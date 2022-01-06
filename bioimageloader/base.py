@@ -4,7 +4,7 @@
 import abc
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, TypeVar, Union, Callable
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import cv2
 import imgaug.augmenters as iaa
@@ -14,9 +14,6 @@ from imgaug.augmentables.segmaps import SegmentationMapsOnImage
 from PIL import Image
 from torch.utils.data import Dataset  # to be compatible with pytorch
 from torchvision import transforms
-
-T_co = TypeVar('T_co', covariant=True)
-T = TypeVar('T')
 
 
 class DatasetInterface(Dataset, metaclass=abc.ABCMeta):
@@ -207,7 +204,8 @@ class NucleiDataset(DatasetInterface):
             raise NotImplementedError("Choose one ['image', 'mask', 'both']")
 
     def info(self):
-        print(self.overview_table.loc[self.acronym])
+        if self.overview_table:
+            print(self.overview_table.loc[self.acronym])
 
     def build_totensor(self, val: float) -> Callable:
         """Base transformation to cast an image array to a tensor
@@ -300,18 +298,23 @@ class NucleiDataset(DatasetInterface):
         return False
 
     @cached_property
-    def overview_table(self) -> pd.DataFrame:
+    def overview_table(self) -> Optional[pd.DataFrame]:
         """Read and store the overview table"""
-        table = pd.read_table('images/table_overview.txt',
-                              sep=r'\s+\|\s',
-                              engine='python',
-                              index_col=0)
-        return table
+        f_table = Path('images/table_overview.txt')
+        if f_table.exists():
+            table = pd.read_table(f_table,
+                                  sep=r'\s+\|\s',
+                                  engine='python',
+                                  index_col=0)
+            return table
+        return None
 
     @property
-    def resolution(self) -> Tuple[int, ...]:
-        res = self.overview_table.loc[self.acronym, 'Resolution']
-        return tuple(map(int, res.strip('()').split(',')))
+    def resolution(self) -> Optional[Tuple[int, ...]]:
+        if self.overview_table:
+            res = self.overview_table.loc[self.acronym, 'Resolution']
+            return tuple(map(int, res.strip('()').split(',')))
+        return None
 
     @property
     def indices(self) -> Optional[List[int]]:
