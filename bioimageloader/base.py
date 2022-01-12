@@ -4,7 +4,7 @@
 import abc
 from functools import cached_property
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
 import imgaug.augmenters as iaa
@@ -12,24 +12,17 @@ import numpy as np
 import pandas as pd
 from imgaug.augmentables.segmaps import SegmentationMapsOnImage
 from PIL import Image
-from torch.utils.data import Dataset  # to be compatible with pytorch
-from torchvision import transforms
 
 
-class DatasetInterface(Dataset, metaclass=abc.ABCMeta):
+class DatasetInterface(metaclass=abc.ABCMeta):
     """Interface
 
     Attributes
     ----------
-    torch.utils.data.Dataset:
-        methods:
-            [__getitem__]
-            [__len__]
-    cls:
-        methods:
-            [__repr__, get_image, get_mask]
-        properties:
-            [acronym, overview_talbe, root_dir, file_list]
+    methods:
+        [__getitem__, __repr__, get_image, get_mask]
+    properties:
+        [acronym, overview_talbe, root_dir, file_list, __len__]
 
     Abstract Methods
     ----------------
@@ -78,12 +71,6 @@ class DatasetInterface(Dataset, metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def tensor(self):
-        """Apply base_transform in order to return Tensor."""
-        return NotImplementedError
-
-    @property
-    @abc.abstractmethod
     def file_list(self):
         """A list of pathes to image files"""
         raise NotImplementedError
@@ -98,7 +85,6 @@ class NucleiDataset(DatasetInterface):
     -------
     __repr__
     __getitem__
-    build_totensor
     resize
 
     Attributes
@@ -106,23 +92,17 @@ class NucleiDataset(DatasetInterface):
     overview_talbe
     root_dir
     file_list
-    totensor_image
-    totensor_mask
     output
-    tensor
     overview_talbe
     resolution
 
-    Requirements for subclass:
-        torch.utils.data.Dataset:
-                methods:
-                    [__len__ (optional)]
-        subcls:
-                methods:
-                    [get_image, get_mask (optional)]
-                properties:
-                    [acronym, _root_dir, _tensor, _output (optional), _resize
-                     (optional)]
+    Requirements for subclass
+    -------------------------
+        methods:
+            [get_image, get_mask (optional)]
+        properties:
+            [acronym, __len__, _root_dir,  _output (optional),
+            _resize (optional)]
 
     NOTE:
     * Somehow `for d in _dataset` doesn't work properly
@@ -133,11 +113,6 @@ class NucleiDataset(DatasetInterface):
     ```
 
     """
-
-    def __init__(self, *args, **kwargs):
-        # Float number will cast array into torch.float32
-        self.totensor_image = self.build_totensor(255.0)
-        self.totensor_mask = self.build_totensor(1.0)
 
     def __repr__(self):
         """Print summary info for a subclass"""
@@ -164,8 +139,6 @@ class NucleiDataset(DatasetInterface):
             image = self.get_image(p)
             if augmenters:
                 image = augmenters.augment_image(image)
-            if self.tensor:
-                image = self.totensor_image(image)
             return {'image': image}
         # `output=gt`
         elif self.output == 'mask':
@@ -178,8 +151,6 @@ class NucleiDataset(DatasetInterface):
                 # # Filtering out empty masks
                 # while mask.max() == 0:
                 #     mask = self.augmenters.augment_image(mask)
-            if self.tensor:
-                mask = self.totensor_mask(mask)
             return {'mask': mask}
         # both image and gt
         elif self.output == 'both':
@@ -196,9 +167,6 @@ class NucleiDataset(DatasetInterface):
                 segmap = SegmentationMapsOnImage(mask, mask.shape)
                 image, mask = augmenters(image=image, segmentation_maps=segmap)
                 mask = mask.get_arr()
-            if self.tensor:
-                image = self.totensor_image(image)
-                mask = self.totensor_mask(mask)
             return {'image': image, 'mask': mask}
         else:
             raise NotImplementedError("Choose one ['image', 'mask', 'both']")
@@ -206,20 +174,6 @@ class NucleiDataset(DatasetInterface):
     def info(self):
         if self.overview_table:
             print(self.overview_table.loc[self.acronym])
-
-    def build_totensor(self, val: float) -> Callable:
-        """Base transformation to cast an image array to a tensor
-
-        Note that mask output won't be boolean. In case of instance GT, they
-        will have floating values between (0.0, 1.0].
-        """
-        return transforms.Compose([
-                # transforms.Lambda(lambda x: np.array(x)),
-                # ToTensor works in range[0,255]
-                # transforms.Lambda(lambda x: (255*(x/x.max())).astype(np.uint8)),
-                # transforms.Lambda(lambda x: (255*(x/x.max())).astype(np.uint8)),
-                transforms.ToTensor(),
-                transforms.Lambda(lambda x: x.mul(val))])
 
     def _resize_arr(
         self,
@@ -289,13 +243,6 @@ class NucleiDataset(DatasetInterface):
     @property
     def resize(self):
         return self._resize
-
-    @property
-    def tensor(self) -> bool:
-        """Apply base_transform in order to return Tensor."""
-        if hasattr(self, '_tensor'):
-            return getattr(self, '_tensor')
-        return False
 
     @cached_property
     def overview_table(self) -> Optional[pd.DataFrame]:

@@ -9,6 +9,7 @@ from PIL import Image
 
 from bioimageloader.base import NucleiDataset
 
+
 class TNBC(NucleiDataset):
     """TNBC Nuclei Segmentation Dataset
 
@@ -33,7 +34,6 @@ class TNBC(NucleiDataset):
         self,
         # Interface requirement
         root_dir,
-        tensor: bool = True,
         output: str = 'both',
         resize: Optional[Tuple[int, int]] = None,
         # Specific to this dataset
@@ -50,9 +50,6 @@ class TNBC(NucleiDataset):
         ---------
         root_dir : str or pathlib.Path
             Path to root directory
-        tensor : bool
-            If true, output type will be tensor and will not be modified at all.
-            Default is True.
         output : {'image','mask','both'}
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
             (default: 'both')
@@ -80,7 +77,6 @@ class TNBC(NucleiDataset):
         # Interface and super-class arguments
         super().__init__(*args, **kwargs)
         self._root_dir = os.path.join(root_dir, 'TNBC_NucleiSegmentation')
-        self._tensor = tensor
         self._output = output
         self._resize = resize
         # Parameters specific this dataset

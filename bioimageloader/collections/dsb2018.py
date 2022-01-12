@@ -27,7 +27,6 @@ class DSB2018(NucleiDataset):
         self,
         # Interface requirement
         root_dir: Union[str, Path],
-        tensor: bool = True,
         output: str = 'both',
         resize: Optional[Tuple[int, int]] = None,
         # Specific to this dataset
@@ -44,9 +43,6 @@ class DSB2018(NucleiDataset):
         ---------
         root_dir : str or pathlib.Path
             Path to root directory
-        tensor : bool
-            If true, output type will be tensor and will not be modified at all.
-            Default is True
         output : {'image','mask','both'}
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
             (default: 'both')
@@ -84,7 +80,6 @@ class DSB2018(NucleiDataset):
         # Interface and super-class arguments
         super().__init__(*args, **kwargs)
         self._root_dir = root_dir
-        self._tensor = tensor
         self._output = output
         self._resize = resize
         # Parameters specific this dataset
