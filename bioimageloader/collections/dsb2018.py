@@ -10,7 +10,6 @@ from PIL import Image
 from bioimageloader.base import NucleiDataset
 from bioimageloader.utils import imread_array, rle_decoding_inseg
 
-
 class DSB2018(NucleiDataset):
     """Data Science Bowl 2018
 
@@ -96,11 +95,6 @@ class DSB2018(NucleiDataset):
         self.augmenters = augmenters
         self.num_calls = num_calls
 
-    def __len__(self):
-        if self.num_calls:
-            return self.num_calls
-        return len(self.file_list)
-
     def get_image(self, p: Path) -> np.ndarray:
         """Should be called from `__getitem__()`"""
         img = Image.open(p)
@@ -148,6 +142,11 @@ class DSB2018(NucleiDataset):
         if self.resize:
             mask = self._resize_arr(mask, 0)
         return mask
+
+    def __len__(self):
+        if self.num_calls:
+            return self.num_calls
+        return len(self.file_list)
 
     @cached_property
     def file_list(self) -> List[Path]:
