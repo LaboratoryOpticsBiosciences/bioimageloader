@@ -2,30 +2,48 @@
 """
 
 import abc
-from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional
 
-import cv2
-import imgaug.augmenters as iaa
+import albumentations
 import numpy as np
-import pandas as pd
-from imgaug.augmentables.segmaps import SegmentationMapsOnImage
-from PIL import Image
 
 
 class DatasetInterface(metaclass=abc.ABCMeta):
     """Interface
+
+    Required
+    --------
+    properties:
+        [acronym, root_dir, file_list]
+    methods:
+        [get_image]
+
+    Optional
+    --------
+    properties:
+        [output, anno_dict, get_mask, transforms, num_calls]
+        _output, _anno_dict, _get_mask, _transforms, _num_calls
+    methods:
+        [get_mask]
+
+    Common
+    ------
+    properties:
+        [__repr__, __len__]
+    methos:
+        [__getitem__]
+
 
     Attributes
     ----------
     methods:
         [__getitem__, __repr__, get_image, get_mask]
     properties:
-        [acronym, overview_talbe, root_dir, file_list, __len__]
+        [acronym, root_dir, file_list]
 
-    Abstract Methods
-    ----------------
+    Abstract Methods (Iterable)
+    ---------------------------
     __getitem__
     __len__
     __contains
@@ -36,44 +54,43 @@ class DatasetInterface(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def __repr__(self):
+    def __repr__(self):  # common
         """Get summary info"""
-        raise NotImplementedError
+        ...
+
+    @property
+    @abc.abstractmethod
+    def __len__(self):  # common
+        """Number of calls"""
+        ...
 
     @abc.abstractmethod
-    def __getitem__(self, ind):
+    def __getitem__(self, ind):  # common
         """Given index returns a dictionary of key(s) and array"""
-        raise NotImplementedError
+        ...
 
     @abc.abstractmethod
-    def get_image(self, key):
-        """Get an image."""
-        raise NotImplementedError
+    def get_image(self, key):  # required
+        """Get an image"""
+        ...
 
     @property
     @classmethod
     @abc.abstractmethod
-    def acronym(cls):
+    def acronym(cls):  # required
         """Assign acroym for a subclass dataset"""
-        raise NotImplementedError
+        ...
 
     @property
     @abc.abstractmethod
-    def overview_table(self):
-        """Read and store the overview table"""
-        raise NotImplementedError
-
-    @property
-    @abc.abstractmethod
-    def root_dir(self):
+    def root_dir(self):  # required
         """Path to root directory"""
-        raise NotImplementedError
+        ...
 
     @property
-    @abc.abstractmethod
-    def file_list(self):
+    def file_list(self):  # required
         """A list of pathes to image files"""
-        raise NotImplementedError
+        ...
 
 
 class NucleiDataset(DatasetInterface):
@@ -113,44 +130,50 @@ class NucleiDataset(DatasetInterface):
     ```
 
     """
+    @property
+    def root_dir(self) -> Path:
+        if hasattr(self, '_root_dir'):
+            _root_dir = getattr(self, '_root_dir')
+            if not isinstance(_root_dir, Path):
+                return Path(_root_dir)
+            return _root_dir
+        raise NotImplementedError('Attr `_root_dir` not defined')
 
     def __repr__(self):
         """Print summary info for a subclass"""
         return self.acronym
 
-    def __getitem__(self, ind) -> Dict[str, np.ndarray]:
+    def __len__(self):
+        if self.num_calls is not None:
+            return self.num_calls
+        return len(self.file_list)
+
+    def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
         """Get item by indexing. Transfrom item to Tensor if specified."""
-        # `augmenters` from imgaug library
-        augmenters: Optional[iaa.Sequential] = None
-        if hasattr(self, 'augmenters') and getattr(self, 'augmenters'):
-            augmenters = getattr(self, 'augmenters')
         # Randomize `ind` when `num_calls` set
-        if hasattr(self, 'num_calls') and getattr(self, 'num_calls'):
-            num_calls = getattr(self, 'num_calls')
-            if ind >= num_calls:
+        if self.num_calls is not None:
+            if ind >= self.num_calls:
                 raise IndexError('list index out of range')
             ind_max = len(self.file_list)
-            if self.output != 'image' and hasattr(self, 'anno_dict'):
-                ind_max = len(getattr(self, 'anno_dict'))
+            if (self.output != 'image') and (self.anno_dict is not None):
+                ind_max = len(self.anno_dict)
             ind = np.random.randint(0, ind_max)
-        # `output=image`
+        # `output="image"`
         if self.output == 'image':
             p = self.file_list[ind]
             image = self.get_image(p)
-            if augmenters:
-                image = augmenters.augment_image(image)
+            if self.transforms:
+                image = self.transforms(image=image)['image']
             return {'image': image}
-        # `output=gt`
+        # `output="mask"`
         elif self.output == 'mask':
-            anno_dict = getattr(self, 'anno_dict')
-            get_mask = getattr(self, 'get_mask')
-            pm = anno_dict[ind]
-            mask = get_mask(pm)
-            if augmenters:
-                mask = augmenters.augment_image(mask)
+            pm = self.anno_dict[ind]
+            mask = self.get_mask(pm)
+            if self.transforms is not None:
+                mask = self.transforms(mask=mask)['mask']
                 # # Filtering out empty masks
                 # while mask.max() == 0:
-                #     mask = self.augmenters.augment_image(mask)
+                #     mask = self.transforms.augment_image(mask)
             return {'mask': mask}
         # both image and gt
         elif self.output == 'both':
@@ -158,48 +181,48 @@ class NucleiDataset(DatasetInterface):
             p = self.file_list[ind]
             image = self.get_image(p)
             # 'mask'
-            anno_dict = getattr(self, 'anno_dict')
-            get_mask = getattr(self, 'get_mask')
-            pm = anno_dict[ind]
-            mask = get_mask(pm)
+            pm = self.anno_dict[ind]
+            mask = self.get_mask(pm)
             # Make sure to apply the same augmentation both to image and mask
-            if augmenters:
-                segmap = SegmentationMapsOnImage(mask, mask.shape)
-                image, mask = augmenters(image=image, segmentation_maps=segmap)
-                mask = mask.get_arr()
+            if self.transforms is not None:
+                augmented = self.transforms(image=image, mask=mask)
+                image, mask = augmented['image'], augmented['mask']
             return {'image': image, 'mask': mask}
         else:
             raise NotImplementedError("Choose one ['image', 'mask', 'both']")
 
-    def info(self):
-        if self.overview_table:
-            print(self.overview_table.loc[self.acronym])
+    @property
+    def output(self) -> str:
+        """If not defined, it is set to 'image'"""
+        if hasattr(self, '_output'):
+            return self._output
+        return 'image'
 
-    def _resize_arr(
-        self,
-        arr: Union[np.ndarray, Image.Image],
-        interpolation: int
-    ) -> Union[np.ndarray, Image.Image]:
-        """Resize image array. Bilinear interpolation for 'image', no
-        interpolation for 'mask'.
+    @output.setter
+    def output(self, val):
+        self._output = val
 
-        Parameters
-        ----------
-        arr : numpy.ndarray or PIL.Image.Image
-            Image array or Pillow image object
-        interpolation : {0,1,2}
-            Interpolation argument for ``cv2.resize``.
-            0: Nearest-neighbor
-            1: Bi-linear
-            2: Bi-cubic
-            https://docs.opencv.org/4.5.2/d1/d4f/imgproc_2include_2opencv2_2imgproc_8hpp.html
-            https://docs.opencv.org/4.5.2/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121
+    @property
+    def transforms(self) -> Optional[albumentations.Compose]:
+        """Transform images and masks"""
+        if hasattr(self, '_transforms'):
+            return getattr(self, '_transforms')
+        return None
 
-        """
-        if isinstance(arr, Image.Image):
-            # PIL automatically resample with nearest if arr is grayscale
-            arr = np.array(arr)
-        return cv2.resize(arr, self.resize, interpolation=interpolation)
+    @property
+    def num_calls(self) -> Optional[int]:
+        """Number of calls that will override __len__"""
+        if hasattr(self, '_num_calls'):
+            return getattr(self, '_num_calls')
+        return None
+
+    @property
+    def anno_dict(self) -> dict:
+        """A dictionary of pathes to annotation files"""
+        ...
+
+    def get_mask(self, key) -> np.ndarray:
+        ...
 
     def _drop_missing_pairs(self) -> tuple:
         """Drop images and reindex the anno list (dict)
@@ -221,52 +244,3 @@ class NucleiDataset(DatasetInterface):
             file_list.pop(ind-i)
         anno_dict = dict((i, v) for i, v in enumerate(anno_dict.values()))
         return file_list, anno_dict
-
-    @property
-    def root_dir(self) -> Path:
-        """Define `self._root_dir` within `__init__()` method in subcls."""
-        _root_dir = getattr(self, '_root_dir')
-        if not isinstance(_root_dir, Path):
-            _root_dir = Path(_root_dir)
-        assert _root_dir.exists(), f"`root_dir='{_root_dir}'` does not exist."
-        return _root_dir
-
-    @property
-    def output(self) -> str:
-        """If not defined, it is set to 'image'"""
-        return self._output if hasattr(self, '_output') else 'image'
-
-    @output.setter
-    def output(self, val):
-        self._output = val
-
-    @property
-    def resize(self):
-        return self._resize
-
-    @cached_property
-    def overview_table(self) -> Optional[pd.DataFrame]:
-        """Read and store the overview table"""
-        f_table = Path('images/table_overview.txt')
-        if f_table.exists():
-            table = pd.read_table(f_table,
-                                  sep=r'\s+\|\s',
-                                  engine='python',
-                                  index_col=0)
-            return table
-        return None
-
-    @property
-    def resolution(self) -> Optional[Tuple[int, ...]]:
-        if self.overview_table:
-            res = self.overview_table.loc[self.acronym, 'Resolution']
-            return tuple(map(int, res.strip('()').split(',')))
-        return None
-
-    @property
-    def indices(self) -> Optional[List[int]]:
-        if hasattr(self, '_indices'):
-            _indices = getattr(self, '_indices')
-            if _indices is not None:
-                return sorted(_indices)
-        return None
