@@ -31,7 +31,7 @@ class DSB2018(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
-        # specific to this onem here
+        # specific to this dataset
         training: bool = True,
         *args, **kwargs
     ):
