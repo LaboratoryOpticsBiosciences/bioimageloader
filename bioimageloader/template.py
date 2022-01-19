@@ -23,20 +23,19 @@ class Template(NucleiDataset):
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
         # specific to this dataset
-        *args, **kwargs
+        **kwargs
     ):
         """
         Parameters
         ----------
-        root_dir : str or pathlib.Path
+        root_dir : str
             Path to root directory
-        output : {'image', 'mask', 'both'}
+        output : {'image', 'mask', 'both'} (default: 'both')
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
-            (default: 'both')
         transforms : albumentations.Compose, optional
             An instance of Compose (albumentations pkg) that defines
             augmentation in sequence.
-        num_calls : int
+        num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
 

@@ -33,34 +33,25 @@ class TNBC(NucleiDataset):
     def __init__(
         self,
         # Interface requirement
-        root_dir,
+        root_dir: str,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
-        *args, **kwargs
+        **kwargs
     ):
         """
         Parameters
         ---------
-        root_dir : str or pathlib.Path
+        root_dir : str
             Path to root directory
-        output : {'image','mask','both'}
+        output : {'image','mask','both'} (default: 'both')
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
-            (default: 'both')
         transforms : albumentations.Compose, optional
             An instance of Compose (albumentations pkg) that defines
             augmentation in sequence.
         num_calls : int, optional
-            Useful when `augmenters` is set. Define the total length of the
+            Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
-
-        indices : list of int, optional
-            This dataset does not provide training/testing split, one can
-            provide a list of indices to load.
-        contrast_inversion : bool or list, optional
-            If True, pixel values of all images will be inverted within their
-            data type. e.g. in case of uint8, 0 -> 255, 254 -> 1. Optionally, it
-            can take a list of indicies to invert the given indices selectively.
 
         See Also
         --------
@@ -78,15 +69,6 @@ class TNBC(NucleiDataset):
         if img.mode == 'RGBA':
             img = img.convert(mode='RGB')
         return np.array(img)
-        # if self.gray and (self.contrast_inversion is not None):
-        #     img = np.array(img)
-        #     if isinstance(self.contrast_inversion, (list, tuple)):
-        #         ind = self.file_list.index(p)
-        #         if ind in self.contrast_inversion:
-        #             img = ~img
-        #     else:
-        #         if self.contrast_inversion:
-        #             img = ~img
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = Image.open(p)

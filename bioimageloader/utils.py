@@ -1,10 +1,11 @@
 import random
+from copy import deepcopy
 from functools import cached_property
 from itertools import accumulate
 from pathlib import Path
-from typing import List, Sequence, Union, Protocol
-from copy import deepcopy
+from typing import Callable, List, Protocol, Sequence, Union, Optional
 
+import albumentations
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -108,3 +109,123 @@ def definite_split_dataset_by_indices(
     indices: Sequence[int],
 ) -> List[NucleiDataset]:
     return subset(dataset, indices)
+
+
+def stack_channels(
+    imread_handler: Callable[[Path], np.ndarray],
+    p_lst: list,
+    *axis_order: int
+) -> np.ndarray:
+    """Take a list of multi-channel images whose channels are separated in each
+    file and read them in specified order.
+
+    The order of channels follows the order of each list by default. If
+    `*axis_order` is explicitely given, the function will put channels in that
+    order.
+
+    Parameters
+    ----------
+    imread_handler : Callable
+        Func to read images e.g.) PIL.Image.open
+    p_lst : list of file path
+        A list of file path. Each element refers to one channel.
+    axis_order : int(s)
+        Additional arguments to indicate the order of channels. It should match
+        the number of channels of the return. For example, 3 arguments if
+        num_channels <= 3, else `n` arguments elif num_channels=`n`
+
+    """
+    images = []
+    for p in p_lst:
+        images.append(imread_handler(p))
+    num_channels = len(images)
+    if (num_axes := len(axis_order)) != 0:
+        if num_channels != num_axes:
+            raise ValueError
+    stacked = np.stack(images, axis=-1)
+    if axis_order:
+        ordered = np.zeros_like(stacked)
+        for i, o in enumerate(axis_order):
+            ordered[..., o] = stacked[..., i]
+        return ordered
+    return stacked
+
+
+def stack_channels_to_rgb(
+    imread_handler: Callable[[Path], np.ndarray],
+    p_lst: List[Path],
+    *axis_order: int
+) -> np.ndarray:
+    """Take a list of multi-channel images whose channels are separated in each
+    file and read them in specified order. If the number of channels is less
+    than or equal to 3, then array will be assumed as a RGB image. Otherwise, it
+    it returns an array with the same number of channels of the input.
+
+    The order of channels follows the order of each list by default. If
+    `*axis_order` is explicitely given, the function will put channels in that
+    order.
+
+    Parameters
+    ----------
+    imread_handler : Callable
+        Func to read images e.g.) PIL.Image.open
+    p_lst : a list of Paths
+        A list of Path objects. Each element refers to one channel
+    axis_order : int(s)
+        Additional arguments to indicate the order of channels. It should match
+        the number of channels of the return. For example, 3 arguments if
+        num_channels <= 3, else `n` arguments elif num_channels=`n`
+
+    """
+    images = []
+    for p in p_lst:
+        images.append(imread_handler(p))
+    num_channels = len(images)
+    stacked = np.stack(images, axis=-1)
+    if num_channels < 3:
+        # it happens to be only 2 channels
+        stacked = np.concatenate([stacked, np.zeros_like(images[0])[...,np.newaxis]], axis=-1)
+    if axis_order:
+        ordered = np.zeros_like(stacked)
+        for i, o in enumerate(axis_order):
+            ordered[..., o] = stacked[..., i]
+        return ordered
+    return stacked
+
+
+def bundle_list(lst: list, bundle_size: int) -> List[list]:
+    """Reshape a list given the repetition step size"""
+    return [list(e) for e in zip(
+        *[lst[i::bundle_size] for i in range(bundle_size)]
+    )]
+
+
+def albumentation_gray_sum(
+    image: np.ndarray,
+    num_channels: int,
+    **kwargs
+) -> np.ndarray:
+    dtype = image.dtype
+    image = (image / num_channels).sum(axis=-1)
+    image = image.astype(dtype)
+    return image
+
+
+def expand_to_rgb(
+    image: np.ndarray,
+    dtype: Optional[str] = None,
+) -> np.ndarray:
+    """Expand axis of image that has 2 channels to have 3 channels mainly for
+    visualization
+    """
+    num_channels = image.shape[-1]
+    if num_channels != 2:
+        raise ValueError
+    # it happens to be only 2 channels
+    stacked = np.concatenate(
+        [image, np.zeros_like(image[..., 0])[..., np.newaxis]],
+        axis=-1,
+    )
+    if dtype is not None:
+        return stacked.astype(dtype)
+    return stacked

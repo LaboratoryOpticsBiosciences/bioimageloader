@@ -27,29 +27,27 @@ class DSB2018(NucleiDataset):
     def __init__(
         self,
         root_dir: str,
-        # optional
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
         # specific to this dataset
         training: bool = True,
-        *args, **kwargs
+        **kwargs
     ):
         """
         Parameters
         ----------
-        root_dir : str or pathlib.Path
+        root_dir : str
             Path to root directory
-        output : {'image', 'mask', 'both'}
+        output : {'image', 'mask', 'both'} (default: 'both')
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
-            (default: 'both')
         transforms : albumentations.Compose, optional
             An instance of Compose (albumentations pkg) that defines
             augmentation in sequence.
-        num_calls : int
+        num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
-        training : bool
+        training : bool (default: True)
             Load training set if True, else load testing one
 
         See Also
@@ -59,7 +57,6 @@ class DSB2018(NucleiDataset):
 
         """
         self._root_dir = root_dir
-        # optional
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
