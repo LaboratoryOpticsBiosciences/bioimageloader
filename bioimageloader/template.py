@@ -22,7 +22,7 @@ class Template(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
-        # specific to this one here
+        # specific to this dataset
         *args, **kwargs
     ):
         """

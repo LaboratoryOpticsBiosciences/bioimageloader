@@ -40,8 +40,6 @@ class DSB2018(NucleiDataset):
         ----------
         root_dir : str or pathlib.Path
             Path to root directory
-        training : bool
-            Load training set if True, else load testing one
         output : {'image', 'mask', 'both'}
             Change outputs. 'both' returns {'image': image, 'mask': mask}.
             (default: 'both')
@@ -51,6 +49,8 @@ class DSB2018(NucleiDataset):
         num_calls : int
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
+        training : bool
+            Load training set if True, else load testing one
 
         See Also
         --------
@@ -72,7 +72,6 @@ class DSB2018(NucleiDataset):
         return np.asarray(img)
 
     def get_mask(self, p_lst: Union[List[Path], pd.DataFrame]) -> np.ndarray:
-        """Should be called from `__getitem__()`"""
         if not self.training and isinstance(p_lst, pd.DataFrame):
             run_lengths = p_lst['EncodedPixels']
             h, w = p_lst.iloc[0][['Height', 'Width']]
@@ -102,7 +101,6 @@ class DSB2018(NucleiDataset):
 
     @cached_property
     def anno_dict(self) -> Dict[int, Union[List[Path], pd.DataFrame]]:
-        """anno_dict[ind] = <file>"""
         anno_dict = {}
         if self.training:
             for i, p in enumerate(self.file_list):
