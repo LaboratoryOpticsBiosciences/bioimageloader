@@ -3,9 +3,10 @@
 
 import abc
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Sequence, Union
 
 import albumentations
+import cv2
 import numpy as np
 
 
@@ -106,12 +107,10 @@ class NucleiDataset(DatasetInterface):
 
     Attributes
     ----------
-    overview_talbe
     root_dir
     file_list
     output
-    overview_talbe
-    resolution
+    overview_table
 
     Requirements for subclass
     -------------------------
@@ -119,7 +118,7 @@ class NucleiDataset(DatasetInterface):
             [get_image, get_mask (optional)]
         properties:
             [acronym, __len__, _root_dir,  _output (optional),
-            _resize (optional)]
+            _resize (optional), grayscale (optional), grayscale_mode (optional)]
 
     NOTE:
     * Somehow `for d in _dataset` doesn't work properly
@@ -162,6 +161,12 @@ class NucleiDataset(DatasetInterface):
         if self.output == 'image':
             p = self.file_list[ind]
             image = self.get_image(p)
+            if self.grayscale:
+                image = self.to_gray(
+                    image,
+                    grayscale_mode=self.grayscale_mode,
+                    num_channels=len(p) if isinstance(p, list) else 3
+                )
             if self.transforms:
                 image = self.transforms(image=image)['image']
             return {'image': image}
@@ -183,6 +188,12 @@ class NucleiDataset(DatasetInterface):
             # 'mask'
             pm = self.anno_dict[ind]
             mask = self.get_mask(pm)
+            if self.grayscale:
+                image = self.to_gray(
+                    image,
+                    grayscale_mode=self.grayscale_mode,
+                    num_channels=len(p) if isinstance(p, list) else 3
+                )
             # Make sure to apply the same augmentation both to image and mask
             if self.transforms is not None:
                 augmented = self.transforms(image=image, mask=mask)
@@ -244,3 +255,46 @@ class NucleiDataset(DatasetInterface):
             file_list.pop(ind-i)
         anno_dict = dict((i, v) for i, v in enumerate(anno_dict.values()))
         return file_list, anno_dict
+
+    @property
+    def grayscale(self) -> Optional[bool]:
+        """Flag for grayscale conversion"""
+        if hasattr(self, '_grayscale'):
+            return getattr(self, '_grayscale')
+        return None
+
+    @grayscale.setter
+    def grayscale(self, val):
+        self._grayscale = val
+
+    @property
+    def grayscale_mode(self) -> Optional[Union[str, Sequence[float]]]:
+        """Determine grayscale mode one of {'cv2', 'equal', Sequence[float]}
+        """
+        if hasattr(self, '_grayscale_mode'):
+            return getattr(self, '_grayscale_mode')
+        return None
+
+    @grayscale_mode.setter
+    def grayscale_mode(self, val):
+        self._grayscale_mode = val
+
+    @classmethod
+    def to_gray(
+        cls,
+        arr: np.ndarray,
+        grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
+        num_channels: int = 3,
+    ) -> np.ndarray:
+        if isinstance(grayscale_mode, str):
+            if grayscale_mode == 'cv2':
+                arr = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
+            elif grayscale_mode == 'equal':
+                arr = (arr.sum(axis=-1) / num_channels).astype(arr.dtype)
+                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
+            else:
+                raise ValueError(f"Wrong `grayscale_mode={grayscale_mode}`")
+        else:
+            raise NotImplementedError("`grayscale_mode`")
+        return arr
