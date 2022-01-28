@@ -78,6 +78,26 @@ for data in dset:
     mask = data['mask']
 ```
 
+
+## Assumption
+- Images have 3 channels
+    Images that have grayscale are repeated to have 3 channels, so that they can
+    be treated equally with RGB color images during color related transforms.
+
+    Images that have 2 channels are a bit special. In general, they will be
+    appended one additional channel. `bioimageloader` will respect the colors of
+    stains applied if there is any (in case of fluorescence microscopy where we
+    can actually see visible colors). Otherwise, it will fill RG channels
+    sequentially based on file names.
+
+    Image with 3 channels are not treated at all.
+
+    Lastly, images that have more than 3 channels needs some filtering.
+    `bioimageloader` provides argument called [`sel_ch` NOT DECIDED YET] to allow
+    which channels to select. Optionally, users may want to aggregate all
+    channels and make them have grayscale. See `grayscale` and `grayscale_mode`
+    in detail.
+
 ## How to use augmentation with `albumentations`
 Albumentations is a popular library for image augmentation and `bioimageloader`
 makes use of it through `transforms` argument.
