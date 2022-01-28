@@ -6,6 +6,7 @@ from ._murphylab import MurphyLab
 from ._bbbc006 import BBBC006
 from ._bbbc007 import BBBC007
 from ._bbbc008 import BBBC008
+from ._bbbc018 import BBBC018
 
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     'BBBC006',
     'BBBC007',
     'BBBC008',
+    'BBBC018',
 ]

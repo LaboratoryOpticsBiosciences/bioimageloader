@@ -126,6 +126,7 @@ class BBBC007(NucleiDataset):
 
     @cached_property
     def file_list(self) -> Union[List[Path], List[List[Path]]]:
+        file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'BBBC007_v1_images'
         _file_list = sorted(root_dir.glob(f'{parent}/*/*.tif'))

@@ -87,6 +87,7 @@ class BBBC008(NucleiDataset):
         self._num_calls = num_calls
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
+        # specific to this dataset
         self.image_ch = image_ch
         self.anno_ch = anno_ch
 
@@ -99,7 +100,7 @@ class BBBC008(NucleiDataset):
             img = stack_channels_to_rgb(tifffile.imread, p, 0, 2, 1)
         return img
 
-    def get_mask(self, p: List[Path]) -> np.ndarray:
+    def get_mask(self, p: Union[Path, List[Path]]) -> np.ndarray:
         if isinstance(p, Path):
             mask = tifffile.imread(p)
         else:
@@ -108,7 +109,8 @@ class BBBC008(NucleiDataset):
         return (~mask).astype(np.float32)
 
     @cached_property
-    def file_list(self) -> List[List[Path]]:
+    def file_list(self) -> Union[List[Path], List[List[Path]]]:
+        file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'human_ht29_colon_cancer_2_images'
         _file_list = sorted(root_dir.glob(f'{parent}/*.tif'))
@@ -139,5 +141,7 @@ class BBBC008(NucleiDataset):
                 raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
         elif len(ch) == 2:
             anno_list = bundle_list(_anno_list, 2)
+        else:
+            raise ValueError
         anno_dict = dict((k, v) for k, v in enumerate(anno_list))
         return anno_dict

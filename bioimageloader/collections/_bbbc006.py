@@ -35,6 +35,8 @@ class BBBC006(NucleiDataset):
       two channels anymore.
     - Saved in UINT16, but UINT12 practically. Max value caps at 4095.
 
+    References
+    ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC006
     """
     # Dataset's acronym
