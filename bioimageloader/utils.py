@@ -5,10 +5,11 @@ from itertools import accumulate
 from pathlib import Path
 from typing import Callable, List, Protocol, Sequence, Union, Optional
 
-import albumentations
+import cv2
 import numpy as np
 import pandas as pd
 from PIL import Image
+import scipy.ndimage as ndi
 
 from bioimageloader.base import NucleiDataset
 
@@ -79,6 +80,8 @@ def rle_decoding_inseg(
 
 
 class NucleiDatasetProto(Protocol):
+    """Static typing protocol for NucleiDataset
+    """
     file_list: list
     anno_dict: dict
 
@@ -87,8 +90,13 @@ class NucleiDatasetProto(Protocol):
 
 
 def subset(dataset: NucleiDatasetProto, indices: Sequence[int]):
+    indices = sorted(indices)
     dset = deepcopy(dataset)
-    dset.file_list = [dataset.file_list[i] for i in sorted(indices)]
+    dset.file_list = [dataset.file_list[i] for i in indices]
+    if dataset.anno_dict is not None:
+        dset.anno_dict = dict((i, dataset.anno_dict[k]) for i, k in enumerate(
+            indices
+        ))
     return dset
 
 
@@ -104,7 +112,7 @@ def random_split_dataset(
             for offset, length in zip(accumulate(lengths), lengths)]
 
 
-def definite_split_dataset_by_indices(
+def split_dataset_by_indices(
     dataset: NucleiDatasetProto,
     indices: Sequence[int],
 ) -> List[NucleiDataset]:
@@ -113,7 +121,7 @@ def definite_split_dataset_by_indices(
 
 def stack_channels(
     imread_handler: Callable[[Path], np.ndarray],
-    p_lst: list,
+    p_lst: List[Path],
     *axis_order: int
 ) -> np.ndarray:
     """Take a list of multi-channel images whose channels are separated in each
@@ -156,7 +164,10 @@ def stack_channels_to_rgb(
     p_lst: List[Path],
     *axis_order: int
 ) -> np.ndarray:
-    """Take a list of multi-channel images whose channels are separated in each
+    """Many transforms work for either RGB or gray scale images. Having RGB is
+    also helpful for visualization.
+
+    Take a list of multi-channel images whose channels are separated in each
     file and read them in specified order. If the number of channels is less
     than or equal to 3, then array will be assumed as a RGB image. Otherwise, it
     it returns an array with the same number of channels of the input.
@@ -198,17 +209,6 @@ def bundle_list(lst: list, bundle_size: int) -> List[list]:
     return [list(e) for e in zip(
         *[lst[i::bundle_size] for i in range(bundle_size)]
     )]
-
-
-def albumentation_gray_sum(
-    image: np.ndarray,
-    num_channels: int,
-    **kwargs
-) -> np.ndarray:
-    dtype = image.dtype
-    image = (image / num_channels).sum(axis=-1)
-    image = image.astype(dtype)
-    return image
 
 
 def expand_to_rgb(

@@ -1,13 +1,14 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 
 from ..base import NucleiDataset
-from ..utils import bundle_list, stack_channels
+from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
 class BBBC007(NucleiDataset):
@@ -27,10 +28,9 @@ class BBBC007(NucleiDataset):
     - [4, 5, 11, 14, 15] have 3 channels but they are just all gray scale
         images. Extra work is required in get_image().
 
-    [BBBC007](https://bbbc.broadinstitute.org/BBBC007)
-
-    .. [1]Jones et al., in the Proceedings of the ICCV Workshop on Computer
+    .. [1] Jones et al., in the Proceedings of the ICCV Workshop on Computer
        Vision for Biomedical Image Applications (CVBIA), 2005.
+    .. [2] [BBBC007](https://bbbc.broadinstitute.org/BBBC007)
     """
     # Dataset's acronym
     acronym = 'BBBC007'
@@ -41,8 +41,11 @@ class BBBC007(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
+        grayscale: bool = False,
+        grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
-        # anno_ch: Optional[str]='DNA',
+        image_ch: Sequence[str] = ('DNA', 'actin',),
+        anno_ch: Sequence[str] = ('DNA',),
         **kwargs
     ):
         """
@@ -58,10 +61,18 @@ class BBBC007(NucleiDataset):
         num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
-
-        anno_ch : {'DNA','actin'}, optional
-            Which channel to use as annotation, default is 'DNA'. Set it to None
-            to load both. Default is 'DNA'.
+        grayscale : bool (default: False)
+            Convert images to grayscale
+        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+            How to convert to grayscale. If set to 'cv2', it follows opencv
+            implementation. Else if set to 'equal', it sums up values along
+            channel axis, then divides it by the number of expected channels.
+        image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
+            Which channel(s) to load as image. Make sure to give it as a
+            Sequence when choose a single channel.
+        anno_ch : {'DNA', 'actin'} (default: ('DNA',))
+            Which channel(s) to load as annotation. Make sure to give it as a
+            Sequence when choose a single channel.
 
         See Also
         --------
@@ -72,45 +83,80 @@ class BBBC007(NucleiDataset):
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
-        # self.anno_ch = anno_ch
+        self._grayscale = grayscale
+        self._grayscale_mode = grayscale_mode
+        self.image_ch = image_ch
+        self.anno_ch = anno_ch
 
-    def get_image(self, lst_p: List[Path]) -> np.ndarray:
-        img = stack_channels(tifffile.imread, lst_p)
+    @classmethod
+    def _imread_handler(cls, p: Path) -> np.ndarray:
+        """Handle irregular images by wrapping tifffile.imread
+
+        Normally two images in a pair have gray scale and only have one channel.
+        This means that each image array has shape of (height, width). But there
+        are some outliers.
+
+        For example a pair of images below has 3 channels with all having the
+        same value (height, width, 3).
+        ['BBBC007_v1_images/f113/AS_09125_040701150004_A02f00d0.tif',
+         'BBBC007_v1_images/f113/AS_09125_040701150004_A02f00d1.tif']
+
+        6 pairs out of 16 have this issue and this wrapper resolves it.
+        """
+        img = tifffile.imread(p)
+        if img.shape[-1] == 3:
+            return img[..., 0]
         return img
 
-    def get_mask(self, p: List[Path]) -> np.ndarray:
-        # mask = None
-        # if self.anno_ch:
-        #     mask = tifffile.imread(p)
-        #     mask = binary_fill_holes_edge(mask, 50)  # 50 seems enough
-        # else:
-        #     mask = stack_channels(tifffile.imread, p)
-        #     for c in range(mask.shape[-1]):
-        #         mask[..., c] = binary_fill_holes_edge(mask[..., c], 50)
-        mask = stack_channels(tifffile.imread, p)
-        return mask
+    def get_image(self, p: Union[Path, List[Path]]) -> np.ndarray:
+        if isinstance(p, Path):
+            img = self._imread_handler(p)
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        else:
+            img = stack_channels_to_rgb(self._imread_handler, p)
+        return img
+
+    def get_mask(self, p: Union[Path, List[Path]]) -> np.ndarray:
+        if isinstance(p, Path):
+            mask = tifffile.imread(p)
+        else:
+            mask = stack_channels(tifffile.imread, p)
+        # dtype=bool originally and bool is not well handled by albumentations
+        return mask.astype(np.float32)
 
     @cached_property
-    def file_list(self) -> List[List[Path]]:
+    def file_list(self) -> Union[List[Path], List[List[Path]]]:
         root_dir = self.root_dir
         parent = 'BBBC007_v1_images'
         _file_list = sorted(root_dir.glob(f'{parent}/*/*.tif'))
-        file_list = bundle_list(_file_list, 2)
+        if len(ch := self.image_ch) == 1:
+            if ch[0] == 'DNA':
+                file_list = _file_list[::2]
+            elif ch[0] == 'actin':
+                file_list = _file_list[1::2]
+            else:
+                raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
+        elif len(ch) == 2:
+            file_list = bundle_list(_file_list, 2)
+        else:
+            raise ValueError("Set `anno_ch` in ('DNA', 'actin') or all")
         return file_list
 
     @cached_property
-    def anno_dict(self) -> Dict[int, List[Path]]:
+    def anno_dict(self) -> Dict[int, Union[Path, List[Path]]]:
         root_dir = self.root_dir
         parent = 'BBBC007_v1_outlines'
         _anno_list = sorted(root_dir.glob(f'{parent}/*/*.tif'))
-        # if cat := self.anno_ch:
-        #     if cat == 'DNA':
-        #         anno_list = anno_list[::2]
-        #     elif cat == 'actin':
-        #         anno_list = anno_list[1::2]
-        #     else:
-        #         raise NotImplementedError("Set `anno_ch` to {'DNA', 'actin', None}")
-        # else:
-        anno_list = bundle_list(_anno_list, 2)
+        if len(ch := self.anno_ch) == 1:
+            if ch[0] == 'DNA':
+                anno_list = _anno_list[::2]
+            elif ch[0] == 'actin':
+                anno_list = _anno_list[1::2]
+            else:
+                raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
+        elif len(ch) == 2:
+            anno_list = bundle_list(_anno_list, 2)
+        else:
+            raise ValueError("Set `anno_ch` in ('DNA', 'actin') or all")
         anno_dict = dict((k, v) for k, v in enumerate(anno_list))
         return anno_dict

@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
@@ -8,7 +8,7 @@ import tifffile
 from PIL import Image
 
 from ..base import NucleiDataset
-from ..utils import bundle_list, stack_channels
+from ..utils import bundle_list, stack_channels_to_rgb
 
 
 class BBBC006(NucleiDataset):
@@ -33,7 +33,7 @@ class BBBC006(NucleiDataset):
     - 2 channels, w1=Hoechst, w2=phalloidin
     - Two channels usually overlap and when overlapped, it's hard to distinguish
       two channels anymore.
-    - Saved in uint16, but uint12 practically
+    - Saved in UINT16, but UINT12 practically. Max value caps at 4095.
 
     .. [1] https://bbbc.broadinstitute.org/BBBC006
     """
@@ -46,7 +46,10 @@ class BBBC006(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
+        grayscale: bool = False,
+        grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
+        uint8: bool = True,
         z_ind: int = 16,
         **kwargs
     ):
@@ -63,6 +66,16 @@ class BBBC006(NucleiDataset):
         num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
+        grayscale : bool (default: False)
+            Convert images to grayscale
+        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+            How to convert to grayscale. If set to 'cv2', it follows opencv
+            implementation. Else if set to 'equal', it sums up values along
+            channel axis, then divides it by the number of expected channels.
+        uint8 : bool (default: True)
+            Whether to convert images to UINT8. It will divide image by 2**12
+            and cast it to UINT8. If set False, no process will be applied. Read
+            more about rationales in Notes section.
         z_ind : int (default: 16)
             Select one z stack. Default is 16, because 16 is the most in-focus.
 
@@ -79,14 +92,18 @@ class BBBC006(NucleiDataset):
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
+        self._grayscale = grayscale
+        self._grayscale_mode = grayscale_mode
+        # specific to this dataset
+        self.uint8 = uint8
         self.z_ind = z_ind
 
     def get_image(self, p: List[Path]) -> np.ndarray:
         # 2 channels
-        img = stack_channels(tifffile.imread, p, 2, 0, 1)
-        # # uint12
-        # Should be done with albumentations.ToFloat()
-        # img = (img / 2**4).astype(np.uint8)
+        img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
+        # UINT12
+        if self.uint8:
+            img = (img / 2**4).astype(np.uint8)
         return img
 
     def get_mask(self, p: Path) -> np.ndarray:

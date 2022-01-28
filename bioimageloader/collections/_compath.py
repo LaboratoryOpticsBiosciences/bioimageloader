@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
@@ -22,11 +22,24 @@ class ComputationalPathology(NucleiDataset):
     - gt is converted from annotation recorded in xml format
     - gt has dtype of torch.float64, converted from numpy.uint16, and it has
       value 'num_objects' * 255 because it is base-transformed
+    - The origianl dataset provides annotation in xml format, which takes
+      long time to parse and to reconstruct mask images dynamically during
+      training. Drawing masks beforehand makes training much faster. Use
+      `mask_tif` in that case.
+    - When `augmenters` is provided, set the `num_calls` argument
+      30x1000x1000 -> 16x30=480 patches. Thus, the default `num_calls=720`
+      (x1.5)
+    - dtype of 'gt' is int16. However, to make batching easier, it will be
+      casted to float32
+    - Be careful about types of augmenters; avoid interpolation
 
+    References
+    ----------
     .. [1] N. Kumar, R. Verma, S. Sharma, S. Bhargava, A. Vahadane, and A.
        Sethi, “A Dataset and a Technique for Generalized Nuclear Segmentation
        for Computational Pathology,” IEEE Transactions on Medical Imaging, vol.
        36, no. 7, pp. 1550–1560, Jul. 2017, doi: 10.1109/TMI.2017.2677499.
+
     """
 
     # Dataset's acronym
@@ -41,6 +54,8 @@ class ComputationalPathology(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
+        grayscale: bool = False,
+        grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         # Specific to this dataset
         mask_tif: bool = False,
         **kwargs
@@ -58,23 +73,16 @@ class ComputationalPathology(NucleiDataset):
         num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
+        grayscale : bool (default: False)
+            Convert images to grayscale
+        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+            How to convert to grayscale. If set to 'cv2', it follows opencv
+            implementation. Else if set to 'equal', it sums up values along
+            channel axis, then divides it by the number of expected channels.
         mask_tif : bool (default: False)
             Instead of parsing every xml file to reconstruct mask image arrays,
             use pre-drawn mask tif files which should reside in the same folder
             as annotation xml files.
-
-        Notes
-        -----
-        - The origianl dataset provides annotation in xml format, which takes
-          long time to parse and to reconstruct mask images dynamically during
-          training. Drawing masks beforehand makes training much faster. Use
-          `mask_tif` in that case.
-        - When `augmenters` is provided, set the `num_calls` argument
-          30x1000x1000 -> 16x30=480 patches. Thus, the default `num_calls=720`
-          (x1.5)
-        - dtype of 'gt' is int16. However, to make batching easier, it will be
-          casted to float32
-        - Be careful about types of augmenters; avoid interpolation
 
         See Also
         --------
@@ -87,6 +95,8 @@ class ComputationalPathology(NucleiDataset):
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
+        self._grayscale = grayscale
+        self._grayscale_mode = grayscale_mode
         # Parameters specific this dataset
         self.mask_tif = mask_tif
 
@@ -99,7 +109,9 @@ class ComputationalPathology(NucleiDataset):
     def get_mask(self, p: Path) -> np.ndarray:
         if self.mask_tif:
             if p.suffix == '.xml':
-                raise ValueError("Use `save_xml_to_tif()` and set `mask_tif` to True")
+                raise ValueError(
+                    "Use `save_xml_to_tif()` then set `mask_tif` to True"
+                )
             mask = tifffile.imread(p)
             return mask.astype(np.int16)
         # Parse xml

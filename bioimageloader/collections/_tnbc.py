@@ -1,7 +1,7 @@
 import os.path
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
@@ -22,7 +22,6 @@ class TNBC(NucleiDataset):
 
     See Also
     --------
-    TNBC : Super class
     NucleiDataset : Super class
     NucleiDatasetInterface : Interface of the super class
     """
@@ -37,6 +36,8 @@ class TNBC(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
+        grayscale: bool = False,
+        grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         **kwargs
     ):
         """
@@ -52,6 +53,12 @@ class TNBC(NucleiDataset):
         num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
+        grayscale : bool (default: False)
+            Convert images to grayscale
+        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+            How to convert to grayscale. If set to 'cv2', it follows opencv
+            implementation. Else if set to 'equal', it sums up values along
+            channel axis, then divides it by the number of expected channels.
 
         See Also
         --------
@@ -63,12 +70,14 @@ class TNBC(NucleiDataset):
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
+        self._grayscale = grayscale
+        self._grayscale_mode = grayscale_mode
 
     def get_image(self, p: Path) -> np.ndarray:
         img = Image.open(p)
         if img.mode == 'RGBA':
             img = img.convert(mode='RGB')
-        return np.array(img)
+        return np.asarray(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = Image.open(p)

@@ -1,6 +1,6 @@
 # bioimageloader
 ---
-bioimageloader is a python library to provide templates for bioimage datasets to
+`bioimageloader` is a python library to provide templates for bioimage datasets to
 develop computer vision deep neural networks. Find supported templates down
 below [need tag link].
 
@@ -81,6 +81,7 @@ for data in dset:
 
 ## Assumption
 - Images have 3 channels
+
     Images that have grayscale are repeated to have 3 channels, so that they can
     be treated equally with RGB color images during color related transforms.
 
@@ -97,6 +98,13 @@ for data in dset:
     which channels to select. Optionally, users may want to aggregate all
     channels and make them have grayscale. See `grayscale` and `grayscale_mode`
     in detail.
+
+
+- Annotation mask has one single channel
+
+    Ensure to have 1 annotation, because usually that is enough. But each
+    dataset will provide a way to select one or more channel(s) through
+    `image_ch` and `anno_ch` arguments.
 
 ## How to use augmentation with `albumentations`
 Albumentations is a popular library for image augmentation and `bioimageloader`

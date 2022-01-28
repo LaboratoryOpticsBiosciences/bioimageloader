@@ -5,6 +5,7 @@ from ._s_bsst265 import S_BSST265
 from ._murphylab import MurphyLab
 from ._bbbc006 import BBBC006
 from ._bbbc007 import BBBC007
+from ._bbbc008 import BBBC008
 
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     'MurphyLab',
     'BBBC006',
     'BBBC007',
+    'BBBC008',
 ]

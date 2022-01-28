@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
@@ -30,6 +30,8 @@ class DSB2018(NucleiDataset):
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
+        grayscale: bool = False,
+        grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         # specific to this dataset
         training: bool = True,
         **kwargs
@@ -47,6 +49,12 @@ class DSB2018(NucleiDataset):
         num_calls : int, optional
             Useful when `transforms` is set. Define the total length of the
             dataset. If it is set, it overrides __len__.
+        grayscale : bool (default: False)
+            Convert images to grayscale
+        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+            How to convert to grayscale. If set to 'cv2', it follows opencv
+            implementation. Else if set to 'equal', it sums up values along
+            channel axis, then divides it by the number of expected channels.
         training : bool (default: True)
             Load training set if True, else load testing one
 
@@ -60,6 +68,8 @@ class DSB2018(NucleiDataset):
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
+        self._grayscale = grayscale
+        self._grayscale_mode = grayscale_mode
         # specific to this one here
         self.training = training
 
