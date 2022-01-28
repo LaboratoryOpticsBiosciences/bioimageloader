@@ -105,20 +105,26 @@ class NucleiDataset(DatasetInterface):
     __getitem__
     resize
 
+
     Attributes
     ----------
     root_dir
+    output (optional)
+    transforms
+    num_calls
+    grayscale (optional)
+    grayscale_mode (optional)
     file_list
-    output
-    overview_table
+    anno_dict (optional)
+    # overview_table (not implemented yet)
 
     Requirements for subclass
     -------------------------
-        methods:
-            [get_image, get_mask (optional)]
-        properties:
-            [acronym, __len__, _root_dir,  _output (optional),
-            _resize (optional), grayscale (optional), grayscale_mode (optional)]
+    methods:
+        [get_image, get_mask (optional)]
+    properties:
+        [acronym, __len__, _root_dir,  _output (optional),
+        _resize (optional), grayscale (optional), grayscale_mode (optional)]
 
     NOTE:
     * Somehow `for d in _dataset` doesn't work properly
