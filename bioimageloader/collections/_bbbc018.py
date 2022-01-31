@@ -55,6 +55,7 @@ class BBBC018(NucleiDataset):
     def __init__(
         self,
         root_dir: str,
+        *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,

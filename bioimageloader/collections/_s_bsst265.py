@@ -45,6 +45,7 @@ class S_BSST265(NucleiDataset):
         self,
         # Interface requirement
         root_dir: str,
+        *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,

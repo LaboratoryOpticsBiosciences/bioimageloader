@@ -18,6 +18,7 @@ class Template(NucleiDataset):
     def __init__(
         self,
         root_dir: str,
+        *,  # only keyword param
         output: str = 'both',  # optional
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
