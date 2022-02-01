@@ -8,6 +8,7 @@ import numpy as np
 import tifffile
 
 from ..base import NucleiDataset
+from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
@@ -70,7 +71,7 @@ class BBBC007(NucleiDataset):
             channel axis, then divides it by the number of expected channels.
         image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
             Which channel(s) to load as image. Make sure to give it as a
-            Sequence when choose a single channel.
+            Sequence when choose a single channel. Name matches to `anno_ch`.
         anno_ch : {'DNA', 'actin'} (default: ('DNA',))
             Which channel(s) to load as annotation. Make sure to give it as a
             Sequence when choose a single channel.
@@ -88,6 +89,10 @@ class BBBC007(NucleiDataset):
         self._grayscale_mode = grayscale_mode
         self.image_ch = image_ch
         self.anno_ch = anno_ch
+        if not any([ch in ('DNA', 'actin') for ch in image_ch]):
+            raise ValueError("Set `anno_ch` in ('nuclei', 'cells') in sequence")
+        if not any([ch in ('DNA', 'actin') for ch in anno_ch]):
+            raise ValueError("Set `anno_ch` in ('nuclei', 'cells') in sequence")
 
     @classmethod
     def _imread_handler(cls, p: Path) -> np.ndarray:
@@ -109,7 +114,7 @@ class BBBC007(NucleiDataset):
             return img[..., 0]
         return img
 
-    def get_image(self, p: Union[Path, List[Path]]) -> np.ndarray:
+    def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             img = self._imread_handler(p)
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
@@ -117,7 +122,7 @@ class BBBC007(NucleiDataset):
             img = stack_channels_to_rgb(self._imread_handler, p)
         return img
 
-    def get_mask(self, p: Union[Path, List[Path]]) -> np.ndarray:
+    def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             mask = tifffile.imread(p)
         else:
@@ -126,7 +131,7 @@ class BBBC007(NucleiDataset):
         return mask.astype(np.float32)
 
     @cached_property
-    def file_list(self) -> Union[List[Path], List[List[Path]]]:
+    def file_list(self) -> Union[List[Path], List[BundledPath]]:
         file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'BBBC007_v1_images'
@@ -145,7 +150,7 @@ class BBBC007(NucleiDataset):
         return file_list
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, List[Path]]]:
+    def anno_dict(self) -> Dict[int, Union[Path, BundledPath]]:
         root_dir = self.root_dir
         parent = 'BBBC007_v1_outlines'
         _anno_list = sorted(root_dir.glob(f'{parent}/*/*.tif'))
@@ -154,8 +159,6 @@ class BBBC007(NucleiDataset):
                 anno_list = _anno_list[::2]
             elif ch[0] == 'actin':
                 anno_list = _anno_list[1::2]
-            else:
-                raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
         elif len(ch) == 2:
             anno_list = bundle_list(_anno_list, 2)
         else:

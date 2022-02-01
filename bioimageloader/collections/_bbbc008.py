@@ -8,6 +8,7 @@ import numpy as np
 import tifffile
 
 from ..base import NucleiDataset
+from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
@@ -91,8 +92,10 @@ class BBBC008(NucleiDataset):
         # specific to this dataset
         self.image_ch = image_ch
         self.anno_ch = anno_ch
+        if not any([ch in ('DNA', 'actin') for ch in anno_ch]):
+            raise ValueError("Set `anno_ch` in ('DNA', 'actin') in sequence")
 
-    def get_image(self, p: Union[Path, List[Path]]) -> np.ndarray:
+    def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             img = tifffile.imread(p)
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
@@ -101,7 +104,7 @@ class BBBC008(NucleiDataset):
             img = stack_channels_to_rgb(tifffile.imread, p, 0, 2, 1)
         return img
 
-    def get_mask(self, p: Union[Path, List[Path]]) -> np.ndarray:
+    def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             mask = tifffile.imread(p)
         else:
@@ -110,7 +113,7 @@ class BBBC008(NucleiDataset):
         return (~mask).astype(np.float32)
 
     @cached_property
-    def file_list(self) -> Union[List[Path], List[List[Path]]]:
+    def file_list(self) -> Union[List[Path], List[BundledPath]]:
         file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'human_ht29_colon_cancer_2_images'
@@ -129,7 +132,7 @@ class BBBC008(NucleiDataset):
         return file_list
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, List[Path]]]:
+    def anno_dict(self) -> Dict[int, Union[Path, BundledPath]]:
         root_dir = self.root_dir
         parent = 'human_ht29_colon_cancer_2_foreground'
         _anno_list = sorted(root_dir.glob(f'{parent}/*.tif'))
@@ -138,8 +141,6 @@ class BBBC008(NucleiDataset):
                 anno_list = _anno_list[::2]
             elif ch[0] == 'actin':
                 anno_list = _anno_list[1::2]
-            else:
-                raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
         elif len(ch) == 2:
             anno_list = bundle_list(_anno_list, 2)
         else:

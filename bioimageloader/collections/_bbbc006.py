@@ -8,6 +8,7 @@ import tifffile
 from PIL import Image
 
 from ..base import NucleiDataset
+from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
@@ -82,10 +83,6 @@ class BBBC006(NucleiDataset):
         z_ind : int (default: 16)
             Select one z stack. Default is 16, because 16 is the most in-focus.
 
-        gray_mode : {'sum','PIL'}
-            How to convert to gray scale; If 'sum' it will sum along channel
-            axis. Else if 'PIL', use pillow gray conversion. Default is 'sum'.
-
         See Also
         --------
         NucleiDataset : Super class
@@ -101,7 +98,7 @@ class BBBC006(NucleiDataset):
         self.uint8 = uint8
         self.z_ind = z_ind
 
-    def get_image(self, p: List[Path]) -> np.ndarray:
+    def get_image(self, p: BundledPath) -> np.ndarray:
         # 2 channels
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
         # UINT12
@@ -114,7 +111,7 @@ class BBBC006(NucleiDataset):
         return np.asarray(mask)
 
     @cached_property
-    def file_list(self) -> List[List[Path]]:
+    def file_list(self) -> List[BundledPath]:
         root_dir = self.root_dir
         parent = f'BBBC006_v1_images_z_{self.z_ind:02d}'
         _file_list = sorted(root_dir.glob(f'{parent}/*.tif'))

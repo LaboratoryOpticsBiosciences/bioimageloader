@@ -49,7 +49,6 @@ class ComputationalPathology(NucleiDataset):
 
     def __init__(
         self,
-        # Interface requirement
         root_dir: str,
         *,
         output: str = 'both',
@@ -57,7 +56,7 @@ class ComputationalPathology(NucleiDataset):
         num_calls: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
-        # Specific to this dataset
+        # specific to this dataset
         mask_tif: bool = False,
         **kwargs
     ):
@@ -91,14 +90,13 @@ class ComputationalPathology(NucleiDataset):
         DatasetInterface : Interface
 
         """
-        # Interface and super-class arguments
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
-        # Parameters specific this dataset
+        # specific to this dataset
         self.mask_tif = mask_tif
 
     def get_image(self, p: Path) -> np.ndarray:

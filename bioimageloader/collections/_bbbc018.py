@@ -8,6 +8,7 @@ import tifffile
 from PIL import Image
 
 from ..base import NucleiDataset
+from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
@@ -121,13 +122,13 @@ class BBBC018(NucleiDataset):
         img = Image.open(p)
         return np.asarray(img)[..., 1]
 
-    def get_image(self, p: List[Path]) -> np.ndarray:
+    def get_image(self, p: BundledPath) -> np.ndarray:
         # Second channel has objects
         # Order = (DNA,actin,pH3)
         img = stack_channels_to_rgb(self._imread_handler, p, 2, 0, 1)
         return img
 
-    def get_mask(self, p: Union[Path, List[Path]]) -> np.ndarray:
+    def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             mask = np.asarray(Image.open(p))
         else:
@@ -136,7 +137,7 @@ class BBBC018(NucleiDataset):
         return np.ascontiguousarray(mask[::-1, ...])
 
     @cached_property
-    def file_list(self) -> List[List[Path]]:
+    def file_list(self) -> List[BundledPath]:
         root_dir = self.root_dir
         parent = 'BBBC018_v1_images'
         # Order = (DNA,actin,pH3)
@@ -144,8 +145,8 @@ class BBBC018(NucleiDataset):
         return bundle_list(_file_list, 3)
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, List[Path]]]:
-        anno_dict: Dict[int, Union[Path, List[Path]]] = {}
+    def anno_dict(self) -> Dict[int, Union[Path, BundledPath]]:
+        anno_dict: Dict[int, Union[Path, BundledPath]] = {}
         root_dir = self.root_dir
         parent = 'BBBC018_v1_outlines'
         # _anno_list = sorted(root_dir.glob(f'{parent}/*.png'))
