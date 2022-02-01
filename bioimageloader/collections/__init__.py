@@ -7,6 +7,15 @@ from ._bbbc006 import BBBC006
 from ._bbbc007 import BBBC007
 from ._bbbc008 import BBBC008
 from ._bbbc018 import BBBC018
+from ._bbbc020 import BBBC020
+from ._bbbc039 import BBBC039
+# partial anno
+from ._digitpath import DigitalPathology
+from ._ucsb import UCSB
+from ._bbbc002 import BBBC002  # very few
+# no anno
+from ._bbbc013 import BBBC013  # very few
+from ._bbbc014 import BBBC014
 
 
 __all__ = [
@@ -19,4 +28,11 @@ __all__ = [
     'BBBC007',
     'BBBC008',
     'BBBC018',
+    'BBBC020',
+    'BBBC039',
+    'DigitalPathology',
+    'UCSB',
+    'BBBC002',
+    'BBBC013',
+    'BBBC014',
 ]
