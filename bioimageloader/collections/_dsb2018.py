@@ -8,7 +8,8 @@ import pandas as pd
 from PIL import Image
 
 from ..base import NucleiDataset
-from ..utils import imread_array, rle_decoding_inseg
+from ..types import BundledPath
+from ..utils import imread_asarray, rle_decoding_inseg
 
 
 class DSB2018(NucleiDataset):
@@ -79,7 +80,7 @@ class DSB2018(NucleiDataset):
         img = img.convert(mode='RGB')
         return np.asarray(img)
 
-    def get_mask(self, p_lst: Union[List[Path], pd.DataFrame]) -> np.ndarray:
+    def get_mask(self, p_lst: Union[BundledPath, pd.DataFrame]) -> np.ndarray:
         if not self.training and isinstance(p_lst, pd.DataFrame):
             run_lengths = p_lst['EncodedPixels']
             h, w = p_lst.iloc[0][['Height', 'Width']]
@@ -87,12 +88,12 @@ class DSB2018(NucleiDataset):
             return mask
         p = p_lst[0]
         val = 1
-        m0 = imread_array(p) > 0
+        m0 = imread_asarray(p) > 0
         mask = np.zeros_like(m0, dtype=np.uint8)  # uint8 is enough
         mask[m0] = val
         for p in p_lst[1:]:
             val += 1
-            m = imread_array(p) > 0
+            m = imread_asarray(p) > 0
             # Does not allow overlapping, but since it's semantic segmentation
             # task, it's okay
             mask[m] = val
@@ -108,7 +109,7 @@ class DSB2018(NucleiDataset):
         return sorted(root_dir.glob(f'{parent}/*/images/*.png'))
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[List[Path], pd.DataFrame]]:
+    def anno_dict(self) -> Dict[int, Union[BundledPath, pd.DataFrame]]:
         anno_dict = {}
         if self.training:
             for i, p in enumerate(self.file_list):

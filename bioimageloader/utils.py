@@ -40,7 +40,7 @@ def random_label_cmap(n=2**16, h=(0, 1), l=(.4, 1), s=(.2, .8)):
     return matplotlib.colors.ListedColormap(cols)
 
 
-def imread_array(p: Path, dtype=None) -> np.ndarray:
+def imread_asarray(p: Path, dtype=None) -> np.ndarray:
     '''Read an image using PIL then convert it into numpy array'''
     img = np.asarray(Image.open(p), dtype=dtype)
     return img
@@ -182,7 +182,7 @@ def stack_channels_to_rgb(
     Parameters
     ----------
     imread_handler : Callable
-        Func to read images e.g.) PIL.Image.open
+        Func to read images e.g.) PIL.Image.open | tifffile.imread
     p_lst : a list of Paths
         A list of Path objects. Each element refers to one channel
     axis_order : int(s)
