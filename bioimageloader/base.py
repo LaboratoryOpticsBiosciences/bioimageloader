@@ -244,10 +244,10 @@ class NucleiDataset(DatasetInterface):
     @property
     def anno_dict(self) -> dict:
         """A dictionary of pathes to annotation files"""
-        ...
+        raise NotImplementedError
 
     def get_mask(self, key) -> np.ndarray:
-        ...
+        raise NotImplementedError
 
     def _drop_missing_pairs(self) -> tuple:
         """Drop images and reindex the anno list (dict)
@@ -309,9 +309,12 @@ class NucleiDataset(DatasetInterface):
     ) -> np.ndarray:
         if isinstance(grayscale_mode, str):
             if grayscale_mode == 'cv2':
+                if arr.shape[-1] != 3:
+                    raise ValueError("Image arr should have RGB channels")
                 arr = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
                 arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
             elif grayscale_mode == 'equal':
+                # Expect (h, w, ch) shape of array
                 arr = (arr.sum(axis=-1) / num_channels).astype(arr.dtype)
                 arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
             else:
