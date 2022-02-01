@@ -16,6 +16,12 @@ from ._bbbc002 import BBBC002  # very few
 # no anno
 from ._bbbc013 import BBBC013  # very few
 from ._bbbc014 import BBBC014
+from ._bbbc015 import BBBC015
+from ._bbbc016 import BBBC016
+from ._bbbc026 import BBBC026
+from ._bbbc041 import BBBC041
+from ._frunet import FRUNet
+from ._bbbc021 import BBBC021
 
 
 __all__ = [
@@ -35,4 +41,10 @@ __all__ = [
     'BBBC002',
     'BBBC013',
     'BBBC014',
+    'BBBC015',
+    'BBBC016',
+    'BBBC026',
+    'BBBC041',
+    'FRUNet',
+    'BBBC021',
 ]
