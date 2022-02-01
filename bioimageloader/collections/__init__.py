@@ -1,3 +1,4 @@
+# import should not be sorted by isort
 from ._dsb2018 import DSB2018
 from ._tnbc import TNBC
 from ._compath import ComputationalPathology
@@ -24,27 +25,30 @@ from ._frunet import FRUNet
 from ._bbbc021 import BBBC021
 
 
+# Keep this list sorted
 __all__ = [
-    'DSB2018',
-    'TNBC',
-    'ComputationalPathology',
-    'S_BSST265',
-    'MurphyLab',
+    'BBBC002',
     'BBBC006',
     'BBBC007',
     'BBBC008',
-    'BBBC018',
-    'BBBC020',
-    'BBBC039',
-    'DigitalPathology',
-    'UCSB',
-    'BBBC002',
     'BBBC013',
     'BBBC014',
     'BBBC015',
     'BBBC016',
-    'BBBC026',
-    'BBBC041',
-    'FRUNet',
+    'BBBC018',
+    'BBBC020',
     'BBBC021',
+    'BBBC026',
+    'BBBC039',
+    'BBBC041',
+    'ComputationalPathology',
+    'DSB2018',
+    'DigitalPathology',
+    'FRUNet',
+    'MurphyLab',
+    'S_BSST265',
+    'TNBC',
+    'UCSB',
 ]
+
+assert __all__ == sorted(__all__), "Keep collections sorted"

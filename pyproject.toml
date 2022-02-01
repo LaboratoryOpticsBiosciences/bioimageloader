@@ -2,5 +2,6 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[too.isort]
+[tool.isort]
 known_local_folder = ["bioimageloader"]
+skip = ["bioimageloader/collections/__init__.py"]

@@ -3,13 +3,13 @@ from copy import deepcopy
 from functools import cached_property
 from itertools import accumulate
 from pathlib import Path
-from typing import Callable, List, Protocol, Sequence, Union, Optional, TypeVar
+from typing import Callable, List, Optional, Protocol, Sequence, TypeVar, Union
 
 import cv2
 import numpy as np
 import pandas as pd
-from PIL import Image
 import scipy.ndimage as ndi
+from PIL import Image
 
 from bioimageloader.base import NucleiDataset
 
