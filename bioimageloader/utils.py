@@ -3,7 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 from itertools import accumulate
 from pathlib import Path
-from typing import Callable, List, Protocol, Sequence, Union, Optional
+from typing import Callable, List, Protocol, Sequence, Union, Optional, TypeVar
 
 import cv2
 import numpy as np
@@ -12,6 +12,18 @@ from PIL import Image
 import scipy.ndimage as ndi
 
 from bioimageloader.base import NucleiDataset
+
+T = TypeVar('T')
+
+
+class NucleiDatasetProto(Protocol):
+    """Static typing protocol for NucleiDataset
+    """
+    file_list: list
+    anno_dict: dict
+
+    def __len__(self):
+        ...
 
 
 def random_label_cmap(n=2**16, h=(0, 1), l=(.4, 1), s=(.2, .8)):
@@ -78,15 +90,6 @@ def rle_decoding_inseg(
                 decoded[(p-1)+dp] = i + 1  # 0 is bg
     return decoded.reshape((w, h)).T
 
-
-class NucleiDatasetProto(Protocol):
-    """Static typing protocol for NucleiDataset
-    """
-    file_list: list
-    anno_dict: dict
-
-    def __len__(self):
-        ...
 
 
 def subset(dataset: NucleiDatasetProto, indices: Sequence[int]):
@@ -204,7 +207,7 @@ def stack_channels_to_rgb(
     return stacked
 
 
-def bundle_list(lst: list, bundle_size: int) -> List[list]:
+def bundle_list(lst: List[T], bundle_size: int) -> List[List[T]]:
     """Reshape a list given the repetition step size"""
     return [list(e) for e in zip(
         *[lst[i::bundle_size] for i in range(bundle_size)]

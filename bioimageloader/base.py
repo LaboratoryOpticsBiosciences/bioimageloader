@@ -114,6 +114,7 @@ class NucleiDataset(DatasetInterface):
     num_calls
     grayscale (optional)
     grayscale_mode (optional)
+    num_channels (optional)
     file_list
     anno_dict (optional)
     # overview_table (not implemented yet)
@@ -124,7 +125,8 @@ class NucleiDataset(DatasetInterface):
         [get_image, get_mask (optional)]
     properties:
         [acronym, __len__, _root_dir,  _output (optional),
-        _resize (optional), grayscale (optional), grayscale_mode (optional)]
+        _resize (optional), grayscale (optional), grayscale_mode (optional),
+        num_channels (optional)]
 
     NOTE:
     * Somehow `for d in _dataset` doesn't work properly
@@ -168,10 +170,13 @@ class NucleiDataset(DatasetInterface):
             p = self.file_list[ind]
             image = self.get_image(p)
             if self.grayscale:
+                num_channels = self.num_channels
+                if num_channels is None:
+                    num_channels = len(p) if isinstance(p, list) else 3
                 image = self.to_gray(
                     image,
                     grayscale_mode=self.grayscale_mode,
-                    num_channels=len(p) if isinstance(p, list) else 3
+                    num_channels=num_channels
                 )
             if self.transforms:
                 image = self.transforms(image=image)['image']
@@ -195,10 +200,13 @@ class NucleiDataset(DatasetInterface):
             pm = self.anno_dict[ind]
             mask = self.get_mask(pm)
             if self.grayscale:
+                num_channels = self.num_channels
+                if num_channels is None:
+                    num_channels = len(p) if isinstance(p, list) else 3
                 image = self.to_gray(
                     image,
                     grayscale_mode=self.grayscale_mode,
-                    num_channels=len(p) if isinstance(p, list) else 3
+                    num_channels=num_channels
                 )
             # Make sure to apply the same augmentation both to image and mask
             if self.transforms is not None:
@@ -284,6 +292,13 @@ class NucleiDataset(DatasetInterface):
     @grayscale_mode.setter
     def grayscale_mode(self, val):
         self._grayscale_mode = val
+
+    @property
+    def num_channels(self) -> Optional[int]:
+        """Number of image channels used for `to_gray()`"""
+        if hasattr(self, '_num_channels'):
+            return getattr(self, '_num_channels')
+        return None
 
     @classmethod
     def to_gray(
