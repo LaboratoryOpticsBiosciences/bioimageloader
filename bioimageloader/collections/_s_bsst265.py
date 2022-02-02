@@ -103,7 +103,7 @@ class S_BSST265(NucleiDataset):
         anno_dict = dict((k, v) for k, v in enumerate(anno_list))
         return anno_dict
 
-    @classmethod
-    def _sort_key(cls, p, zfill=2):
+    @staticmethod
+    def _sort_key(p, zfill=2):
         split = p.stem.split('_')
         return '_'.join([s.zfill(zfill) for s in split])

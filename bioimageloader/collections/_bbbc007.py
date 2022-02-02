@@ -94,8 +94,8 @@ class BBBC007(NucleiDataset):
         if not any([ch in ('DNA', 'actin') for ch in anno_ch]):
             raise ValueError("Set `anno_ch` in ('nuclei', 'cells') in sequence")
 
-    @classmethod
-    def _imread_handler(cls, p: Path) -> np.ndarray:
+    @staticmethod
+    def _imread_handler(p: Path) -> np.ndarray:
         """Handle irregular images by wrapping tifffile.imread
 
         Normally two images in a pair have gray scale and only have one channel.

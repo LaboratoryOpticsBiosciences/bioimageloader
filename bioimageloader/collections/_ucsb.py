@@ -89,8 +89,8 @@ class UCSB(NucleiDataset):
         tif = tifffile.imread(p)
         return tif
 
-    @classmethod
-    def _filter_category(cls, p: Path, category: str):
+    @staticmethod
+    def _filter_category(p: Path, category: str):
         return re.search(category, p.stem)
 
     @cached_property

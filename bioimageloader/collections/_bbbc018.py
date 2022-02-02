@@ -117,8 +117,8 @@ class BBBC018(NucleiDataset):
         if self.output == 'both' and self.drop_missing_pairs:
             self.file_list, self.anno_dict = self._drop_missing_pairs()
 
-    @classmethod
-    def _imread_handler(cls, p: Path) -> np.ndarray:
+    @staticmethod
+    def _imread_handler(p: Path) -> np.ndarray:
         img = Image.open(p)
         return np.asarray(img)[..., 1]
 

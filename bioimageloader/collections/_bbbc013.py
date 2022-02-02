@@ -99,7 +99,7 @@ class BBBC013(NucleiDataset):
                 return file_list[1::2]
         return bundle_list(file_list, 2)
 
-    @classmethod
-    def _sort_key(self, p: Path):
+    @staticmethod
+    def _sort_key(p: Path):
         channel, ind, t, subind = p.stem.split('-')
         return '-'.join([ind, t, subind, channel])

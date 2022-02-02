@@ -168,8 +168,8 @@ class BBBC020(NucleiDataset):
         file_list = sorted(root_dir.glob(f'{parent}/*/*_(c1+c5).TIF'))
         return file_list
 
-    @classmethod
-    def _sort_key(cls, p: Path):
+    @staticmethod
+    def _sort_key(p: Path):
         res = re.search(r'\d+$', p.stem)
         if res is None:
             raise ValueError

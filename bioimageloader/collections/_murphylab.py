@@ -142,8 +142,8 @@ class MurphyLab(NucleiDataset):
         )
         return file_list
 
-    @classmethod
-    def _sort_key(cls, p, zfill=2):
+    @staticmethod
+    def _sort_key(p, zfill=2):
         split = p.stem.split('-')
         return '-'.join([p.parent.stem] + [s.zfill(zfill) for s in split])
 

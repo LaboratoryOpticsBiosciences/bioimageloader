@@ -300,9 +300,8 @@ class NucleiDataset(DatasetInterface):
             return getattr(self, '_num_channels')
         return None
 
-    @classmethod
+    @staticmethod
     def to_gray(
-        cls,
         arr: np.ndarray,
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         num_channels: int = 3,
