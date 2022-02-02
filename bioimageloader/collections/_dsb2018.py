@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import imread_asarray, rle_decoding_inseg
 
 
-class DSB2018(NucleiDataset):
+class DSB2018(MaskDataset):
     """Data Science Bowl 2018
 
     Each entry is a pair of an image and a mask.
@@ -62,7 +62,7 @@ class DSB2018(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """
@@ -101,7 +101,7 @@ class DSB2018(NucleiDataset):
 
     @cached_property
     def file_list(self) -> List[Path]:
-        # Call NucleiDataset.root_dir
+        # Call MaskDataset.root_dir
         root_dir = self.root_dir
         parent = 'stage1_train'
         if not self.training:

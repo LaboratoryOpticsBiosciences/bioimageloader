@@ -7,12 +7,12 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, imread_asarray, stack_channels_to_rgb
 
 
-class BBBC014(NucleiDataset):
+class BBBC014(MaskDataset):
     """Human U2OS cells cytoplasm–nucleus translocation
 
     This 96-well plate has images of cytoplasm to nucleus translocation of the
@@ -75,7 +75,7 @@ class BBBC014(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

@@ -6,15 +6,14 @@ from typing import Optional, Sequence, Union
 import albumentations
 import numpy as np
 import tifffile
-from PIL import Image
 
-from .base import NucleiDataset
+from .base import MaskDataset
 from .types import KNOWN_IMAGE_EXT, PIL_IMAGE_EXT, TIFFFILE_IMAGE_EXT
 from .utils import imread_asarray
 
 
-class GenericNucleiDataset(NucleiDataset):
-    """Call this from .utils.get_nucleidataset_from_directory()
+class GenericMaskDataset(MaskDataset):
+    """Call this from .utils.get_maskdataset_from_directory()
 
     Attributes
     ----------
@@ -31,11 +30,11 @@ class GenericNucleiDataset(NucleiDataset):
 
     See Also
     --------
-    bioimageloader.utils.get_nucleidataset_from_directory
+    bioimageloader.utils.get_maskdataset_from_directory
 
     """
     count = 0
-    acronym = 'nucleidataset'
+    acronym = 'maskdataset'
 
     def __init__(
         self,
@@ -48,7 +47,7 @@ class GenericNucleiDataset(NucleiDataset):
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         **kwargs
     ):
-        self.acronym = f'nucleidataset_{GenericNucleiDataset.count}'
+        self.acronym = f'maskdataset_{GenericMaskDataset.count}'
         self._root_dir = root_dir
         # keywords
         self._setattr_ifvalue('_output', output)
@@ -57,7 +56,7 @@ class GenericNucleiDataset(NucleiDataset):
         self._setattr_ifvalue('_grayscale', grayscale)
         self._setattr_ifvalue('_grayscale_mode', grayscale_mode)
         # count # of instances
-        GenericNucleiDataset.count += 1
+        GenericMaskDataset.count += 1
 
     def _setattr_ifvalue(self, attr, value=None):
         if value is not None:

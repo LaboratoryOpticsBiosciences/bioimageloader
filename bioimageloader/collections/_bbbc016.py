@@ -7,12 +7,12 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
-class BBBC016(NucleiDataset):
+class BBBC016(MaskDataset):
     """Human U2OS cells transfluor
 
     This image set is of a Transfluor assay where an orphan GPCR is stably
@@ -69,7 +69,7 @@ class BBBC016(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

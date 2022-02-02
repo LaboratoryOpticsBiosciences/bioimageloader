@@ -9,10 +9,10 @@ import tifffile
 from PIL import Image
 from skimage.draw import polygon
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class ComputationalPathology(NucleiDataset):
+class ComputationalPathology(MaskDataset):
     """A Dataset and a Technique for Generalized Nuclear Segmentation for
     Computational Pathology [1]_
 
@@ -86,7 +86,7 @@ class ComputationalPathology(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

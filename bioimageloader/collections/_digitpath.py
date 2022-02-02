@@ -8,10 +8,10 @@ import numpy as np
 import tifffile
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class DigitalPathology(NucleiDataset):
+class DigitalPathology(MaskDataset):
     """Deep learning for digital pathology image analysis: A comprehensive
     tutorial with selected use cases
 
@@ -61,7 +61,7 @@ class DigitalPathology(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

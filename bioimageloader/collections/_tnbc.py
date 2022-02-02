@@ -7,10 +7,10 @@ import albumentations
 import numpy as np
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class TNBC(NucleiDataset):
+class TNBC(MaskDataset):
     """TNBC Nuclei Segmentation Dataset
 
     References
@@ -22,8 +22,8 @@ class TNBC(NucleiDataset):
 
     See Also
     --------
-    NucleiDataset : Super class
-    NucleiDatasetInterface : Interface of the super class
+    MaskDataset : Super class
+    MaskDatasetInterface : Interface of the super class
     """
 
     # Dataset's acronym
@@ -63,7 +63,7 @@ class TNBC(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         # Interface and super-class arguments
@@ -86,7 +86,7 @@ class TNBC(NucleiDataset):
 
     @cached_property
     def file_list(self) -> List[Path]:
-        # Call NucleiDataset.root_dir
+        # Call MaskDataset.root_dir
         root_dir = self.root_dir
         parent = 'Slide_*'
         file_list = sorted(root_dir.glob(f'{parent}/*.png'))

@@ -9,12 +9,12 @@ import numpy as np
 import tifffile
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
-class BBBC020(NucleiDataset):
+class BBBC020(MaskDataset):
     """Murine bone-marrow derived macrophages
 
     The image set consists of 25 images, each consisting of three channels. The
@@ -94,7 +94,7 @@ class BBBC020(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

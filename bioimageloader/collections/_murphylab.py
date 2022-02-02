@@ -8,10 +8,10 @@ import numpy as np
 from gimpformats.gimpXcfDocument import GimpDocument
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class MurphyLab(NucleiDataset):
+class MurphyLab(MaskDataset):
     """Nuclei Segmentation In Microscope Cell Images: A Hand-Segmented Dataset
     And Comparison Of Algorithms
 
@@ -91,7 +91,7 @@ class MurphyLab(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

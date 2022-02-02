@@ -7,12 +7,12 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
-class BBBC008(NucleiDataset):
+class BBBC008(MaskDataset):
     """Human HT29 colon-cancer cells
 
     F/B semantic segmentation
@@ -80,7 +80,7 @@ class BBBC008(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

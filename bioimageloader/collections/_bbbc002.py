@@ -7,10 +7,10 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class BBBC002(NucleiDataset):
+class BBBC002(MaskDataset):
     """Drosophila Kc167 cells
 
     There are 10 fields of view of each sample, for a total of 50 fields of
@@ -55,7 +55,7 @@ class BBBC002(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

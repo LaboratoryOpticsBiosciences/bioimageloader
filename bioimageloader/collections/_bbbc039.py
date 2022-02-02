@@ -7,10 +7,10 @@ import numpy as np
 import tifffile
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class BBBC039(NucleiDataset):
+class BBBC039(MaskDataset):
     """Nuclei of U2OS cells in a chemical screen
 
     This data set has a total of 200 fields of view of nuclei captured with
@@ -64,7 +64,7 @@ class BBBC039(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

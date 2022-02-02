@@ -1,7 +1,8 @@
 # bioimageloader
+Load bioimages for machine leaning applications
 ---
-`bioimageloader` is a python library to provide templates for bioimage datasets to
-develop computer vision deep neural networks. Find supported templates down
+`bioimageloader` is a python library to provide templates for bioimage datasets
+to develop computer vision deep neural networks. Find supported templates down
 below [need tag link].
 
 
@@ -15,11 +16,12 @@ nature of bioimages. For instances of technical issues, some datasets were
 missing one or two pairs of image and annotation, had broken files, had very
 specific file formats that cannot be easily read in python, or provided mask
 annotation not in image format but in .xml format. It was a big pain in the ass
-to deal with all these edge cases one by one, and I thought it would be valuable
-to package it to share it with community so that others do not have to suffer.
+to deal with all these edge cases one by one, but anyway I did it and I thought
+it would be valuable to package and share it with community so that others do
+not have to suffer.
 
-I did not mention what sorts of issues are rooted from nature of bioimages yet.
-You can find them in transforms section [need tag link].
+Wait, I did not mention what sorts of issues are rooted from nature of bioimages
+yet. You can find them in transforms section [need tag link].
 
 
 
@@ -48,16 +50,18 @@ Note
    even be easily used with sklearn. (TensorFlow support? IDK, need to check how
    they changed DataLoader)
 
-2. Currently, NucleiDataset is a default base since all datasets gathered are
-   nuclei datasets.
+2. Currently, MaskDataset is a default base since all datasets gathered are
+   mainly nuclei/cells datasets.
+   - [ ] BBoxDataset
+   - [ ] KPointDataset (Not really applicable to bioimages)
 
 
 ## Installation
 
 # dev install (recommended for the moment)
 ```bash
-git clone <address>
-cd gitrepo && pip install -e .
+git clone https://github.com/sbinnee/bioimageloader
+cd bioimageloader && pip install -e .
 ```
 
 
@@ -86,10 +90,11 @@ for data in dset:
     be treated equally with RGB color images during color related transforms.
 
     Images that have 2 channels are a bit special. In general, they will be
-    appended one additional channel. `bioimageloader` will respect the colors of
-    stains applied if there is any (in case of fluorescence microscopy where we
-    can actually see visible colors). Otherwise, it will fill RG channels
-    sequentially based on file names.
+    appended with one additional channel. `bioimageloader` will respect the
+    colors of stains applied or the order of channels described if there is any
+    (in case of fluorescence microscopy where we can actually see visible
+    colors). Otherwise, it will fill RG channels sequentially based on file
+    names.
 
     Image with 3 channels are not treated at all.
 
@@ -105,6 +110,13 @@ for data in dset:
     Ensure to have 1 annotation, because usually that is enough. But each
     dataset will provide a way to select one or more channel(s) through
     `image_ch` and `anno_ch` arguments.
+
+
+- Images have dtype UINT8
+
+    ...
+
+
 
 ## How to use augmentation with `albumentations`
 Albumentations is a popular library for image augmentation and `bioimageloader`
@@ -128,9 +140,9 @@ can update it.
 3. Point path to the dataset
 
 ```python
-from bioimageloader import NucleiDataset
+from bioimageloader import MaskDataset
 
-class NewDataset(NucleiDataset):
+class NewDataset(MaskDataset):
     def get_image(self, ...):
     ...
 
@@ -142,11 +154,34 @@ dset = NewDataset('path/to/root_dir')
 
 
 ## Available templates
+22 datasets
 
 Table
+- BBBC002
+- BBBC006
+- BBBC007
+- BBBC008
+- BBBC013
+- BBBC014
+- BBBC015
+- BBBC016
+- BBBC018
+- BBBC020
+- BBBC021
+- BBBC026
+- BBBC039
+- BBBC041
+- ComputationalPathology
 - DSB2018
-- ...
+- DigitalPathology
+- FRUNet
+- MurphyLab
+- S_BSST265
+- TNBC
+- UCSB
 
+
+<!-- Put this in another README -->
 ## Worth mentioning datasets
 All datasets are very unique. Read each docstring for details.
 
@@ -155,6 +190,7 @@ All datasets are very unique. Read each docstring for details.
     plane. Thus it loads only zind=16 by default.
 
 
+<!-- Put this in another README with more details -->
 ## I want more granular control over datasets individually
 Each bioimage dataset is very unique and it is natural that users want more
 controls and it was true for my work as well. Good news is that `bioimageloader`
@@ -181,7 +217,7 @@ case. I hope that they are useful with the template.
     models. See ZeroCostDL4Mic.
 
 
-## Author
+## Contact
 Seongbin Lim
 - Homepage: https://sbinnee.github.io/
-- Email: seongbin.lim@polytechnique.edu
+- Email: seongbin.lim _at_ polytechnique.edu, sungbin246 _at_ gmail.com

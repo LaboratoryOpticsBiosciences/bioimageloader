@@ -10,14 +10,14 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-from bioimageloader.base import NucleiDataset
-from bioimageloader.common import GenericNucleiDataset
+from bioimageloader.base import MaskDataset
+from bioimageloader.common import GenericMaskDataset
 
 T = TypeVar('T')
 
 
-class NucleiDatasetProto(Protocol):
-    """Static typing protocol for NucleiDataset
+class MaskDatasetProto(Protocol):
+    """Static typing protocol for MaskDataset
     """
     file_list: list
     anno_dict: dict
@@ -92,7 +92,7 @@ def rle_decoding_inseg(
 
 
 
-def subset(dataset: NucleiDatasetProto, indices: Sequence[int]):
+def subset(dataset: MaskDatasetProto, indices: Sequence[int]):
     indices = sorted(indices)
     dset = deepcopy(dataset)
     dset.file_list = [dataset.file_list[i] for i in indices]
@@ -104,9 +104,9 @@ def subset(dataset: NucleiDatasetProto, indices: Sequence[int]):
 
 
 def random_split_dataset(
-    dataset: NucleiDatasetProto,
+    dataset: MaskDatasetProto,
     lengths: Sequence[int],
-) -> List[NucleiDataset]:
+) -> List[MaskDataset]:
     if sum(lengths) != len(dataset):
         raise ValueError("Sum of input lengths does not equal the length of the input dataset!")
     indices = list(range(len(dataset)))
@@ -116,9 +116,9 @@ def random_split_dataset(
 
 
 def split_dataset_by_indices(
-    dataset: NucleiDatasetProto,
+    dataset: MaskDatasetProto,
     indices: Sequence[int],
-) -> List[NucleiDataset]:
+) -> List[MaskDataset]:
     return subset(dataset, indices)
 
 
@@ -234,7 +234,7 @@ def expand_to_rgb(
     return stacked
 
 
-def get_nucleidataset_from_directory(
+def get_maskdataset_from_directory(
     root_dir: str,
     *,
     image_dir: Optional[str] = None,
@@ -244,8 +244,8 @@ def get_nucleidataset_from_directory(
     num_calls: Optional[int] = None,
     grayscale: Optional[bool] = None,
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
-) -> NucleiDataset:
-    """Construct NucleiDataset by assuming the structure of given directory
+) -> MaskDataset:
+    """Construct MaskDataset by assuming the structure of given directory
 
     case1/                  *case2/                *case4/
     ├── image00.tif         ├── image00.tif         ├── images
@@ -284,7 +284,7 @@ def get_nucleidataset_from_directory(
         └── 09.tif                                          └── 1.jpg
 
     """
-    nuclei_dataset = GenericNucleiDataset(
+    mask_dataset = GenericMaskDataset(
         root_dir=root_dir,
         output=output,
         transforms=transforms,
@@ -292,7 +292,7 @@ def get_nucleidataset_from_directory(
         grayscale=grayscale,
         grayscale_mode=grayscale_mode,
     )
-    nuclei_dataset._setattr_ifvalue('_image_dir', image_dir)
-    nuclei_dataset._setattr_ifvalue('_label_dir', label_dir)
+    mask_dataset._setattr_ifvalue('_image_dir', image_dir)
+    mask_dataset._setattr_ifvalue('_label_dir', label_dir)
 
-    return nuclei_dataset
+    return mask_dataset

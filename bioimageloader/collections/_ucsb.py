@@ -7,10 +7,10 @@ import albumentations
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class UCSB(NucleiDataset):
+class UCSB(MaskDataset):
     """A biosegmentation benchmark for evaluation of bioimage analysis methods
 
     Notes
@@ -66,7 +66,7 @@ class UCSB(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

@@ -8,10 +8,10 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class FRUNet(NucleiDataset):
+class FRUNet(MaskDataset):
     """FRU-Net: Robust Segmentation of Small Extracellular Vesicles
 
     TEM images
@@ -64,7 +64,7 @@ class FRUNet(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

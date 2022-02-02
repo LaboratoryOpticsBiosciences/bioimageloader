@@ -7,12 +7,12 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
-class BBBC007(NucleiDataset):
+class BBBC007(MaskDataset):
     """Drosophila Kc167 cells
 
     Outline annotation
@@ -78,7 +78,7 @@ class BBBC007(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

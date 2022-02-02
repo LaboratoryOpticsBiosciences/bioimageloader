@@ -5,12 +5,12 @@ from typing import List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, imread_asarray, stack_channels_to_rgb
 
 
-class BBBC015(NucleiDataset):
+class BBBC015(MaskDataset):
     """Human U2OS cells transfluor
 
     The images are of a human osteosarcoma cell line (U2OS) co-expressing beta2
@@ -74,7 +74,7 @@ class BBBC015(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

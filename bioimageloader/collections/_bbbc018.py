@@ -7,12 +7,12 @@ import numpy as np
 import tifffile
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
-class BBBC018(NucleiDataset):
+class BBBC018(MaskDataset):
     """Human HT29 colon-cancer cells (diverse phenotypes)
 
     The image set consists of 56 fields of view (4 from each of 14 samples).
@@ -101,7 +101,7 @@ class BBBC018(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

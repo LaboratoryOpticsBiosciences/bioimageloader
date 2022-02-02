@@ -94,8 +94,8 @@ class DatasetInterface(metaclass=abc.ABCMeta):
         ...
 
 
-class NucleiDataset(DatasetInterface):
-    """Concrete super class for neclei datasets
+class MaskDataset(DatasetInterface):
+    """Concrete super class for mask datasets
 
     It defines a few common methods and properties.
 

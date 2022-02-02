@@ -5,10 +5,10 @@ from typing import Dict, List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 
-from bioimageloader.base import NucleiDataset
+from bioimageloader.base import MaskDataset
 
 
-class Template(NucleiDataset):
+class Template(MaskDataset):
     """Template
     """
 
@@ -49,7 +49,7 @@ class Template(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
 
         """

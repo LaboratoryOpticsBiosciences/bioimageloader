@@ -7,11 +7,11 @@ from typing import List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..utils import imread_asarray
 
 
-class BBBC041(NucleiDataset):
+class BBBC041(MaskDataset):
     """P. vivax (malaria) infected human blood smears
 
     Images are in .png or .jpg format. There are 3 sets of images consisting of
@@ -69,7 +69,7 @@ class BBBC041(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = os.path.join(root_dir, 'malaria')

@@ -7,12 +7,12 @@ import numpy as np
 import tifffile
 from PIL import Image
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
-class BBBC006(NucleiDataset):
+class BBBC006(MaskDataset):
     """Human U2OS cells (out of focus)
 
     Images were acquired from one 384-well microplate containing U2OS cells
@@ -85,7 +85,7 @@ class BBBC006(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         self._root_dir = root_dir

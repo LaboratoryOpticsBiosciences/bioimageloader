@@ -7,10 +7,10 @@ import albumentations
 import numpy as np
 import tifffile
 
-from ..base import NucleiDataset
+from ..base import MaskDataset
 
 
-class S_BSST265(NucleiDataset):
+class S_BSST265(MaskDataset):
     '''An annotated fluorescence image dataset for training nuclear segmentation
     methods
 
@@ -67,7 +67,7 @@ class S_BSST265(NucleiDataset):
 
         See Also
         --------
-        NucleiDataset : Super class
+        MaskDataset : Super class
         DatasetInterface : Interface
         """
         # Interface and super-class arguments
