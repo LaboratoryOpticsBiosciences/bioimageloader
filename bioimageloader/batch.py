@@ -2,11 +2,11 @@ import bisect
 import concurrent.futures
 import warnings
 from math import ceil
-from typing import List
+from typing import List, Iterator
 
 import numpy as np
 
-from .base import DatasetInterface
+from .base import Dataset
 
 
 class ConcatDataset:
@@ -23,7 +23,7 @@ class ConcatDataset:
     ----------
     .. [1] https://pytorch.org/docs/stable/_modules/torch/utils/data/dataset.html#ConcatDataset
     """
-    def __init__(self, datasets: List[DatasetInterface]):
+    def __init__(self, datasets: List[Dataset]):
         self.datasets = datasets
         self.acronym = [dset.acronym for dset in self.datasets]
         self.sizes = [len(dset) for dset in self.datasets]
@@ -47,7 +47,7 @@ class ConcatDataset:
 class BatchDataloader:
     def __init__(
         self,
-        dataset: DatasetInterface,
+        dataset: Dataset,
         batch_size: int = 16,
         drop_last: bool = False,
     ):
@@ -59,3 +59,6 @@ class BatchDataloader:
         if self.drop_last:
             return len(self.dataset) // self.batch_size
         return ceil(len(self.dataset) / self.batch_size)
+
+    def __iter__(self) -> Iterator:
+        return iter(self.dataset)

@@ -3,7 +3,7 @@
 
 import abc
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union, Iterator
 
 import albumentations
 import cv2
@@ -94,20 +94,15 @@ class DatasetInterface(metaclass=abc.ABCMeta):
         ...
 
 
-class MaskDataset(DatasetInterface):
-    """Concrete super class for mask datasets
+class Dataset(DatasetInterface):
+    """Concrete super class for [MaskDataset, ...]
 
-    It defines a few common methods and properties.
-
-    Methods
-    -------
-    __repr__
-    __getitem__
-    resize
-
+    Define common methods and properties
 
     Attributes
     ----------
+    __repr__
+    __len__
     root_dir
     output (optional)
     transforms
@@ -115,28 +110,22 @@ class MaskDataset(DatasetInterface):
     grayscale (optional)
     grayscale_mode (optional)
     num_channels (optional)
-    file_list
-    anno_dict (optional)
-    # overview_table (not implemented yet)
 
-    Requirements for subclass
+    Methods
+    -------
+    _drop_missing_pairs
+    to_gray
+
+    Requirements for subclasses
     -------------------------
     methods:
-        [get_image, get_mask (optional)]
-    properties:
-        [acronym, __len__, _root_dir,  _output (optional),
-        _resize (optional), grayscale (optional), grayscale_mode (optional),
-        num_channels (optional)]
-
-    NOTE:
-    * Somehow `for d in _dataset` doesn't work properly
-    Use
-    ```
-    for ind in len(_dataset):
-        d = _dataset[ind]
-    ```
+        [__getitem__, get_image]
 
     """
+
+    def __iter__(self):
+        return IterDataset(self)
+
     @property
     def root_dir(self) -> Path:
         if hasattr(self, '_root_dir'):
@@ -154,6 +143,126 @@ class MaskDataset(DatasetInterface):
         if self.num_calls is not None:
             return self.num_calls
         return len(self.file_list)
+
+    @property
+    def output(self) -> str:
+        """If not defined, it is set to 'image'"""
+        if hasattr(self, '_output'):
+            return self._output
+        return 'image'
+
+    @output.setter
+    def output(self, val):
+        self._output = val
+
+    @property
+    def transforms(self) -> Optional[albumentations.Compose]:
+        """Transform images and masks"""
+        if hasattr(self, '_transforms'):
+            return getattr(self, '_transforms')
+        return None
+
+    @property
+    def num_calls(self) -> Optional[int]:
+        """Number of calls that will override __len__"""
+        if hasattr(self, '_num_calls'):
+            return getattr(self, '_num_calls')
+        return None
+
+    @property
+    def anno_dict(self) -> dict:
+        """A dictionary of pathes to annotation files"""
+        raise NotImplementedError
+
+    @property
+    def grayscale(self) -> Optional[bool]:
+        """Flag for grayscale conversion"""
+        if hasattr(self, '_grayscale'):
+            return getattr(self, '_grayscale')
+        return None
+
+    @grayscale.setter
+    def grayscale(self, val):
+        self._grayscale = val
+
+    @property
+    def grayscale_mode(self) -> Optional[Union[str, Sequence[float]]]:
+        """Determine grayscale mode one of {'cv2', 'equal', Sequence[float]}
+        """
+        if hasattr(self, '_grayscale_mode'):
+            return getattr(self, '_grayscale_mode')
+        return None
+
+    @grayscale_mode.setter
+    def grayscale_mode(self, val):
+        self._grayscale_mode = val
+
+    @property
+    def num_channels(self) -> Optional[int]:
+        """Number of image channels used for `to_gray()`"""
+        if hasattr(self, '_num_channels'):
+            return getattr(self, '_num_channels')
+        return None
+
+    def _drop_missing_pairs(self) -> tuple:
+        """Drop images and reindex the anno list (dict)
+
+        Sometimes, not all images have annotation. For consistence, this func
+        simply drops those images missing annotation.
+
+        For example,
+        - MurphyLab
+        - BBBC018
+        - BBBC020
+        """
+        file_list = getattr(self, 'file_list')
+        anno_dict = getattr(self, 'anno_dict')
+        _diff = set(range(len(file_list))).difference(set(anno_dict))
+        diff = sorted(_diff)
+        # logger.info(f'{self.acronym}:Dropping indices: {diff}')
+        for i, ind in enumerate(diff):
+            file_list.pop(ind-i)
+        anno_dict = dict((i, v) for i, v in enumerate(anno_dict.values()))
+        return file_list, anno_dict
+
+    @staticmethod
+    def to_gray(
+        arr: np.ndarray,
+        grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
+        num_channels: int = 3,
+    ) -> np.ndarray:
+        if isinstance(grayscale_mode, str):
+            if grayscale_mode == 'cv2':
+                if arr.shape[-1] != 3:
+                    raise ValueError("Image arr should have RGB channels")
+                arr = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
+            elif grayscale_mode == 'equal':
+                # Expect (h, w, ch) shape of array
+                arr = (arr.sum(axis=-1) / num_channels).astype(arr.dtype)
+                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
+            else:
+                raise ValueError(f"Wrong `grayscale_mode={grayscale_mode}`")
+        else:
+            raise NotImplementedError("`grayscale_mode`")
+        return arr
+
+
+class MaskDataset(Dataset):
+    """Dataset with mask annotation
+
+    Implement __getitem__ for mask annotation
+
+    Requirements for subclasses
+    -------------------------
+    methods:
+        [get_image, get_mask (optional)]
+    properties:
+        [acronym, __len__, _root_dir,  _output (optional),
+        _resize (optional), grayscale (optional), grayscale_mode (optional),
+        num_channels (optional)]
+
+    """
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
         """Get item by indexing. Transfrom item to Tensor if specified."""
@@ -216,108 +325,6 @@ class MaskDataset(DatasetInterface):
         else:
             raise NotImplementedError("Choose one ['image', 'mask', 'both']")
 
-    @property
-    def output(self) -> str:
-        """If not defined, it is set to 'image'"""
-        if hasattr(self, '_output'):
-            return self._output
-        return 'image'
-
-    @output.setter
-    def output(self, val):
-        self._output = val
-
-    @property
-    def transforms(self) -> Optional[albumentations.Compose]:
-        """Transform images and masks"""
-        if hasattr(self, '_transforms'):
-            return getattr(self, '_transforms')
-        return None
-
-    @property
-    def num_calls(self) -> Optional[int]:
-        """Number of calls that will override __len__"""
-        if hasattr(self, '_num_calls'):
-            return getattr(self, '_num_calls')
-        return None
-
-    @property
-    def anno_dict(self) -> dict:
-        """A dictionary of pathes to annotation files"""
-        raise NotImplementedError
-
     def get_mask(self, key) -> np.ndarray:
         raise NotImplementedError
 
-    def _drop_missing_pairs(self) -> tuple:
-        """Drop images and reindex the anno list (dict)
-
-        Sometimes, not all images have annotation. For consistence, this func
-        simply drops those images missing annotation.
-
-        For example,
-        - MurphyLab
-        - BBBC018
-        - BBBC020
-        """
-        file_list = getattr(self, 'file_list')
-        anno_dict = getattr(self, 'anno_dict')
-        _diff = set(range(len(file_list))).difference(set(anno_dict))
-        diff = sorted(_diff)
-        # logger.info(f'{self.acronym}:Dropping indices: {diff}')
-        for i, ind in enumerate(diff):
-            file_list.pop(ind-i)
-        anno_dict = dict((i, v) for i, v in enumerate(anno_dict.values()))
-        return file_list, anno_dict
-
-    @property
-    def grayscale(self) -> Optional[bool]:
-        """Flag for grayscale conversion"""
-        if hasattr(self, '_grayscale'):
-            return getattr(self, '_grayscale')
-        return None
-
-    @grayscale.setter
-    def grayscale(self, val):
-        self._grayscale = val
-
-    @property
-    def grayscale_mode(self) -> Optional[Union[str, Sequence[float]]]:
-        """Determine grayscale mode one of {'cv2', 'equal', Sequence[float]}
-        """
-        if hasattr(self, '_grayscale_mode'):
-            return getattr(self, '_grayscale_mode')
-        return None
-
-    @grayscale_mode.setter
-    def grayscale_mode(self, val):
-        self._grayscale_mode = val
-
-    @property
-    def num_channels(self) -> Optional[int]:
-        """Number of image channels used for `to_gray()`"""
-        if hasattr(self, '_num_channels'):
-            return getattr(self, '_num_channels')
-        return None
-
-    @staticmethod
-    def to_gray(
-        arr: np.ndarray,
-        grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
-        num_channels: int = 3,
-    ) -> np.ndarray:
-        if isinstance(grayscale_mode, str):
-            if grayscale_mode == 'cv2':
-                if arr.shape[-1] != 3:
-                    raise ValueError("Image arr should have RGB channels")
-                arr = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
-                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
-            elif grayscale_mode == 'equal':
-                # Expect (h, w, ch) shape of array
-                arr = (arr.sum(axis=-1) / num_channels).astype(arr.dtype)
-                arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
-            else:
-                raise ValueError(f"Wrong `grayscale_mode={grayscale_mode}`")
-        else:
-            raise NotImplementedError("`grayscale_mode`")
-        return arr
