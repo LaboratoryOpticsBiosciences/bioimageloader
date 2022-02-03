@@ -335,7 +335,7 @@ class IterDataset(Iterator):
     def __init__(self, dataset: Dataset):
         self.dataset = dataset
         self.ind = 0
-        self.end = len(self.dataset) - 1
+        self.end = len(self.dataset)
 
     def __next__(self):
         if self.ind == self.end:

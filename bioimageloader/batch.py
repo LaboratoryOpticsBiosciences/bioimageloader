@@ -2,7 +2,7 @@ import bisect
 import concurrent.futures
 import warnings
 from math import ceil
-from typing import List, Iterator
+from typing import List, Iterator, Optional
 
 import numpy as np
 
@@ -50,15 +50,60 @@ class BatchDataloader:
         dataset: Dataset,
         batch_size: int = 16,
         drop_last: bool = False,
+        num_workers: Optional[int] = None,
     ):
         self.dataset = dataset
         self.batch_size = batch_size
         self.drop_last = drop_last
+        self.num_workers = num_workers
+        self.executor = concurrent.futures.ProcessPoolExecutor(max_workers=self.num_workers)
 
-    def __len__(self) -> int:
+    def __len__(self):
         if self.drop_last:
             return len(self.dataset) // self.batch_size
         return ceil(len(self.dataset) / self.batch_size)
 
-    def __iter__(self) -> Iterator:
-        return iter(self.dataset)
+    @property
+    def _last_size(self):
+        if self.drop_last:
+            return self.batch_size
+        return len(self.dataset) % self.batch_size
+
+    def __iter__(self):
+        return IterBatchDataloader(self)
+
+    def __del__(self):
+        # Shutdown mp
+        self.executor.shutdown(wait=True)
+
+
+class IterBatchDataloader(Iterator):
+    def __init__(self, dataloader: BatchDataloader):
+        self.dataloader = dataloader
+        self.dataset = dataloader.dataset
+        self.batch_size = self.dataloader.batch_size
+        self.drop_last = self.dataloader.drop_last
+        self.num_workers = self.dataloader.num_workers
+        self.executor = self.dataloader.executor
+        self._last_size = self.dataloader._last_size
+
+        self.batch_ind = 0
+        self.batch_end = len(dataloader)
+
+    def __next__(self):
+        if self.batch_ind == self.batch_end:
+            raise StopIteration
+        if self.batch_ind == self.batch_end - 1 and not self.drop_last:
+            batch_size = self._last_size
+        else:
+            batch_size = self.batch_size
+        ind_start = self.batch_size * self.batch_ind
+        jobs = [self.executor.submit(_mp_getitem, self.dataset, ind)
+                for ind in range(ind_start, ind_start + batch_size)]
+        concurrent.futures.wait(jobs)
+        self.batch_ind += 1
+        return [j.result() for j in jobs]
+
+
+def _mp_getitem(dataset, ind):
+    return dataset[ind]
