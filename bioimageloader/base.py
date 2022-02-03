@@ -328,3 +328,18 @@ class MaskDataset(Dataset):
     def get_mask(self, key) -> np.ndarray:
         raise NotImplementedError
 
+
+class IterDataset(Iterator):
+    """Iterable
+    """
+    def __init__(self, dataset: Dataset):
+        self.dataset = dataset
+        self.ind = 0
+        self.end = len(self.dataset) - 1
+
+    def __next__(self):
+        if self.ind == self.end:
+            raise StopIteration
+        data = self.dataset[self.ind]
+        self.ind += 1
+        return data
