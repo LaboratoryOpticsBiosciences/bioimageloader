@@ -10,8 +10,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-from bioimageloader.base import MaskDataset
-from bioimageloader.common import GenericMaskDataset
+from .base import MaskDataset
 
 T = TypeVar('T')
 
@@ -284,7 +283,8 @@ def get_maskdataset_from_directory(
         └── 09.tif                                          └── 1.jpg
 
     """
-    mask_dataset = GenericMaskDataset(
+    from .common import CommonMaskDataset
+    mask_dataset = CommonMaskDataset(
         root_dir=root_dir,
         output=output,
         transforms=transforms,

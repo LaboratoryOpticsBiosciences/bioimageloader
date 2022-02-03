@@ -12,7 +12,7 @@ from .types import KNOWN_IMAGE_EXT, PIL_IMAGE_EXT, TIFFFILE_IMAGE_EXT
 from .utils import imread_asarray
 
 
-class GenericMaskDataset(MaskDataset):
+class CommonMaskDataset(MaskDataset):
     """Call this from .utils.get_maskdataset_from_directory()
 
     Attributes
@@ -47,7 +47,7 @@ class GenericMaskDataset(MaskDataset):
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         **kwargs
     ):
-        self.acronym = f'maskdataset_{GenericMaskDataset.count}'
+        self.acronym = f'maskdataset_{CommonMaskDataset.count}'
         self._root_dir = root_dir
         # keywords
         self._setattr_ifvalue('_output', output)
@@ -56,7 +56,7 @@ class GenericMaskDataset(MaskDataset):
         self._setattr_ifvalue('_grayscale', grayscale)
         self._setattr_ifvalue('_grayscale_mode', grayscale_mode)
         # count # of instances
-        GenericMaskDataset.count += 1
+        CommonMaskDataset.count += 1
 
     def _setattr_ifvalue(self, attr, value=None):
         if value is not None:
