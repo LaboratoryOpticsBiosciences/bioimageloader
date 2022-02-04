@@ -1,15 +1,14 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Sequence, Union, Any
 
 import albumentations
 import numpy as np
-import pandas as pd
 from PIL import Image
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import imread_asarray, rle_decoding_inseg
+from ..utils import imread_asarray, rle_decoding_inseg, read_csv, ordered_unique
 
 
 class DSB2018(MaskDataset):
@@ -80,49 +79,68 @@ class DSB2018(MaskDataset):
         img = img.convert(mode='RGB')
         return np.asarray(img)
 
-    def get_mask(self, p_lst: Union[BundledPath, pd.DataFrame]) -> np.ndarray:
-        if not self.training and isinstance(p_lst, pd.DataFrame):
-            run_lengths = p_lst['EncodedPixels']
-            h, w = p_lst.iloc[0][['Height', 'Width']]
-            mask = rle_decoding_inseg((h, w), run_lengths)
+    def get_mask(self, anno: Union[BundledPath, Dict[str, Any]]) -> np.ndarray:
+        if self.training and not isinstance(anno, dict):
+            # anno: BundlePath
+            p = anno[0]
+            val = 1
+            m0 = imread_asarray(p) > 0
+            mask = np.zeros_like(m0, dtype=np.uint8)  # uint8 is enough
+            mask[m0] = val
+            for p in anno[1:]:
+                val += 1
+                m = imread_asarray(p) > 0
+                # Does not allow overlapping!
+                mask[m] = val
             return mask
-        p = p_lst[0]
-        val = 1
-        m0 = imread_asarray(p) > 0
-        mask = np.zeros_like(m0, dtype=np.uint8)  # uint8 is enough
-        mask[m0] = val
-        for p in p_lst[1:]:
-            val += 1
-            m = imread_asarray(p) > 0
-            # Does not allow overlapping, but since it's semantic segmentation
-            # task, it's okay
-            mask[m] = val
+        # anno: dict
+        run_lengths = anno['EncodedPixels']
+        h, w = anno['Height'], anno['Width']
+        mask = rle_decoding_inseg((h, w), run_lengths)
         return mask
+
+    @cached_property
+    def ids(self) -> List[str]:
+        if self.training:
+            _, lines = read_csv(self.root_dir / 'stage1_train_labels.csv')
+        else:
+            _, lines = read_csv(self.root_dir / 'stage1_solution.csv')
+        ids = [line[0] for line in lines]
+        ids = ordered_unique(ids)
+        return ids
 
     @cached_property
     def file_list(self) -> List[Path]:
         # Call MaskDataset.root_dir
-        root_dir = self.root_dir
-        parent = 'stage1_train'
-        if not self.training:
-            parent = 'stage1_test'
-        return sorted(root_dir.glob(f'{parent}/*/images/*.png'))
+        parent = 'stage1_train' if self.training else 'stage1_test'
+        return [self.root_dir / parent / i / 'images' / f'{i}.png'
+                for i in self.ids]
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[BundledPath, pd.DataFrame]]:
+    def anno_dict(self) -> Union[Dict[int, BundledPath], Dict[int, dict]]:
         anno_dict = {}
         if self.training:
             for i, p in enumerate(self.file_list):
                 anno_dict[i] = list(p.parents[1].glob('masks/*.png'))
+            return anno_dict
         else:
-            solution = pd.read_csv(
-                self.root_dir / 'stage1_solution.csv',
-                index_col=0
-            )
-            solution['EncodedPixels'] = solution['EncodedPixels'].apply(
-                lambda x: np.array(x.split(' '), dtype=int)
-            )
-            for i, p in enumerate(self.file_list):
-                ind = p.parents[1].stem
-                anno_dict[i] = solution.loc[ind]
-        return dict(anno_dict)
+            _, lines = read_csv(self.root_dir / 'stage1_solution.csv')
+            # header: ImageId,EncodedPixels,Height,Width,Usage
+            # iter_rle = map(lambda line: [int(s) for s in line[1].split(' ')],
+            #                lines)
+            offset = 0
+            for i, idx in enumerate(self.ids):
+                solution: dict = {'EncodedPixels': []}
+                for line in lines[offset:]:
+                    if idx == line[0]:
+                        if 'Height' not in solution:
+                            solution['Height'] = int(line[2])
+                            solution['Width'] = int(line[3])
+                        solution['EncodedPixels'].append(
+                            [int(s) for s in line[1].split(' ')]
+                        )
+                        offset += 1
+                    else:
+                        break
+                anno_dict[i] = solution
+            return anno_dict

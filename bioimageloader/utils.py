@@ -1,3 +1,4 @@
+import csv
 import random
 from copy import deepcopy
 from itertools import accumulate
@@ -6,7 +7,6 @@ from typing import Callable, List, Optional, Protocol, Sequence, TypeVar, Union
 
 import albumentations
 import numpy as np
-import pandas as pd
 from PIL import Image
 
 from .base import MaskDataset
@@ -44,9 +44,33 @@ def imread_asarray(p: Path, dtype=None) -> np.ndarray:
     return img
 
 
+def read_csv(file: Union[str, Path], sniffer_siz=2048) -> tuple:
+    with open(file, newline='') as csvfile:
+        sniffer = csv.Sniffer()
+        dialect = sniffer.sniff(csvfile.readline())
+        has_header = sniffer.has_header(csvfile.readline())
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        header = None
+        if has_header:
+            header = next(reader)
+        lines = [row for row in reader]
+    return header, lines
+
+
+def ordered_unique(seq: Sequence[T]) -> List[T]:
+    unique = []
+    v = None
+    for _v in seq:
+        if v != _v:
+            unique.append(_v)
+            v = _v
+    return unique
+
+
 def rle_decoding_inseg(
     size: Union[tuple, list],
-    run_lengths: Union[pd.DataFrame, list]
+    run_lengths: List[List[int]],
 ) -> np.ndarray:
     """Decoding RLE (Run Length Encoding). Output binary mask. If you want each
     instance have different values, use `rle_decoding_inseg(), instead.`
@@ -66,17 +90,6 @@ def rle_decoding_inseg(
         Decoded image array
 
     """
-    # #--- Prep ---# #
-    # if `run_lengths` is pd.Dataframe, convert it to a list of numpy.ndarray
-    if isinstance(run_lengths, pd.DataFrame):
-        _run_lengths = []
-        for e in run_lengths['EncodedPixels']:
-            if not isinstance(e, np.ndarray):
-                _run_lengths.append(np.array(e.split(sep=' '), dtype=int))
-            else:
-                _run_lengths.append(e)
-        run_lengths = _run_lengths
-
     # #--- Draw canvas ---# #
     h, w = size[0], size[1]
     decoded = np.zeros(h * w, dtype=np.uint8)
