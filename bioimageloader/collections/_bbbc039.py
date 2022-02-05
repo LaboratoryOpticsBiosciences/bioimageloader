@@ -18,8 +18,23 @@ class BBBC039(MaskDataset):
     of the larger BBBC022 chemical screen. The images are stored as TIFF files
     with 520x696 pixels at 16 bits.
 
-    NOTE
-    ---
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    training : bool or list of int
+        Load training data if True, else load testing data.
+
+    Notes
+    -----
     - Split (training/valiadation/test)
         - `training=True` combines 'training' with 'validation'
     - Sample of larger BBBC022 and did manual segmentation
@@ -30,6 +45,13 @@ class BBBC039(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC039
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
 
     # Dataset's acronym
@@ -46,27 +68,6 @@ class BBBC039(MaskDataset):
         training: bool = True,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        training : bool or list of int
-            Load training data if True, else load testing data.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

@@ -13,19 +13,43 @@ from ..base import MaskDataset
 
 class MurphyLab(MaskDataset):
     """Nuclei Segmentation In Microscope Cell Images: A Hand-Segmented Dataset
-    And Comparison Of Algorithms
+    And Comparison Of Algorithms [1]_
 
-    IMPORTANT
-    ---------
+    Parameters
+    ----------
+    root_dir : str or pathlib.Path
+        Path to root directory
+    output : {'image','mask','both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines
+        augmentation in sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    drop_missing_pairs : bool (default: True)
+        Valid only if `output='both'`. It will drop images that do not have
+        mask pairs.
+    drop_broken_files : bool (default: True)
+        Drop broken files that cannot be read
+    filled_mask : bool (default: False)
+        Use saved filled masks through `fill_save_mask()` method instead of
+        default boundary masks. If one would want to use manually modified
+        masks, the annotation files should have the same name as '*.xcf'
+        with modified suffix by '.png'.
+
+    Warnings
+    --------
     This dataset has many issues whose details can be found below. The simpleset
     way is to drop those that cause isseus. It is recommended to not opt out
-    `drop_missing_pairs()` and `drop_broken_files()`. Otherwise, it will meet
-    exceptions.
+    ``drop_missing_pairs()`` and ``drop_broken_files()``. Otherwise, it will
+    meet exceptions.
 
-    If one wants filled hole, `fill_save_mask()` function will fill holes with
+    If one wants filled hole, ``fill_save_mask()`` function will fill holes with
     some tricks to handle edge cases and save them as .png format. Then set
-    `filled_mask` argument to True to load them.
+    ``filled_mask`` argument to True to load them.
 
+    Read more in Notes section
 
     Notes
     -----
@@ -34,20 +58,31 @@ class MurphyLab(MaskDataset):
       segmented images (out of 100)
     - 3 missing segmentations: ind={31, 43, 75}
         ./data/images/dna-images/gnf/dna-31.png
+
         ./data/images/dna-images/gnf/dna-43.png
+
         ./data/images/dna-images/ic100/dna-25.png
+
     - Manually filled annotation to make masks using GIMP
     - 2009_ISBI_2DNuclei_code_data/data/images/segmented-lpc/ic100/dna-15.xcf
       does not have 'borders' layer like the others.  This one alone has
       'border' layer.
 
+    References
+    ----------
     .. [1] L. P. Coelho, A. Shariff, and R. F. Murphy, “Nuclear segmentation in
        microscope cell images: A hand-segmented dataset and comparison of
        algorithms,” in 2009 IEEE International Symposium on Biomedical Imaging:
        From Nano to Macro, Jun. 2009, pp. 518–521, doi:
        10.1109/ISBI.2009.5193098.
-    """
 
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
+    """
     # Dataset's acronym
     acronym = 'MurphyLab'
 
@@ -65,36 +100,6 @@ class MurphyLab(MaskDataset):
         filled_mask: bool = False,
         **kwargs
     ):
-        """
-        Parameters
-        ---------
-        root_dir : str or pathlib.Path
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        drop_missing_pairs : bool (default: True)
-            Valid only if `output='both'`. It will drop images that do not have
-            mask pairs.
-        drop_broken_files : bool (default: True)
-            Drop broken files that cannot be read
-        filled_mask : bool (default: False)
-            Use saved filled masks through `fill_save_mask()` method instead of
-            default boundary masks. If one would want to use manually modified
-            masks, the annotation files should have the same name as '*.xcf'
-            with modified suffix by '.png'.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-
-        """
         # Interface and super-class arguments
         self._root_dir = os.path.join(root_dir, 'data', 'images')
         self._output = output
@@ -161,8 +166,11 @@ class MurphyLab(MaskDataset):
         return anno_dict
 
     def _drop_broken_files(self):
-        # '/data/images/segmented-lpc/ic100/dna-46.xcf' cannnot be read by
-        # gimpformats
+        """Drop broken files
+
+        '/data/images/segmented-lpc/ic100/dna-46.xcf' cannnot be read by
+        ``gimpformats``
+        """
         file_list = self.file_list
         anno_dict = self.anno_dict
         for i, p in anno_dict.items():
@@ -177,15 +185,13 @@ class MurphyLab(MaskDataset):
         """Fill holes from boundary mask with some tricks
 
         Requires scipy and scikit-image. Install depencency with pip option
-        `pip install bioimageloader[process]`.
+        ``pip install bioimageloader[process]``.
 
-        Note that this is not perfect.
-        # Those not entirely closed by this algorithm.
-        36, 40, 63
+        Note that this does not result perfect filled masks. Those not entirely
+        closed by this algorithm (36, 40, 63).
 
-        # Other issues
-        63  # 'border' not 'borders'
-        93  # GimpDocument cannot even read it...
+        Other issues: ``ind=63``: 'border' not 'borders', ``ind=93``
+        ``GimpDocument`` cannot read it...
         """
         from scipy.ndimage import binary_fill_holes
         from skimage.morphology import dilation, erosion

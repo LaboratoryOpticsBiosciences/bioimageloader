@@ -16,6 +16,29 @@ class ComputationalPathology(MaskDataset):
     """A Dataset and a Technique for Generalized Nuclear Segmentation for
     Computational Pathology [1]_
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image','mask','both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ```transforms``` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    mask_tif : bool (default: False)
+        Instead of parsing every xml file to reconstruct mask image arrays, use
+        pre-drawn mask tif files which should reside in the same folder as
+        annotation xml files.
+
     Notes
     -----
     - Resolution of all images is (1000,1000)
@@ -25,9 +48,9 @@ class ComputationalPathology(MaskDataset):
     - The origianl dataset provides annotation in xml format, which takes
       long time to parse and to reconstruct mask images dynamically during
       training. Drawing masks beforehand makes training much faster. Use
-      `mask_tif` in that case.
-    - When `augmenters` is provided, set the `num_calls` argument
-      30x1000x1000 -> 16x30=480 patches. Thus, the default `num_calls=720`
+      ``mask_tif`` in that case.
+    - When ``augmenters`` is provided, set the ``num_calls`` argument
+      30x1000x1000 -> 16x30=480 patches. Thus, the default ``num_calls=720``
       (x1.5)
     - dtype of 'gt' is int16. However, to make batching easier, it will be
       casted to float32
@@ -40,8 +63,13 @@ class ComputationalPathology(MaskDataset):
        for Computational Pathology,” IEEE Transactions on Medical Imaging, vol.
        36, no. 7, pp. 1550–1560, Jul. 2017, doi: 10.1109/TMI.2017.2677499.
 
-    """
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
 
+    """
     # Dataset's acronym
     acronym = 'ComPath'
     # Hard code resolution to parse annotation (.xml)
@@ -60,36 +88,6 @@ class ComputationalPathology(MaskDataset):
         mask_tif: bool = False,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        mask_tif : bool (default: False)
-            Instead of parsing every xml file to reconstruct mask image arrays,
-            use pre-drawn mask tif files which should reside in the same folder
-            as annotation xml files.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms
@@ -119,6 +117,10 @@ class ComputationalPathology(MaskDataset):
 
     @classmethod
     def _parse_xml_to_array(cls, f_anno) -> np.ndarray:
+        """This dataset provides annotation in .xml format
+
+        Consider pre-generating mask image using ``save_xml_to_tif()``
+        """
         tree = ET.parse(f_anno)
         root = tree.getroot()
 
@@ -150,9 +152,9 @@ class ComputationalPathology(MaskDataset):
         """Parse .xml to mask and write it as tiff file
 
         Having masks in images is much faster than parsing .xml for each call.
-        This func iterates through `anno_dict`, parse and save each in .tif
+        This func iterates through ``anno_dict``, parse and save each in .tif
         format in the same annotation directory. Re-initiate an instance with
-        `mask_tif` argument to load them.
+        ``mask_tif`` argument to load them.
         """
         if self.output not in ['mask', 'both']:
             raise ValueError("Set output either to 'mask' or 'both'")

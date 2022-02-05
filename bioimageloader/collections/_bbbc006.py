@@ -26,6 +26,31 @@ class BBBC006(MaskDataset):
     TIF format, LZW compression. Each image filename includes either 'w1' to
     denote Hoechst images or 'w2' to denote phalloidin images.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    uint8 : bool (default: True)
+        Whether to convert images to UINT8. It will divide image by 2**12 and
+        cast it to UINT8. If set False, no process will be applied. Read more
+        about rationales in Notes section.
+    z_ind : int (default: 16)
+        Select one z stack. Default is 16, because 16 is the most in-focus.
+
     Notes
     -----
     - z-stack, z=16 is in-focus ones, sites (s1, s2)
@@ -39,6 +64,13 @@ class BBBC006(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC006
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC006'
@@ -57,37 +89,6 @@ class BBBC006(MaskDataset):
         z_ind: int = 16,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        uint8 : bool (default: True)
-            Whether to convert images to UINT8. It will divide image by 2**12
-            and cast it to UINT8. If set False, no process will be applied. Read
-            more about rationales in Notes section.
-        z_ind : int (default: 16)
-            Select one z stack. Default is 16, because 16 is the most in-focus.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

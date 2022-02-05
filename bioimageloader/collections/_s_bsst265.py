@@ -62,12 +62,13 @@ class S_BSST265(MaskDataset):
             An instance of Compose (albumentations pkg) that defines
             augmentation in sequence.
         num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
+            Useful when ``transforms`` is set. Define the total length of the
+            dataset. If it is set, it overwrites ``__len__``.
 
         See Also
         --------
         MaskDataset : Super class
+        Dataset : Base class
         DatasetInterface : Interface
         """
         # Interface and super-class arguments

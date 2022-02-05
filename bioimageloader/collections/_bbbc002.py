@@ -18,6 +18,17 @@ class BBBC002(MaskDataset):
     images provided here are a single channel, DNA. The image size is 512 x 512
     pixels. The images are provided as 8-bit TIFF files.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+
     Notes
     -----
     - Cell count available
@@ -29,6 +40,13 @@ class BBBC002(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC002
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC002'
@@ -41,23 +59,6 @@ class BBBC002(MaskDataset):
         num_calls: Optional[int] = None,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls

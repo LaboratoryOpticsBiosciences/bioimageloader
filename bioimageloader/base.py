@@ -3,7 +3,7 @@
 
 import abc
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union, Iterator
+from typing import Any, Dict, Iterator, Optional, Sequence, Union
 
 import albumentations
 import cv2
@@ -11,14 +11,18 @@ import numpy as np
 
 
 class DatasetInterface(metaclass=abc.ABCMeta):
-    """Interface
+    """Dataset interface
 
-    Required
-    --------
-    properties:
-        [acronym, root_dir, file_list]
-    methods:
-        [get_image]
+    Attributes
+    ----------
+    acronym
+    root_dir
+    file_list
+
+    Methods
+    -------
+    get_image
+
 
     Optional
     --------
@@ -56,13 +60,12 @@ class DatasetInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __repr__(self):  # common
-        """Get summary info"""
+        """Print info of dataset"""
         ...
 
     @property
     @abc.abstractmethod
     def __len__(self):  # common
-        """Number of calls"""
         ...
 
     @abc.abstractmethod
@@ -95,33 +98,43 @@ class DatasetInterface(metaclass=abc.ABCMeta):
 
 
 class Dataset(DatasetInterface):
-    """Concrete super class for [MaskDataset, ...]
-
-    Define common methods and properties
+    """Base to define common attributes and methods for [`MaskDataset`, ...]
 
     Attributes
     ----------
     __repr__
     __len__
+    __iter__
     root_dir
-    output (optional)
+    output : optional
     transforms
     num_calls
-    grayscale (optional)
-    grayscale_mode (optional)
-    num_channels (optional)
+    anno_dict : optional
+    grayscale : optional
+    grayscale_mode : optional
+    num_channels : optional
 
     Methods
     -------
     _drop_missing_pairs
     to_gray
 
-    Requirements for subclasses
-    -------------------------
-    methods:
-        [__getitem__, get_image]
+    Notes
+    -----
+    Required attributes in subclass
+        - ``__getitem__()``
+        - ``get_image()``
 
     """
+
+    def __repr__(self):
+        return self.acronym
+
+    def __len__(self):
+        """Length of dataset. Can be overwritten with ``num_calls``"""
+        if self.num_calls is not None:
+            return self.num_calls
+        return len(self.file_list)
 
     def __iter__(self):
         return IterDataset(self)
@@ -135,18 +148,9 @@ class Dataset(DatasetInterface):
             return _root_dir
         raise NotImplementedError('Attr `_root_dir` not defined')
 
-    def __repr__(self):
-        """Print summary info for a subclass"""
-        return self.acronym
-
-    def __len__(self):
-        if self.num_calls is not None:
-            return self.num_calls
-        return len(self.file_list)
-
     @property
     def output(self) -> str:
-        """If not defined, it is set to 'image'"""
+        """Determine return(s) when called. If not set, default to 'image'"""
         if hasattr(self, '_output'):
             return self._output
         return 'image'
@@ -170,8 +174,8 @@ class Dataset(DatasetInterface):
         return None
 
     @property
-    def anno_dict(self) -> dict:
-        """A dictionary of pathes to annotation files"""
+    def anno_dict(self) -> Dict[int, Any]:
+        """Dictionary of pathes to annotation files"""
         raise NotImplementedError
 
     @property
@@ -231,6 +235,19 @@ class Dataset(DatasetInterface):
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         num_channels: int = 3,
     ) -> np.ndarray:
+        """Convert bioimage to grayscale
+
+        Parameters
+        ----------
+        arr : image array
+            Numpy image array whose shape is (h, w, 3)
+        grayscale_mode : str or sequence of float, optional
+            Choose a strategy for gray conversion. Three options are availble.
+            Either one of {'cv2', 'equal'} or be a sequence of float numbers,
+            which indicate linear weights of each channel.
+        num_channels : int
+            Explicitly set number of channels for `grayscale_mode='equal'`.
+        """
         if isinstance(grayscale_mode, str):
             if grayscale_mode == 'cv2':
                 if arr.shape[-1] != 3:
@@ -249,23 +266,62 @@ class Dataset(DatasetInterface):
 
 
 class MaskDataset(Dataset):
-    """Dataset with mask annotation
+    """Base for datasets with mask annotation
 
-    Implement __getitem__ for mask annotation
+    Define ``__getitem__`` method to load mask annotation paired with image.
+    Pre-defined attributes are prefixed with a single underscore to distinguish
+    them from those specific to a dataset. It is required to implement two
+    methods: ``get_image()`` and ``get_mask()`` as well as ``acronym`` and
+    ``_root_dir`` for each subclass.
 
-    Requirements for subclasses
-    -------------------------
-    methods:
-        [get_image, get_mask (optional)]
-    properties:
-        [acronym, __len__, _root_dir,  _output (optional),
-        _resize (optional), grayscale (optional), grayscale_mode (optional),
-        num_channels (optional)]
+    Todo
+    ----
+    - [ ] Implement ``get_image()`` for those that do not have mask annotation
+
+    Methods
+    -------
+    __getitem__
+
+    Notes
+    -----
+    Required attributes in subclass
+        - ``acronym``
+        - ``_root_dir``
+        - ``_output`` (optional)
+        - ``_grayscale`` (optional)
+        - ``_grayscale_mode`` (optional)
+        - ``_num_channels`` (optional)
+        - ``get_image()``
+        - ``get_mask()`` (optional)
+
+    See Also
+    --------
+    Dataset : super class
 
     """
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
-        """Get item by indexing. Transfrom item to Tensor if specified."""
+        """Get item depending on ``output`` argument
+
+        For MaskDataset, available output types are ['image', 'mask', 'both'].
+
+        Parameters
+        ----------
+        ind : int
+            Index to get path(s) from ``file_list`` attribute
+        output
+        file_list
+        anno_dict
+
+        Other Parameters
+        ----------------
+        self._transforms
+        self._num_calls
+        self._grayscale
+        self._grayscale_mode
+        self._num_channels
+
+        """
         # Randomize `ind` when `num_calls` set
         if self.num_calls is not None:
             if ind >= self.num_calls:
@@ -326,6 +382,7 @@ class MaskDataset(Dataset):
             raise NotImplementedError("Choose one ['image', 'mask', 'both']")
 
     def get_mask(self, key) -> np.ndarray:
+        """Get a mask"""
         raise NotImplementedError
 
 

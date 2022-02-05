@@ -12,15 +12,42 @@ from ..utils import imread_asarray, rle_decoding_inseg, read_csv, ordered_unique
 
 
 class DSB2018(MaskDataset):
-    """Data Science Bowl 2018
+    """Data Science Bowl 2018 [1]_
 
-    Each entry is a pair of an image and a mask.
-    By default, it applies `base_transform`, which makes an image Tensor and
-    have data range of uint8 [0, 255].
+    Find the nuclei in divergent images to advance medical discovery
 
-    Returns a dictionary, whose key is determined by `output` argument.
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    training : bool (default: True)
+        Load training set if True, else load testing one
+
+    References
+    ----------
+    .. [1] https://www.kaggle.com/c/data-science-bowl-2018/
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
-
     # Set acronym
     acronym = 'DSB2018'
 
@@ -37,34 +64,6 @@ class DSB2018(MaskDataset):
         training: bool = True,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        training : bool (default: True)
-            Load training set if True, else load testing one
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

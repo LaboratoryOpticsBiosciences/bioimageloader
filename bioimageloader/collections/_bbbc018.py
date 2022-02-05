@@ -30,13 +30,50 @@ class BBBC018(MaskDataset):
     five-digit well index (from Jones et al.'s supplement) and channel is either
     DNA, actin, or pH3, depending on the channel.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    anno_ch : {'DNA', 'actin'} (default: ('DNA',))
+        Which channel(s) to load as annotation. Make sure to give it as a
+        Sequence when choose a single channel.
+    drop_missing_pairs : bool (default: True)
+        Valid only if `output='both'`. It will drop images that do not have mask
+        pairs.
+
+    Other Parameters
+    ----------------
+    image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
+
+    Warnings
+    --------
+    BBBC018_v1_images/10779 annotation is missing. len(anno_dict) =
+    len(file_list) - 1; ind={26}
+        PosixPath('images/bbbc/018/BBBC018_v1_images/10779-DNA.DIB')
+
+        PosixPath('images/bbbc/018/BBBC018_v1_images/10779-actin.DIB')
+
+        PosixPath('images/bbbc/018/BBBC018_v1_images/10779-pH3.DIB')
+
+
     Notes
     -----
-    - BBBC018_v1_images/10779 annotation is missing. len(anno_dict) =
-      len(file_list) - 1; ind={26}
-        [PosixPath('images/bbbc/018/BBBC018_v1_images/10779-DNA.DIB'),
-         PosixPath('images/bbbc/018/BBBC018_v1_images/10779-actin.DIB'),
-         PosixPath('images/bbbc/018/BBBC018_v1_images/10779-pH3.DIB')]
     - Every DIB has 3 channels (Order = (DNA,actin,pH3)). The second one is the
       object.
     - DNA -> Nuceli
@@ -48,6 +85,13 @@ class BBBC018(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC018
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
 
     # Dataset's acronym
@@ -67,43 +111,7 @@ class BBBC018(MaskDataset):
         anno_ch: Sequence[str] = ('DNA',),
         drop_missing_pairs: bool = True,
         **kwargs
-                 # anno_ch: str='DNA',
-                 # Always good to have
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        # image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
-        #     Which channel(s) to load as image. Make sure to give it as a
-        #     Sequence when choose a single channel.
-        anno_ch : {'DNA', 'actin'} (default: ('DNA',))
-            Which channel(s) to load as annotation. Make sure to give it as a
-            Sequence when choose a single channel.
-        drop_missing_pairs : bool (default: True)
-            Valid only if `output='both'`. It will drop images that do not have
-            mask pairs.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

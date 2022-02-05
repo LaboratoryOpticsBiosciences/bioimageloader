@@ -7,11 +7,9 @@ from typing import Dict, List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 import tifffile
-from PIL import Image
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels_to_rgb
 
 
 class BBBC020(MaskDataset):
@@ -21,32 +19,72 @@ class BBBC020(MaskDataset):
     samples were stained with DAPI and CD11b/APC. In addition to this, a merged
     image is provided. DAPI labels the nuclei and CD11b/APC the cell surface.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    anno_ch : {'nuclei', 'cells'} (default: ('nuclei',))
+        Which channel(s) to load as annotation. Make sure to give it as a
+        Sequence when choose a single channel.
+    drop_missing_pairs : bool (default: True)
+        Valid only if `output='both'`. It will drop images that do not have mask
+        pairs.
+
+    Warnings
+    --------
+    - 5 annotations are missing: `jw-30min 1, jw-30min 2, jw-30min 3, jw-30min
+      4, jw-30min 5; ind={17,18,19,20,21}
+        ./BBBC020_v1_images/jw-30min 1/jw-30min 1_(c1+c5).TIF
+
+        ./BBBC020_v1_images/jw-30min 2/jw-30min 2_(c1+c5).TIF
+
+        ./BBBC020_v1_images/jw-30min 3/jw-30min 3_(c1+c5).TIF
+
+        ./BBBC020_v1_images/jw-30min 4/jw-30min 4_(c1+c5).TIF
+
+        ./BBBC020_v1_images/jw-30min 5/jw-30min 5_(c1+c5).TIF
+
+    - BBC020_v1_outlines_nuclei/jw-15min 5_c5_43.TIF exists but corrupted
+
     Notes
     -----
     - Anotations are instance segmented where each of them is saved as a single
       image file. It loads and aggregates them as a single array. Later label
       will overlap the former ones. If you do not want this behavior, modify
-      subclass this class and override `get_mask()` method.
+      subclass this class and override ``get_mask()`` method.
     - 2 channels; R channel is the same as G, R==G!=B
         Assign 0 to red channel
     - BBBC has received a complaint that "BBB020_v1_outlines_nuclei" appears
       incomplete and we have been unable to obtain the missing images from the
       original contributor.
-    - 5 annotations are missing: `jw-30min 1, jw-30min 2, jw-30min 3, jw-30min
-      4, jw-30min 5; ind={17,18,19,20,21}
-        ./BBBC020_v1_images/jw-30min 1/jw-30min 1_(c1+c5).TIF
-        ./BBBC020_v1_images/jw-30min 2/jw-30min 2_(c1+c5).TIF
-        ./BBBC020_v1_images/jw-30min 3/jw-30min 3_(c1+c5).TIF
-        ./BBBC020_v1_images/jw-30min 4/jw-30min 4_(c1+c5).TIF
-        ./BBBC020_v1_images/jw-30min 5/jw-30min 5_(c1+c5).TIF
-    - BBC020_v1_outlines_nuclei/jw-15min 5_c5_43.TIF exists but corrupted
     - Nuclei anno looks good
-    - Should separte nuclei and cells annotation; if `anno_ch=None`, `anno_dict`
-      becomes a mess.
+    - Should separte nuclei and cells annotation; if ``anno_ch=None``,
+      ``anno_dict`` becomes a mess.
 
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC020
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
 
     # Dataset's acronym
@@ -66,37 +104,6 @@ class BBBC020(MaskDataset):
         drop_missing_pairs: bool = True,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        anno_ch : {'nuclei', 'cells'} (default: ('nuclei',))
-            Which channel(s) to load as annotation. Make sure to give it as a
-            Sequence when choose a single channel.
-        drop_missing_pairs : bool (default: True)
-            Valid only if `output='both'`. It will drop images that do not have
-            mask pairs.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

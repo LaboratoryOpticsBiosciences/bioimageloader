@@ -12,16 +12,31 @@ from ..base import MaskDataset
 
 
 class FRUNet(MaskDataset):
-    """FRU-Net: Robust Segmentation of Small Extracellular Vesicles
+    """FRU-Net: Robust Segmentation of Small Extracellular Vesicles [1]_
 
     TEM images
+
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    normalize : bool (default: True)
+        Normalize each image by its maximum value and cast it to UINT8.
 
     Notes
     -----
     - Originally, dtype is UINT16
-    - Max value is 20444 across all images
-    - Contrast varies a lot. Normalization may be needed.
-        Init param `normalize` is set to True by default.
+    - Max value is 20444, but contrast varies a lot. Normalization may be
+      needed. Init param ``normalize`` is set to True by default for this
+      reason.
 
     References
     ----------
@@ -30,6 +45,12 @@ class FRUNet(MaskDataset):
        Extracellular Vesicles in Transmission Electron Microscopy Images,”
        Scientific Reports, vol. 9, no. 1, Art. no. 1, Sep. 2019, doi:
        10.1038/s41598-019-49431-3.
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
 
     """
     # Dataset's acronym
@@ -46,28 +67,6 @@ class FRUNet(MaskDataset):
         normalize: bool = True,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        normalize : bool (default: True)
-            Normalize each image by its maximum value and cast it to UINT8.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-
-        """
         self._root_dir = os.path.join(root_dir, 'code', 'data')
         self._output = output
         self._transforms = transforms

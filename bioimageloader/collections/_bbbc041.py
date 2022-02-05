@@ -20,16 +20,42 @@ class BBBC041(MaskDataset):
     and time course (Gabriel Rangel). Blood smears were stained with Giemsa
     reagent.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ```transforms``` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    training : bool (default: True)
+        Load training set if True, else load testing one
+
     Notes
     -----
     - 1208/120 training/test split
-    - .png and .jpg format; Mostly png, some jpg
+    - png and jpg format; Mostly png, some jpg
     - Two resolution; seems depending on the format
 
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC041
     .. [2] https://github.com/tobsecret/Awesome_Malaria_Parasite_Imaging_Datasets
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
 
     # Dataset's acronym
@@ -47,31 +73,6 @@ class BBBC041(MaskDataset):
         training: bool = True,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        training : bool (default: True)
-            Load training set if True, else load testing one
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = os.path.join(root_dir, 'malaria')
         self._transforms = transforms
         self._num_calls = num_calls

@@ -13,24 +13,36 @@ from .utils import imread_asarray
 
 
 class CommonMaskDataset(MaskDataset):
-    """Call this from .utils.get_maskdataset_from_directory()
+    """Call this from ``bioimageloader.utils.get_maskdataset_from_directory()``
+
+    Parameters
+    ----------
+    root_dir
+    output : optional
+    transforms : optional
+    num_calls : optional
+    grayscale : optional
+    grayscale_mode : optional
+    num_channels : optional
 
     Attributes
     ----------
-    root_dir
-    output (optional)
-    transforms
-    num_calls
-    grayscale (optional)
-    grayscale_mode (optional)
-    num_channels (optional)
+    image_dir
+    mask_dir
     file_list
-    anno_dict (optional)
-    # overview_table (not implemented yet)
+    anno_dict
+
+    Methods
+    -------
+    get_image
+    get_mask
+    _setattr_ifvalue
+    _filter_known_ext
 
     See Also
     --------
-    bioimageloader.utils.get_maskdataset_from_directory
+    MaskDataset : super class
+    bioimageloader.utils.get_maskdataset_from_directory : util
 
     """
     count = 0
@@ -59,6 +71,7 @@ class CommonMaskDataset(MaskDataset):
         CommonMaskDataset.count += 1
 
     def _setattr_ifvalue(self, attr, value=None):
+        """Set attribute if value is not None"""
         if value is not None:
             setattr(self, attr, value)
 
@@ -76,33 +89,32 @@ class CommonMaskDataset(MaskDataset):
         self._image_dir = val
 
     @property
-    def label_dir(self) -> Optional[Path]:
-        if hasattr(self, '_label_dir'):
-            return self.root_dir / self._label_dir
+    def mask_dir(self) -> Optional[Path]:
+        if hasattr(self, '_mask_dir'):
+            return self.root_dir / self._mask_dir
         if (n := 'labels') in os.listdir(self.root_dir):
-            if (_label_dir := self.root_dir / n).is_dir():
-                return _label_dir
+            if (_mask_dir := self.root_dir / n).is_dir():
+                return _mask_dir
         return None
 
-    @label_dir.setter
-    def label_dir(self, val):
-        self._label_dir = val
+    @mask_dir.setter
+    def mask_dir(self, val):
+        self._mask_dir = val
 
     @staticmethod
     def _filter_known_ext(p: Path):
+        """Filter extensions supported by PIL and tifffile"""
         return p.suffix.lower() in KNOWN_IMAGE_EXT
 
     @cached_property
     def file_list(self):
-        """Overwrite it"""
         image_dir = self.image_dir if self.image_dir else self.root_dir
         return sorted(filter(self._filter_known_ext, image_dir.iterdir()))
 
     @cached_property
     def anno_dict(self):
-        """Overwrite it"""
-        label_dir = self.label_dir if self.label_dir else self.root_dir
-        return sorted(filter(self._filter_known_ext, label_dir.iterdir()))
+        mask_dir = self.mask_dir if self.mask_dir else self.root_dir
+        return sorted(filter(self._filter_known_ext, mask_dir.iterdir()))
 
     def get_image(self, p: Path) -> np.ndarray:
         if (suffix := p.suffix.lower()) in TIFFFILE_IMAGE_EXT:

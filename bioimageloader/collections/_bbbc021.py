@@ -25,6 +25,26 @@ class BBBC021(MaskDataset):
     channels) in TIFF format. We provide the images in 55 ZIP archives, one for
     each microtiter plate. The archives are ~750 MB each.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin', 'tublin'))
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
+
     Notes
     -----
     - HUGE dataset
@@ -32,11 +52,18 @@ class BBBC021(MaskDataset):
         - w1 (DNA) -> Blue
         - w2 (actin?) -> Green
         - w4 (tublin??)-> Red
-    - uint16
+    - UINT16
 
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC021
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC021'
@@ -51,35 +78,8 @@ class BBBC021(MaskDataset):
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # # specific to this dataset
         image_ch: Sequence[str] = ('DNA', 'actin', 'tublin'),
-        # anno_ch: Sequence[str] = ('DNA',),
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin', 'tublin'))
-            Which channel(s) to load as image. Make sure to give it as a
-            Sequence when choose a single channel.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls

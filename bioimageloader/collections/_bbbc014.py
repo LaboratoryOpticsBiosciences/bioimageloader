@@ -25,6 +25,26 @@ class BBBC014(MaskDataset):
     images: a nuclear counterstain (DAPI) image and a signal stain (FITC) image.
     Image size is 1360 x 1024 pixels. Images are in 8-bit BMP format.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    image_ch : {'DAPI', 'FITC'} (default: ('DAPI', 'FITC'))
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
+
     Notes
     -----
     - Second channel is usually very clear with a few artifacts
@@ -35,7 +55,14 @@ class BBBC014(MaskDataset):
 
     References
     ----------
-    .. [1] [BBBC014](https://bbbc.broadinstitute.org/BBBC014)
+    .. [1] https://bbbc.broadinstitute.org/BBBC014
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC014'
@@ -52,32 +79,6 @@ class BBBC014(MaskDataset):
         image_ch: Sequence[str] = ('DAPI', 'FITC'),
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        image_ch : {'DAPI', 'FITC'} (default: ('DAPI', 'FITC'))
-            Which channel(s) to load as image. Make sure to give it as a
-            Sequence when choose a single channel.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls

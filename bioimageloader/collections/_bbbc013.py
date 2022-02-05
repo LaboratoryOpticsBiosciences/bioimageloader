@@ -20,6 +20,26 @@ class BBBC013(MaskDataset):
     FKHR-GFP; Channel 2 = DNA). Image size is 640 x 640 pixels. Images are
     available in native FRM format or 8-bit BMP.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    image_ch : {'GFP', 'DNA'} (default: ('GFP', 'DNA'))
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
+
     Notes
     -----
     - Two formats are available; FRM and BMP
@@ -27,6 +47,13 @@ class BBBC013(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC013
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC013'
@@ -43,32 +70,6 @@ class BBBC013(MaskDataset):
         image_ch: Sequence[str] = ('GFP', 'DNA',),
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        image_ch : {'GFP', 'DNA'} (default: ('GFP', 'DNA'))
-            Which channel(s) to load as image. Make sure to give it as a
-            Sequence when choose a single channel.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls

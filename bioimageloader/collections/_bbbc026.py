@@ -21,6 +21,17 @@ class BBBC026(MaskDataset):
     For each well there is one field and a single image nuclear image (Hoecsht).
     Images are in 8-bit PNG format.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+
     Notes
     -----
     - Only centers are annotated for 5 imgages (not implemented)
@@ -28,6 +39,13 @@ class BBBC026(MaskDataset):
     References
     ----------
     .. [1] https://bbbc.broadinstitute.org/BBBC026
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC026'
@@ -40,23 +58,6 @@ class BBBC026(MaskDataset):
         num_calls: Optional[int] = None,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls

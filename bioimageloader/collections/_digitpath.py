@@ -13,17 +13,43 @@ from ..base import MaskDataset
 
 class DigitalPathology(MaskDataset):
     """Deep learning for digital pathology image analysis: A comprehensive
-    tutorial with selected use cases
+    tutorial with selected use cases [1]_
+
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image','mask','both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
 
     Notes
     -----
-    - Annotation is partial, thus `output='image'` by default.
+    - Annotation is partial, thus ``output='image'`` by default.
 
     References
     ----------
     .. [1] A. Janowczyk and A. Madabhushi, “Deep learning for digital pathology
        image analysis: A comprehensive tutorial with selected use cases,” J
        Pathol Inform, vol. 7, Jul. 2016, doi: 10.4103/2153-3539.186902.
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'DigitPath'
@@ -39,32 +65,6 @@ class DigitalPathology(MaskDataset):
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-
-        """
         self._root_dir = os.path.join(root_dir, 'nuclei')
         self._output = output
         self._transforms = transforms

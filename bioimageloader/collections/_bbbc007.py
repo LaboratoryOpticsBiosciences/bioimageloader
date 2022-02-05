@@ -24,14 +24,48 @@ class BBBC007(MaskDataset):
     average. The two channels (DNA and actin) of each image are stored in
     separate gray-scale 8-bit TIFF files.
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'image', 'mask', 'both'} (default: 'both')
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines augmentation in
+        sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool (default: False)
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along channel
+        axis, then divides it by the number of expected channels.
+    image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel. Name matches to `anno_ch`.
+    anno_ch : {'DNA', 'actin'} (default: ('DNA',))
+        Which channel(s) to load as annotation. Make sure to give it as a
+        Sequence when choose a single channel.
+
     Notes
     -----
     - [4, 5, 11, 14, 15] have 3 channels but they are just all gray scale
-        images. Extra work is required in get_image().
+      images. Extra work is required in get_image().
 
+    References
+    ----------
     .. [1] Jones et al., in the Proceedings of the ICCV Workshop on Computer
        Vision for Biomedical Image Applications (CVBIA), 2005.
-    .. [2] [BBBC007](https://bbbc.broadinstitute.org/BBBC007)
+    .. [2] https://bbbc.broadinstitute.org/BBBC007
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     """
     # Dataset's acronym
     acronym = 'BBBC007'
@@ -50,37 +84,6 @@ class BBBC007(MaskDataset):
         anno_ch: Sequence[str] = ('DNA',),
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image', 'mask', 'both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
-            Which channel(s) to load as image. Make sure to give it as a
-            Sequence when choose a single channel. Name matches to `anno_ch`.
-        anno_ch : {'DNA', 'actin'} (default: ('DNA',))
-            Which channel(s) to load as annotation. Make sure to give it as a
-            Sequence when choose a single channel.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        DatasetInterface : Interface
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

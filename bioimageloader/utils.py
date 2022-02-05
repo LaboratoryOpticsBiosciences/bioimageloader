@@ -10,6 +10,7 @@ import numpy as np
 from PIL import Image
 
 from .base import MaskDataset
+from .types import Bundled
 
 T = TypeVar('T')
 
@@ -218,7 +219,7 @@ def stack_channels_to_rgb(
     return stacked
 
 
-def bundle_list(lst: List[T], bundle_size: int) -> List[List[T]]:
+def bundle_list(lst: List[T], bundle_size: int) -> List[Bundled[T]]:
     """Reshape a list given the repetition step size"""
     return [list(e) for e in zip(
         *[lst[i::bundle_size] for i in range(bundle_size)]

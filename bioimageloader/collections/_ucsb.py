@@ -53,8 +53,8 @@ class UCSB(MaskDataset):
             An instance of Compose (albumentations pkg) that defines
             augmentation in sequence.
         num_calls : int, optional
-            Useful when `transforms` is set. Define the total length of the
-            dataset. If it is set, it overrides __len__.
+            Useful when ``transforms`` is set. Define the total length of the
+            dataset. If it is set, it overwrites ``__len__``.
         grayscale : bool (default: False)
             Convert images to grayscale
         grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
@@ -67,6 +67,7 @@ class UCSB(MaskDataset):
         See Also
         --------
         MaskDataset : Super class
+        Dataset : Base class
         DatasetInterface : Interface
 
         """
