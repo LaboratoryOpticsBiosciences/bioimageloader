@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Sequence, Union, overload
 
 import albumentations
 import cv2
@@ -153,7 +153,7 @@ class BBBC007(MaskDataset):
         return file_list
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, BundledPath]]:
+    def anno_dict(self) -> Union[Dict[int, Path], Dict[int, BundledPath]]:
         root_dir = self.root_dir
         parent = 'BBBC007_v1_outlines'
         _anno_list = sorted(root_dir.glob(f'{parent}/*/*.tif'))
@@ -162,9 +162,9 @@ class BBBC007(MaskDataset):
                 anno_list = _anno_list[::2]
             elif ch[0] == 'actin':
                 anno_list = _anno_list[1::2]
+            return dict((k, v) for k, v in enumerate(anno_list))
         elif len(ch) == 2:
-            anno_list = bundle_list(_anno_list, 2)
+            anno_blist = bundle_list(_anno_list, 2)
         else:
             raise ValueError("Set `anno_ch` in ('DNA', 'actin') or all")
-        anno_dict = dict((k, v) for k, v in enumerate(anno_list))
-        return anno_dict
+        return dict((k, v) for k, v in enumerate(anno_blist))

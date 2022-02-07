@@ -117,12 +117,13 @@ class DSB2018(MaskDataset):
 
     @cached_property
     def anno_dict(self) -> Union[Dict[int, BundledPath], Dict[int, dict]]:
-        anno_dict = {}
         if self.training:
+            anno_dict = {}
             for i, p in enumerate(self.file_list):
                 anno_dict[i] = list(p.parents[1].glob('masks/*.png'))
             return anno_dict
         else:
+            anno_rle = {}
             _, lines = read_csv(self.root_dir / 'stage1_solution.csv')
             # header: ImageId,EncodedPixels,Height,Width,Usage
             # iter_rle = map(lambda line: [int(s) for s in line[1].split(' ')],
@@ -141,5 +142,5 @@ class DSB2018(MaskDataset):
                         offset += 1
                     else:
                         break
-                anno_dict[i] = solution
-            return anno_dict
+                anno_rle[i] = solution
+            return anno_rle

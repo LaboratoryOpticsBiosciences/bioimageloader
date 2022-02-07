@@ -153,21 +153,23 @@ class BBBC018(MaskDataset):
         return bundle_list(_file_list, 3)
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, BundledPath]]:
-        anno_dict: Dict[int, Union[Path, BundledPath]] = {}
+    def anno_dict(self) -> Union[Dict[int, Path], Dict[int, BundledPath]]:
         root_dir = self.root_dir
         parent = 'BBBC018_v1_outlines'
         # _anno_list = sorted(root_dir.glob(f'{parent}/*.png'))
         stain_to_target = {'DNA': 'nuclei',
                            'actin': 'cells'}
         if len(ch := self.anno_ch) == 1:
+            anno_dict: Dict[int, Path] = {}
             target = stain_to_target[ch[0]]
             for i, p in enumerate(self.file_list):
                 name = p[0].stem.split('-')[0]
                 fn = root_dir / parent / f'{name}-{target}.png'
                 if fn.exists():
                     anno_dict[i] = fn
+            return anno_dict
         elif len(ch) == 2:
+            anno_bdict: Dict[int, BundledPath] = {}
             for i, p in enumerate(self.file_list):
                 name = p[0].stem.split('-')[0]
                 lst_fn = []
@@ -177,7 +179,7 @@ class BBBC018(MaskDataset):
                     if fn.exists():
                         lst_fn.append(fn)
                 if lst_fn:
-                    anno_dict[i] = lst_fn
+                    anno_bdict[i] = lst_fn
         else:
             raise ValueError
-        return anno_dict
+        return anno_bdict

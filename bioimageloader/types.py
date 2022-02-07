@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, TypeVar
+from typing import List, TypeVar, NewType, Any
 
 T = TypeVar('T')
 
@@ -14,4 +14,4 @@ TIFFFILE_IMAGE_EXT = [
 ]
 KNOWN_IMAGE_EXT = PIL_IMAGE_EXT + TIFFFILE_IMAGE_EXT
 Bundled = List[T]
-BundledPath = List[Path]
+BundledPath = Bundled[Path]
