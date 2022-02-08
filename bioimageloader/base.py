@@ -47,8 +47,8 @@ class DatasetInterface(metaclass=abc.ABCMeta):
         """Get an image"""
         ...
 
-    @property
     @classmethod
+    @property
     @abc.abstractmethod
     def acronym(cls):  # required
         """Assign acroym for a subclass dataset"""
