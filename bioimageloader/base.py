@@ -15,6 +15,9 @@ class DatasetInterface(metaclass=abc.ABCMeta):
 
     Attributes
     ----------
+    __repr__
+    __len__
+    __getitem__
     acronym
     root_dir
     file_list
@@ -23,39 +26,6 @@ class DatasetInterface(metaclass=abc.ABCMeta):
     -------
     get_image
 
-
-    Optional
-    --------
-    properties:
-        [output, anno_dict, get_mask, transforms, num_calls]
-        _output, _anno_dict, _get_mask, _transforms, _num_calls
-    methods:
-        [get_mask]
-
-    Common
-    ------
-    properties:
-        [__repr__, __len__]
-    methos:
-        [__getitem__]
-
-
-    Attributes
-    ----------
-    methods:
-        [__getitem__, __repr__, get_image, get_mask]
-    properties:
-        [acronym, root_dir, file_list]
-
-    Abstract Methods (Iterable)
-    ---------------------------
-    __getitem__
-    __len__
-    __contains
-
-    Mixin Methods
-    -------------
-    __contains__, __iter__, __reversed__, index, and count
     """
 
     @abc.abstractmethod
@@ -63,7 +33,6 @@ class DatasetInterface(metaclass=abc.ABCMeta):
         """Print info of dataset"""
         ...
 
-    @property
     @abc.abstractmethod
     def __len__(self):  # common
         ...

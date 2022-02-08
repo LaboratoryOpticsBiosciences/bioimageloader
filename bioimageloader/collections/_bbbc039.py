@@ -11,7 +11,7 @@ from ..base import MaskDataset
 
 
 class BBBC039(MaskDataset):
-    """Nuclei of U2OS cells in a chemical screen
+    """Nuclei of U2OS cells in a chemical screen [1]_
 
     This data set has a total of 200 fields of view of nuclei captured with
     fluorescence microscopy using the Hoechst stain. These images are a sample
@@ -22,7 +22,7 @@ class BBBC039(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in

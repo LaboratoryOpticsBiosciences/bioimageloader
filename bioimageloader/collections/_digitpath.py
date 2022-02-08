@@ -19,7 +19,7 @@ class DigitalPathology(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image','mask','both'} (default: 'both')
+    output : {'image', 'mask', 'both'}, default: 'image'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -27,9 +27,9 @@ class DigitalPathology(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'cv2'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
@@ -58,7 +58,7 @@ class DigitalPathology(MaskDataset):
         self,
         root_dir: str,
         *,
-        output: str = 'both',
+        output: str = 'image',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
         grayscale: bool = False,

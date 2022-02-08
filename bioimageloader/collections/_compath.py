@@ -20,7 +20,7 @@ class ComputationalPathology(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image','mask','both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -28,13 +28,13 @@ class ComputationalPathology(MaskDataset):
     num_calls : int, optional
         Useful when ```transforms``` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'cv2'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    mask_tif : bool (default: False)
+    mask_tif : bool, default: False
         Instead of parsing every xml file to reconstruct mask image arrays, use
         pre-drawn mask tif files which should reside in the same folder as
         annotation xml files.

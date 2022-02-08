@@ -30,7 +30,7 @@ class BBBC006(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -38,17 +38,17 @@ class BBBC006(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+    grayscale_mode : {'equal', 'cv2', Sequence[float]}, default: 'equal'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    uint8 : bool (default: True)
+    uint8 : bool, default: True
         Whether to convert images to UINT8. It will divide image by 2**12 and
         cast it to UINT8. If set False, no process will be applied. Read more
         about rationales in Notes section.
-    z_ind : int (default: 16)
+    z_ind : int, default: 16
         Select one z stack. Default is 16, because 16 is the most in-focus.
 
     Notes

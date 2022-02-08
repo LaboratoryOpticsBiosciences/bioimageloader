@@ -20,7 +20,7 @@ class FRUNet(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -28,7 +28,7 @@ class FRUNet(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    normalize : bool (default: True)
+    normalize : bool, default: True
         Normalize each image by its maximum value and cast it to UINT8.
 
     Notes

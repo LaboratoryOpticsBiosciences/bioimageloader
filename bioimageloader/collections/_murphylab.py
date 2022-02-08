@@ -19,7 +19,7 @@ class MurphyLab(MaskDataset):
     ----------
     root_dir : str or pathlib.Path
         Path to root directory
-    output : {'image','mask','both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines
@@ -27,12 +27,12 @@ class MurphyLab(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    drop_missing_pairs : bool (default: True)
+    drop_missing_pairs : bool, default: True
         Valid only if `output='both'`. It will drop images that do not have
         mask pairs.
-    drop_broken_files : bool (default: True)
+    drop_broken_files : bool, default: True
         Drop broken files that cannot be read
-    filled_mask : bool (default: False)
+    filled_mask : bool, default: False
         Use saved filled masks through `fill_save_mask()` method instead of
         default boundary masks. If one would want to use manually modified
         masks, the annotation files should have the same name as '*.xcf'

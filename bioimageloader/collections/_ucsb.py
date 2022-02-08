@@ -13,6 +13,33 @@ from ..base import MaskDataset
 class UCSB(MaskDataset):
     """A biosegmentation benchmark for evaluation of bioimage analysis methods
 
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'both',' image', 'mask'}, default: 'both'
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines
+        augmentation in sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool, default: False
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'cv2'
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along
+        channel axis, then divides it by the number of expected channels.
+    category : {'benign', 'malignant'}, default: ('malignant',)
+        Select which category of output you want
+
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
     Notes
     -----
     - 32 'benign', 26 'malignant' images (58 images in total)
@@ -42,35 +69,6 @@ class UCSB(MaskDataset):
         category: Sequence[str] = ('malignant',),
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when ``transforms`` is set. Define the total length of the
-            dataset. If it is set, it overwrites ``__len__``.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-        category : {'benign', 'malignant'} (default: ('malignant',))
-            Select which category of output you want
-
-        See Also
-        --------
-        MaskDataset : Super class
-        Dataset : Base class
-        DatasetInterface : Interface
-
-        """
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms

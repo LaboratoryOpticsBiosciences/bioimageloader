@@ -23,7 +23,7 @@ class BBBC020(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -31,32 +31,28 @@ class BBBC020(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+    grayscale_mode : {'equal', 'cv2', Sequence[float]}, default: 'equal'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    anno_ch : {'nuclei', 'cells'} (default: ('nuclei',))
+    anno_ch : {'nuclei', 'cells'}, default: ('nuclei',)
         Which channel(s) to load as annotation. Make sure to give it as a
         Sequence when choose a single channel.
-    drop_missing_pairs : bool (default: True)
+    drop_missing_pairs : bool, default: True
         Valid only if `output='both'`. It will drop images that do not have mask
         pairs.
 
     Warnings
     --------
-    - 5 annotations are missing: `jw-30min 1, jw-30min 2, jw-30min 3, jw-30min
-      4, jw-30min 5; ind={17,18,19,20,21}
-        ./BBBC020_v1_images/jw-30min 1/jw-30min 1_(c1+c5).TIF
-
-        ./BBBC020_v1_images/jw-30min 2/jw-30min 2_(c1+c5).TIF
-
-        ./BBBC020_v1_images/jw-30min 3/jw-30min 3_(c1+c5).TIF
-
-        ./BBBC020_v1_images/jw-30min 4/jw-30min 4_(c1+c5).TIF
-
-        ./BBBC020_v1_images/jw-30min 5/jw-30min 5_(c1+c5).TIF
+    5 annotations are missing: `jw-30min 1, jw-30min 2, jw-30min 3, jw-30min 4,
+    jw-30min 5; ind={17,18,19,20,21}
+        - ./BBBC020_v1_images/jw-30min 1/jw-30min 1_(c1+c5).TIF
+        - ./BBBC020_v1_images/jw-30min 2/jw-30min 2_(c1+c5).TIF
+        - ./BBBC020_v1_images/jw-30min 3/jw-30min 3_(c1+c5).TIF
+        - ./BBBC020_v1_images/jw-30min 4/jw-30min 4_(c1+c5).TIF
+        - ./BBBC020_v1_images/jw-30min 5/jw-30min 5_(c1+c5).TIF
 
     - BBC020_v1_outlines_nuclei/jw-15min 5_c5_43.TIF exists but corrupted
 

@@ -14,7 +14,7 @@ from ..utils import bundle_list, stack_channels_to_rgb
 
 
 class BBBC021(MaskDataset):
-    """Human MCF7 cells – compound-profiling experiment
+    """Human MCF7 cells – compound-profiling experiment [1]_
 
     The images are of MCF-7 breast cancer cells treated for 24 h with a
     collection of 113 small molecules at eight concentrations. The cells were
@@ -35,13 +35,13 @@ class BBBC021(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+    grayscale_mode : {'equal', 'cv2', Sequence[float]}, default: 'equal'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin', 'tublin'))
+    image_ch : {'DNA', 'actin'}, default: ('DNA', 'actin', 'tublin')
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
 

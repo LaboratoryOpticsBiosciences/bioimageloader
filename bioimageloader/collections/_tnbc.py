@@ -11,19 +11,38 @@ from ..base import MaskDataset
 
 
 class TNBC(MaskDataset):
-    """TNBC Nuclei Segmentation Dataset
+    """TNBC Nuclei Segmentation Dataset [1]_
+
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'both', 'image', 'mask'}, default: 'both'
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines
+        augmentation in sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
+    grayscale : bool, default: False
+        Convert images to grayscale
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'cv2'
+        How to convert to grayscale. If set to 'cv2', it follows opencv
+        implementation. Else if set to 'equal', it sums up values along
+        channel axis, then divides it by the number of expected channels.
 
     References
     ----------
-    Segmentation of Nuclei in Histopathology Images by Deep Regression of
-    the Distance Map [1]_
 
-    .. [1] https://ieeexplore.ieee.org/document/8438559
+    .. [1] Segmentation of Nuclei in Histopathology Images by Deep Regression of
+       the Distance Map, https://ieeexplore.ieee.org/document/8438559
 
     See Also
     --------
     MaskDataset : Super class
-    MaskDatasetInterface : Interface of the super class
+    Dataset : Base class
+    DatasetInterface : Interface
     """
 
     # Dataset's acronym
@@ -41,32 +60,6 @@ class TNBC(MaskDataset):
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         **kwargs
     ):
-        """
-        Parameters
-        ---------
-        root_dir : str
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when ``transforms`` is set. Define the total length of the
-            dataset. If it is set, it overwrites ``__len__``.
-        grayscale : bool (default: False)
-            Convert images to grayscale
-        grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
-            How to convert to grayscale. If set to 'cv2', it follows opencv
-            implementation. Else if set to 'equal', it sums up values along
-            channel axis, then divides it by the number of expected channels.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        Dataset : Base class
-        DatasetInterface : Interface
-        """
         # Interface and super-class arguments
         self._root_dir = os.path.join(root_dir, 'TNBC_NucleiSegmentation')
         self._output = output
@@ -92,8 +85,6 @@ class TNBC(MaskDataset):
         parent = 'Slide_*'
         file_list = sorted(root_dir.glob(f'{parent}/*.png'))
         return file_list
-        # if self.indices:
-        #     return [file_list[i] for i in self.indices]
 
     @cached_property
     def anno_dict(self) -> Dict[int, Path]:
@@ -104,7 +95,3 @@ class TNBC(MaskDataset):
             sorted(root_dir.glob(f'{parent}/*.png'))
             ))
         return anno_dict
-        # if self.indices:
-        #     return dict((i, anno_dict[k]) for i, k in enumerate(
-        #         self.indices
-        #         ))

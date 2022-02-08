@@ -13,7 +13,7 @@ from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
 
 
 class BBBC008(MaskDataset):
-    """Human HT29 colon-cancer cells
+    """Human HT29 colon-cancer cells [1]_
 
     F/B semantic segmentation
 
@@ -28,7 +28,7 @@ class BBBC008(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'} (default: 'both')
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -36,16 +36,16 @@ class BBBC008(MaskDataset):
     num_calls : int, optional
         Useful when `transforms` is set. Define the total length of the dataset.
         If it is set, it overrides ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'equal')
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'equal'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    image_ch : {'DNA', 'actin'} (default: ('DNA', 'actin'))
+    image_ch : {'DNA', 'actin'}, default: ('DNA', 'actin')
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
-    anno_ch : {'DNA', 'actin'} (default: ('DNA',))
+    anno_ch : {'DNA', 'actin'}, default: ('DNA',)
         Which channel(s) to load as annotation. Make sure to give it as a
         Sequence when choose a single channel.
 

@@ -11,10 +11,23 @@ from ..base import MaskDataset
 
 
 class S_BSST265(MaskDataset):
-    '''An annotated fluorescence image dataset for training nuclear segmentation
-    methods
+    """An annotated fluorescence image dataset for training nuclear segmentation
+    methods [1]_
 
     Immuno Fluorescence (IF) images, designed for ML
+
+    Parameters
+    ----------
+    root_dir : str
+        Path to root directory
+    output : {'both', 'image', 'mask'}, default: 'both'
+        Change outputs. 'both' returns {'image': image, 'mask': mask}.
+    transforms : albumentations.Compose, optional
+        An instance of Compose (albumentations pkg) that defines
+        augmentation in sequence.
+    num_calls : int, optional
+        Useful when ``transforms`` is set. Define the total length of the
+        dataset. If it is set, it overwrites ``__len__``.
 
     Notes
     -----
@@ -30,14 +43,21 @@ class S_BSST265(MaskDataset):
     - visualized_groundtruth: Visualization of groundtruth masks in PNG format
     - visualized_singlecell_groundtruth: Visualization of groundtruth for
       randomly selected nuclei in PNG format
+    - Find more info in README.txt inside the root directory
 
-    Find more info in README.txt within the root directory.
-
+    References
+    ----------
     .. [1] F. Kromp et al., “An annotated fluorescence image dataset for
        training nuclear segmentation methods,” Scientific Data, vol. 7, no. 1,
        Art. no. 1, Aug. 2020, doi: 10.1038/s41597-020-00608-w.
-    '''
 
+    See Also
+    --------
+    MaskDataset : Super class
+    Dataset : Base class
+    DatasetInterface : Interface
+
+    """
     # Dataset's acronym
     acronym = 'S-BSST265'
 
@@ -51,26 +71,6 @@ class S_BSST265(MaskDataset):
         num_calls: Optional[int] = None,
         **kwargs
     ):
-        """
-        Parameters
-        ----------
-        root_dir : str
-            Path to root directory
-        output : {'image','mask','both'} (default: 'both')
-            Change outputs. 'both' returns {'image': image, 'mask': mask}.
-        transforms : albumentations.Compose, optional
-            An instance of Compose (albumentations pkg) that defines
-            augmentation in sequence.
-        num_calls : int, optional
-            Useful when ``transforms`` is set. Define the total length of the
-            dataset. If it is set, it overwrites ``__len__``.
-
-        See Also
-        --------
-        MaskDataset : Super class
-        Dataset : Base class
-        DatasetInterface : Interface
-        """
         # Interface and super-class arguments
         self._root_dir = os.path.join(root_dir, 'S-BSST265')
         self._output = output

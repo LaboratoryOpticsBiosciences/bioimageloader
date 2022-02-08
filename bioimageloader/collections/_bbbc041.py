@@ -30,13 +30,13 @@ class BBBC041(MaskDataset):
     num_calls : int, optional
         Useful when ```transforms``` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    grayscale : bool (default: False)
+    grayscale : bool, default: False
         Convert images to grayscale
-    grayscale_mode : {'cv2', 'equal', Sequence[float]} (default: 'cv2')
+    grayscale_mode : {'cv2', 'equal', Sequence[float]}, default: 'cv2'
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    training : bool (default: True)
+    training : bool, default: True
         Load training set if True, else load testing one
 
     Notes
