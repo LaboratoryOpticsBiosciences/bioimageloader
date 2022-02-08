@@ -2,7 +2,7 @@ import bisect
 import concurrent.futures
 import warnings
 from math import ceil
-from typing import List, Iterator, Optional
+from typing import Dict, Iterator, List, Optional
 
 import numpy as np
 
@@ -90,7 +90,7 @@ class IterBatchDataloader(Iterator):
         self.batch_ind = 0
         self.batch_end = len(dataloader)
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, np.ndarray]:
         if self.batch_ind == self.batch_end:
             raise StopIteration
         if self.batch_ind == self.batch_end - 1 and not self.drop_last:
@@ -102,7 +102,16 @@ class IterBatchDataloader(Iterator):
                 for ind in range(ind_start, ind_start + batch_size)]
         concurrent.futures.wait(jobs)
         self.batch_ind += 1
-        return [j.result() for j in jobs]
+        # return [j.result() for j in jobs]
+        # bundle with the same keys
+        d0 = jobs[0].result()
+        keys = d0.keys()
+        ret = {}
+        for k in keys:
+            ret[k] = np.stack([d0[k]] + list(map(lambda j: j.result()[k],
+                                                 jobs[1:]))
+                              )
+        return ret
 
 
 def _mp_getitem(dataset, ind):
