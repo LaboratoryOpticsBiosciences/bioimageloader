@@ -45,6 +45,8 @@ class ConcatDataset:
 
 
 class BatchDataloader:
+    """Batch loader with multi-processing
+    """
     def __init__(
         self,
         dataset: Dataset,
@@ -78,6 +80,8 @@ class BatchDataloader:
 
 
 class IterBatchDataloader(Iterator):
+    """Iterate BatchDataloader
+    """
     def __init__(self, dataloader: BatchDataloader):
         self.dataloader = dataloader
         self.dataset = dataloader.dataset

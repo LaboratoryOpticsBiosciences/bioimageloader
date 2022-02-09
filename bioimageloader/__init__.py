@@ -1,9 +1,9 @@
 from .batch import BatchDataloader, ConcatDataset
-from .config import Config, datasets_from_cfg
+from .config import Config, datasets_from_config
 
 __all__ = [
     'BatchDataloader',
     'ConcatDataset',
     'Config',
-    'datasets_from_cfg',
+    'datasets_from_config',
 ]
