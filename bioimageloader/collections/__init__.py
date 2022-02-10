@@ -4,6 +4,7 @@ from ._tnbc import TNBC
 from ._compath import ComputationalPathology
 from ._s_bsst265 import S_BSST265
 from ._murphylab import MurphyLab
+from ._frunet import FRUNet
 from ._bbbc006 import BBBC006
 from ._bbbc007 import BBBC007
 from ._bbbc008 import BBBC008
@@ -21,7 +22,6 @@ from ._bbbc015 import BBBC015
 from ._bbbc016 import BBBC016
 from ._bbbc026 import BBBC026
 from ._bbbc041 import BBBC041
-from ._frunet import FRUNet
 from ._bbbc021 import BBBC021
 
 
