@@ -37,6 +37,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 
 ## Fix
 - [ ]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
+- [ ]  Fix data['mask'].dtype == bool
+    When mask has a single channel, make them have the same dtype.
+
 - [ ]  random sampling, shuffle in BatchDataLoader
 
 ## Others
