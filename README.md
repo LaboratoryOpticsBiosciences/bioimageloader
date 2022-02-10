@@ -36,6 +36,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  time-series
 
 ## Fix
+- [ ]  Take out those that do not have mask anno and put them in `Dataset`
+    - [ ]  Implement `__getitem__` for `Dataset`
 - [ ]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
 - [ ]  Fix data['mask'].dtype == bool
     When mask has a single channel, make them have the same dtype.
