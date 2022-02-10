@@ -6,6 +6,44 @@ to develop computer vision deep neural networks. Find supported templates down
 below [need tag link].
 
 
+# Todo for Alpha Release
+I2K 2022 *“developing open source image analysis platforms/tools”*
+- Abstract til 1st March
+- Event 6-10 May (virtual)
+- https://forum.image.sc/t/i2k-2022-conference-talk-workshop-submissions-are-open/62833
+
+## Zarr
+- [ ]  Zarr and in-house data [experimental]
+
+## Docs
+- [ ]  [WIP] Overview table
+    1. `.md` for maintaining
+    2. `.html` (use table gen service, which I don’t like it... but whatever)
+    3. put sample image links
+    4. embed in docs and github readme
+- [ ]  Docs, notebook examples
+
+## Utils
+- [ ]  Data vis
+- [ ]  Models
+    - [ ]  bioimage.io
+- [ ]  Run and eval models
+    - [ ]  Summary table which model excels in which dataset
+- [ ]  Download scripts
+- [ ]  3D [experimental]
+    - [ ]  need 3D augmentation lib
+- [ ]  Custom augmentaino ex) 5 channels
+- [ ]  time-series
+
+## Fix
+- [ ]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
+- [ ]  random sampling, shuffle in BatchDataLoader
+
+## Others
+- [ ]  More data
+    - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
+
+
 # Why use `bioimageloader`?
 `bioimagesloader` is a by-product of my thesis. This library collected bioimage
 datasets for machine learning and deep learning. I needed a lot of diverse
