@@ -13,6 +13,9 @@ TIFFFILE_IMAGE_EXT = [
     '.tif',
     '.tiff',
 ]
-KNOWN_IMAGE_EXT = PIL_IMAGE_EXT + TIFFFILE_IMAGE_EXT
+ZARR_IMAGE_EXT = [
+    '.zarr',
+]
+KNOWN_IMAGE_EXT = PIL_IMAGE_EXT + TIFFFILE_IMAGE_EXT + ZARR_IMAGE_EXT
 Bundled = List[T]
 BundledPath = Bundled[Path]

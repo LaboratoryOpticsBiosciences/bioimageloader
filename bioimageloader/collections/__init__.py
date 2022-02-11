@@ -33,6 +33,7 @@ from ._bbbc016 import BBBC016
 from ._bbbc026 import BBBC026
 from ._bbbc041 import BBBC041
 from ._bbbc021 import BBBC021  # huge dataset 132,000 images
+from ._mntb import MNTB
 
 
 # Keep this list sorted
@@ -55,6 +56,7 @@ __all__ = [
     'DSB2018',
     'DigitalPathology',
     'FRUNet',
+    'MNTB',
     'MurphyLab',
     'S_BSST265',
     'TNBC',
