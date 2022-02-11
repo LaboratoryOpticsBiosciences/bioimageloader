@@ -16,7 +16,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  Zarr and in-house data [experimental]
 
 ## Docs
-- [ ]  [WIP] Overview table
+- [x]  Overview table
     1. `.md` for maintaining
     2. `.html` (use table gen service, which I don’t like it... but whatever)
     3. put sample image links
