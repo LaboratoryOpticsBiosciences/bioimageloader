@@ -22,6 +22,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     3. put sample image links
     4. embed in docs and github readme
 - [ ]  Docs, notebook examples
+- [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ## Utils
 - [ ]  Data vis
@@ -41,11 +42,12 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
 - [ ]  Fix data['mask'].dtype == bool
     When mask has a single channel, make them have the same dtype.
-
 - [ ]  random sampling, shuffle in BatchDataLoader
 
 ## Others
 - [ ]  More data
+    - CRCHisto
+    - CEM500K
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
 
 
@@ -242,6 +244,16 @@ Bad news is that you need to know how to make a subclass in Python (not so bad I
 hope. I suppose that you may have knowledge of Python, if you want to develop
 ML/DL in Python anyway). I included some examples of subclassing for my use
 case. I hope that they are useful with the template.
+
+
+## Dev
+- Prefer underscore ex) S-BSST265 -> S_BSST265
+- Format
+    - flake8
+    - isort
+    - Remove trailing space and blank line at the end of files
+        - [ ]  pre-commit
+- mypy
 
 
 ## QnA

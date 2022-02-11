@@ -19,7 +19,7 @@ class DigitalPathology(MaskDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image', 'mask', 'both'}, default: 'image'
+    output : {'both', 'image', 'mask'}, default: 'both'
         Change outputs. 'both' returns {'image': image, 'mask': mask}.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
@@ -36,7 +36,7 @@ class DigitalPathology(MaskDataset):
 
     Notes
     -----
-    - Annotation is partial, thus ``output='image'`` by default.
+    - Annotation is partial
 
     References
     ----------
@@ -58,7 +58,7 @@ class DigitalPathology(MaskDataset):
         self,
         root_dir: str,
         *,
-        output: str = 'image',
+        output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
         grayscale: bool = False,

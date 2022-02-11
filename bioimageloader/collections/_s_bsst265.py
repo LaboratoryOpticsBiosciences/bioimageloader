@@ -59,7 +59,7 @@ class S_BSST265(MaskDataset):
 
     """
     # Dataset's acronym
-    acronym = 'S-BSST265'
+    acronym = 'S_BSST265'
 
     def __init__(
         self,
