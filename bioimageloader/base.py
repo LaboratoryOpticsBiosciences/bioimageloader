@@ -2,6 +2,7 @@
 """
 
 import abc
+import random
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Sequence, Union
 
@@ -298,7 +299,7 @@ class MaskDataset(Dataset):
             ind_max = len(self.file_list)
             if (self.output != 'image') and (self.anno_dict is not None):
                 ind_max = len(self.anno_dict)
-            ind = np.random.randint(0, ind_max)
+            ind = random.randrange(0, ind_max)
         # `output="image"`
         if self.output == 'image':
             p = self.file_list[ind]
