@@ -6,11 +6,11 @@ import albumentations
 import cv2
 import numpy as np
 
-from ..base import MaskDataset
+from ..base import Dataset
 from ..utils import imread_asarray
 
 
-class BBBC026(MaskDataset):
+class BBBC026(Dataset):
     """Human Hepatocyte and Murine Fibroblast cells – Co-culture experiment
 
     This 384-well plate has images of co-cultured hepatocytes and fibroblasts.
@@ -42,7 +42,6 @@ class BBBC026(MaskDataset):
 
     See Also
     --------
-    MaskDataset : Super class
     Dataset : Base class
     DatasetInterface : Interface
 

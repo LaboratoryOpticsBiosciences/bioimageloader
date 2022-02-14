@@ -76,7 +76,6 @@ class Dataset(DatasetInterface):
     __len__
     __iter__
     root_dir
-    output : optional
     transforms
     num_calls
     anno_dict : optional
@@ -86,6 +85,7 @@ class Dataset(DatasetInterface):
 
     Methods
     -------
+    __getitem__
     _drop_missing_pairs
     to_gray
 
@@ -116,18 +116,7 @@ class Dataset(DatasetInterface):
             if not isinstance(_root_dir, Path):
                 return Path(_root_dir)
             return _root_dir
-        raise NotImplementedError('Attr `_root_dir` not defined')
-
-    @property
-    def output(self) -> str:
-        """Determine return(s) when called. If not set, default to 'image'"""
-        if hasattr(self, '_output'):
-            return self._output
-        return 'image'
-
-    @output.setter
-    def output(self, val):
-        self._output = val
+        raise NotImplementedError("Attr `_root_dir` not defined")
 
     @property
     def transforms(self) -> Optional[albumentations.Compose]:
@@ -177,6 +166,51 @@ class Dataset(DatasetInterface):
         if hasattr(self, '_num_channels'):
             return getattr(self, '_num_channels')
         return None
+
+    def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
+        """Get item
+
+        Dataset does not any annotation available. It will only load 'image'.
+
+        Parameters
+        ----------
+        ind : int
+            Index to get path(s) from ``file_list`` attribute
+
+        Attributes
+        ----------
+        self.file_list
+
+        Other Parameters
+        ----------------
+        self._transforms
+        self._num_calls
+        self._grayscale
+        self._grayscale_mode
+        self._num_channels
+
+        """
+        # Randomize `ind` when `num_calls` set
+        if self.num_calls is not None:
+            if ind >= self.num_calls:
+                raise IndexError('list index out of range')
+            ind_max = len(self.file_list)
+            ind = random.randrange(0, ind_max)
+        # `output="image"`
+        p = self.file_list[ind]
+        image = self.get_image(p)
+        if self.grayscale:
+            num_channels = self.num_channels
+            if num_channels is None:
+                num_channels = len(p) if isinstance(p, list) else 3
+            image = self.to_gray(
+                image,
+                grayscale_mode=self.grayscale_mode,
+                num_channels=num_channels
+            )
+        if self.transforms:
+            image = self.transforms(image=image)['image']
+        return {'image': image}
 
     def _drop_missing_pairs(self) -> tuple:
         """Drop images and reindex the anno list (dict)
@@ -244,9 +278,9 @@ class MaskDataset(Dataset):
     methods: ``get_image()`` and ``get_mask()`` as well as ``acronym`` and
     ``_root_dir`` for each subclass.
 
-    Todo
-    ----
-    - [ ] Implement ``get_image()`` for those that do not have mask annotation
+    Attributes
+    ----------
+    output
 
     Methods
     -------
@@ -257,7 +291,7 @@ class MaskDataset(Dataset):
     Required attributes in subclass
         - ``acronym``
         - ``_root_dir``
-        - ``_output`` (optional)
+        - ``_output``
         - ``_grayscale`` (optional)
         - ``_grayscale_mode`` (optional)
         - ``_num_channels`` (optional)
@@ -269,6 +303,14 @@ class MaskDataset(Dataset):
     Dataset : super class
 
     """
+    @property
+    def output(self) -> str:
+        """Determine return(s) when called"""
+        return self._output
+
+    @output.setter
+    def output(self, val):
+        self._output = val
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
         """Get item depending on ``output`` argument
@@ -279,9 +321,12 @@ class MaskDataset(Dataset):
         ----------
         ind : int
             Index to get path(s) from ``file_list`` attribute
-        output
-        file_list
-        anno_dict
+
+        Attributes
+        ----------
+        self.output
+        self.file_list
+        self.anno_dict
 
         Other Parameters
         ----------------

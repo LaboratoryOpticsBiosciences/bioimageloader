@@ -7,12 +7,12 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from ..base import MaskDataset
+from ..base import Dataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
-class BBBC013(MaskDataset):
+class BBBC013(Dataset):
     """Human U2OS cells cytoplasm–nucleus translocation
 
     The images were acquired at BioImage on the IN Cell Analyzer 3000 using the
@@ -50,7 +50,6 @@ class BBBC013(MaskDataset):
 
     See Also
     --------
-    MaskDataset : Super class
     Dataset : Base class
     DatasetInterface : Interface
 

@@ -8,12 +8,12 @@ import cv2
 import numpy as np
 import tifffile
 
-from ..base import MaskDataset
+from ..base import Dataset
 from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
-class BBBC021(MaskDataset):
+class BBBC021(Dataset):
     """Human MCF7 cells – compound-profiling experiment [1]_
 
     The images are of MCF-7 breast cancer cells treated for 24 h with a
@@ -60,7 +60,6 @@ class BBBC021(MaskDataset):
 
     See Also
     --------
-    MaskDataset : Super class
     Dataset : Base class
     DatasetInterface : Interface
 
