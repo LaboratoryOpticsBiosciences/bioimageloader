@@ -76,6 +76,7 @@ class Dataset(DatasetInterface):
     __len__
     __iter__
     root_dir
+    output
     transforms
     num_calls
     anno_dict : optional
@@ -117,6 +118,11 @@ class Dataset(DatasetInterface):
                 return Path(_root_dir)
             return _root_dir
         raise NotImplementedError("Attr `_root_dir` not defined")
+
+    @property
+    def output(self) -> str:
+        """Determine return(s) when called, fixed to 'image'"""
+        return 'image'
 
     @property
     def transforms(self) -> Optional[albumentations.Compose]:
@@ -168,7 +174,7 @@ class Dataset(DatasetInterface):
         return None
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
-        """Get item
+        """Get image
 
         Dataset does not any annotation available. It will only load 'image'.
 
@@ -313,7 +319,7 @@ class MaskDataset(Dataset):
         self._output = val
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
-        """Get item depending on ``output`` argument
+        """Get image, mask, or both depending on ``output`` argument
 
         For MaskDataset, available output types are ['image', 'mask', 'both'].
 
