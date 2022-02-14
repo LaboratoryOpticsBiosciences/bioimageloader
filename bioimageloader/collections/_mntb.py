@@ -76,7 +76,7 @@ class MNTB(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         zarr_group = zarr.open(p)
-        img = zarr_group["0"][:]
+        img = zarr_group["0"]
         return img
 
     @cached_property
