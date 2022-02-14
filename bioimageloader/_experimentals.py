@@ -44,37 +44,3 @@ def load_all_datasets(roots: Dict[str, str] = ROOTS) -> List[Dataset]:
     for dataset in ALL_COLLECTIONS:
         exec(f'datasets.append({dataset}("{roots[dataset]}"))')
     return datasets
-
-
-def cycle_colors(
-    cm,
-    length: int
-):
-    """Cycle matplotlib's categorical color maps
-
-    cm : matplotlib.colors.ListedColormap
-        Colormap, ex) plt.cm.tab20
-    length : int
-        Length you want
-
-    """
-    unique = cm.colors
-    len_unique = len(unique)
-    if length <= len_unique:
-        return unique[:length]
-    colors = []
-    cycle = -1
-    for i in range(length):
-        if i % len_unique == 0:
-            cycle += 1
-        if i >= len_unique:
-            i -= len_unique * cycle
-        colors.append(unique[i])
-    return colors
-
-
-def to_hex_color(x):
-    """Ignore alpha"""
-    if isinstance(x[0], float):
-        x = [int(255*_x) for _x in x]
-    return '#{:02X}{:02X}{:02X}'.format(x[0], x[1], x[2])
