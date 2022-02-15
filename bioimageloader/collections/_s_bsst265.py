@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 
@@ -31,6 +32,7 @@ class S_BSST265(MaskDataset):
 
     Notes
     -----
+    - All images have grayscale though some have 3 channels
     - rawimages: Raw nuclear images in TIFF format
     - groundtruth: Annotated masks in TIFF format
     - groundtruth_svgs: SVG-Files for each annotated masks and corresponding raw
@@ -79,6 +81,8 @@ class S_BSST265(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         tif = tifffile.imread(p)
+        if tif.shape[-1] != 3:
+            tif = cv2.cvtColor(tif, cv2.COLOR_GRAY2RGB)
         return tif
 
     def get_mask(self, p: Path) -> np.ndarray:

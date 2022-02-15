@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 from PIL import Image
@@ -78,6 +79,7 @@ class BBBC039(MaskDataset):
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
         img = (img / 2**4).astype(np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         return img
 
     def get_mask(self, p: Path) -> np.ndarray:

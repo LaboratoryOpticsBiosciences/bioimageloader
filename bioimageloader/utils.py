@@ -20,6 +20,7 @@ class MaskDatasetProto(Protocol):
     """
     file_list: list
     anno_dict: dict
+    output: str
 
     def __len__(self):
         ...
@@ -103,12 +104,11 @@ def rle_decoding_inseg(
     return decoded.reshape((w, h)).T
 
 
-
 def subset(dataset: MaskDatasetProto, indices: Sequence[int]):
     indices = sorted(indices)
     dset = deepcopy(dataset)
     dset.file_list = [dataset.file_list[i] for i in indices]
-    if dataset.anno_dict is not None:
+    if dataset.output != 'image':
         dset.anno_dict = dict((i, dataset.anno_dict[k]) for i, k in enumerate(
             indices
         ))
@@ -210,7 +210,7 @@ def stack_channels_to_rgb(
     stacked = np.stack(images, axis=-1)
     if num_channels < 3:
         # it happens to be only 2 channels
-        stacked = np.concatenate([stacked, np.zeros_like(images[0])[...,np.newaxis]], axis=-1)
+        stacked = np.concatenate([stacked, np.zeros_like(images[0])[..., np.newaxis]], axis=-1)
     if axis_order:
         ordered = np.zeros_like(stacked)
         for i, o in enumerate(axis_order):

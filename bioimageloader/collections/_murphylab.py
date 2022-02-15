@@ -117,7 +117,6 @@ class MurphyLab(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = Image.open(p)
-        img = img.convert('L')
         return np.asarray(img)
 
     def get_mask(self, p: Path) -> np.ndarray:

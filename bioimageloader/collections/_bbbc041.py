@@ -7,11 +7,11 @@ from typing import List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 
-from ..base import MaskDataset
+from ..base import Dataset
 from ..utils import imread_asarray
 
 
-class BBBC041(MaskDataset):
+class BBBC041(Dataset):
     """P. vivax (malaria) infected human blood smears
 
     Images are in .png or .jpg format. There are 3 sets of images consisting of
