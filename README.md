@@ -98,6 +98,10 @@ Note
 
 2. Currently, MaskDataset is a default base since all datasets gathered are
    mainly nuclei/cells datasets.
+   - [x] Dataset (datasets that do not have any annotation)
+   - [x] MaskDataset
+   - [ ] InstanceMaskDataset (part of MaskDataset now)
+   - [ ] OutlineDataset (part of MaskDataset now)
    - [ ] BBoxDataset
    - [ ] KPointDataset (Not really applicable to bioimages)
 
