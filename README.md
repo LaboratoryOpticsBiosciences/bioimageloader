@@ -25,7 +25,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ## Utils
-- [ ]  Data vis
+- [x]  Data vis
 - [ ]  Models
     - [ ]  bioimage.io
 - [ ]  Run and eval models
