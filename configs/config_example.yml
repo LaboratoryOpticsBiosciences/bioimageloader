@@ -1,0 +1,8 @@
+DSB2018:
+  root_dir: ../Data/DSB2018
+  output: image
+TNBC:
+  root_dir: ../Data/TNBC_NucleiSegmentation
+  output: image
+BBBC016:
+  root_dir: ../Data/bbbc/016
