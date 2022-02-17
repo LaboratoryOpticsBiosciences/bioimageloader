@@ -21,7 +21,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     2. `.html` (use table gen service, which I don’t like it... but whatever)
     3. put sample image links
     4. embed in docs and github readme
-- [ ]  Docs, notebook examples
+- [x]  Docs, notebook examples
+- [ ]  Module docs
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ## Utils
