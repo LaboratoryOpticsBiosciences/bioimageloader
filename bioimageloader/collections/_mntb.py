@@ -18,8 +18,6 @@ class MNTB(ZarrDataset):
     ----------
     root_dir : str
         Path to root directory
-    output : {'image'}
-        Change outputs.
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
         sequence.
@@ -32,13 +30,10 @@ class MNTB(ZarrDataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
-    image_ch : {'F0', 'F1', 'F2'}, default: ('F0', 'F1', 'F2')
-        Which channel(s) to load as image. Make sure to give it as a Sequence
-        when choose a single channel. Name matches to `anno_ch`.
 
     Notes
     -----
-    - F0, F1, F2 to be replaced by real fluorophores names or to be removed
+    - axis order : CZYX
 
     References
     ----------
@@ -57,23 +52,19 @@ class MNTB(ZarrDataset):
         self,
         root_dir: str,
         *,
-        output: str = 'image',
         transforms: Optional[albumentations.Compose] = None,
         num_calls: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
-        image_ch: Sequence[str] = ('F0', 'F1', 'F2',),
         bbox_shape: List[int] = [3,10,100,100],
         **kwargs
     ):
         self._root_dir = root_dir
-        self._output = output
         self._transforms = transforms
         self._num_calls = num_calls
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
-        self.image_ch = image_ch
         self._bbox_shape = bbox_shape
 
     def get_image(self, p: Union[str, tuple]) -> np.ndarray:
