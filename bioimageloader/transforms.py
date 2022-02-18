@@ -40,6 +40,11 @@ class ExpandToRGB(albumentations.DualTransform):
             return img[..., ch]
         return img
 
+    def get_transform_init_args_names(self):
+        return (
+            'select_mask_channel',
+        )
+
 
 class HWCToCHW(albumentations.ImageOnlyTransform):
     """Transpose axes
@@ -81,6 +86,11 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
         # img to have (H, W)
         return img[0]
 
+    def get_transform_init_args_names(self):
+        return (
+            'keep_dim',
+        )
+
 
 class SqueezeGrayImageHWC(albumentations.ImageOnlyTransform):
     """Squeeze grayscale image from (H, W, 3) to (H, W)
@@ -111,6 +121,11 @@ class SqueezeGrayImageHWC(albumentations.ImageOnlyTransform):
         # img to have (H, W)
         return img[..., 0]
 
+    def get_transform_init_args_names(self):
+        return (
+            'keep_dim',
+        )
+
 
 class RGBToGray(albumentations.ImageOnlyTransform):
     """ToGray preserve all 3 channels from the input. This transform truncates
@@ -128,6 +143,9 @@ class RGBToGray(albumentations.ImageOnlyTransform):
 
     def apply(self, img, **params):
         return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+    def get_transform_init_args_names(self):
+        return ()
 
 
 class ToGrayBySum(albumentations.ImageOnlyTransform):
