@@ -48,7 +48,7 @@ def datasets_from_config(
     datasets: List[Dataset] = []
     for dataset, kwargs in config.items():
         if isinstance(transforms, dict):
-            exec(f'datasets.append({dataset}(transforms={transforms[dataset]}, **kwargs))')
+            exec(f'datasets.append({dataset}(transforms=transforms[dataset], **kwargs))')
         else:
             exec(f'datasets.append({dataset}(transforms=transforms, **kwargs))')
     return datasets
