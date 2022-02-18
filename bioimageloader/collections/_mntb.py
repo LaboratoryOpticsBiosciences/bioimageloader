@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 import zarr
 
-from ..base import MaskDataset
+from ..base import ZarrDataset
 
-class MNTB(MaskDataset):
+class MNTB(ZarrDataset):
     """Medium Nucleus of the Trapezoidal Body
 
     Dataset from the Laboratory of Optics and Biosciences.
@@ -46,7 +46,7 @@ class MNTB(MaskDataset):
 
     See Also
     --------
-    Dataset : Base class
+    ZarrDataset : Base class
     DatasetInterface : Interface
 
     """
