@@ -74,9 +74,30 @@ class MNTB(ZarrDataset):
         self._grayscale_mode = grayscale_mode
         self.image_ch = image_ch
 
-    def get_image(self, p: Path) -> np.ndarray:
-        zarr_group = zarr.open(p)
-        img = zarr_group["0"]
+    def get_image(self, p: Union[str, tuple]) -> np.ndarray:
+        """Get a cropped bbox from an array located in path/to/array
+
+        Parameters
+        ----------
+        p : Union[str, tuple]
+            bbox must be in the shape [[min_c, min_z, min_y, min_x], [max_c, max_z, max_y, max_x]].
+            If None, will call ``get_random_bbox_in_array()`` using ``bbox_shape``.
+
+        Returns
+        -------
+        np.ndarray
+            cropped bbox of the path/to/array
+        """
+        array_path, bbox = p
+        zarr_array = zarr.open(array_path)
+        if bbox is None:
+            bbox = self.get_random_bbox_in_array(zarr_array.shape)
+        img = zarr_array[ # to-do : Find a more generic way to use fancy index?
+            bbox[0][0]:bbox[1][0],
+            bbox[0][1]:bbox[1][1],
+            bbox[0][2]:bbox[1][2],
+            bbox[0][3]:bbox[1][3],
+            ]
         return img
 
     @cached_property
