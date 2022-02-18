@@ -38,7 +38,7 @@ class MNTB(ZarrDataset):
 
     Notes
     -----
-    - F0, F1, F2 to be replaced by real fluorophores names
+    - F0, F1, F2 to be replaced by real fluorophores names or to be removed
 
     References
     ----------
@@ -64,6 +64,7 @@ class MNTB(ZarrDataset):
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
         image_ch: Sequence[str] = ('F0', 'F1', 'F2',),
+        bbox_shape: List[int] = [3,10,100,100],
         **kwargs
     ):
         self._root_dir = root_dir
@@ -73,6 +74,7 @@ class MNTB(ZarrDataset):
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         self.image_ch = image_ch
+        self._bbox_shape = bbox_shape
 
     def get_image(self, p: Union[str, tuple]) -> np.ndarray:
         """Get a cropped bbox from an array located in path/to/array
@@ -101,7 +103,8 @@ class MNTB(ZarrDataset):
         return img
 
     @cached_property
-    def file_list(self) -> List[Path]:
+    def file_list(self) -> List[Union[str, tuple]]:
+        """file_list for zarr format is a path to an array and a bounding box in this array"""
         root_dir = self.root_dir
-        file_list = sorted(root_dir.glob(f'*.zarr'))
+        file_list = [(root_dir/"0", None)] # None will call get_random_bbox_in_array()
         return file_list
