@@ -46,6 +46,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     When mask has a single channel, make them have the same dtype.
 - [ ]  random sampling, shuffle in BatchDataLoader
 - [ ]  update overview table
+- [ ]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
+    Possible contribution chance to matplotlib!
 
 ## Others
 - [ ]  More data
@@ -264,14 +266,16 @@ case. I hope that they are useful with the template.
 
 
 ## QnA
-1. Why no download link to each dataset?
-    License issue. `bioimageloader` only provides interfaces not data itself.
-
+1. Why no direct download link to each dataset?
+    License issue. Many involve reading and agreeing with terms before downloading.
+    `bioimageloader` only provides interfaces not data itself. You still can find links
+    to their project pages or papers, and you need to find a way to get the data
+    following their instruction.
 
 2. Don't know how to write my own dataloader.
-    Writing a dataloader requires a bit of python skills. No easy way. Read
-    templates carefully and see how others are implemented. File an issue, and
-    I am willing to help.
+    Writing a dataloader requires a bit of python skills. No easy way. Please Read
+    templates carefully and see how others are implemented. File an issue, and I am
+    willing to help.
 
 
 3. How to run a ML/DL model?

@@ -27,7 +27,10 @@ class MaskDatasetProto(Protocol):
 
 
 def random_label_cmap(n=2**16, h=(0, 1), l=(.4, 1), s=(.2, .8)):
-    # https://github.com/mpicbg-csbd/stardist/blob/master/stardist/plot/plot.py#L8
+    """Random color map for labels (credit: StarDist team) [1]_
+
+    .. [1] https://github.com/stardist/stardist/blob/4422d1c235175a41d657009cb01075347cd14a53/stardist/plot/plot.py#L8
+    """
     import colorsys
 
     import matplotlib
