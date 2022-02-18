@@ -69,7 +69,8 @@ class BatchDataloader:
     def _last_size(self):
         if self.drop_last:
             return self.batch_size
-        return len(self.dataset) % self.batch_size
+        remainder = len(self.dataset) - self.batch_size * (len(self) - 1)
+        return remainder
 
     def __iter__(self):
         return IterBatchDataloader(self)
