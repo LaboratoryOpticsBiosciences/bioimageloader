@@ -8,7 +8,7 @@
 import abc
 import random
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Sequence, Union
+from typing import Any, Dict, List, Iterator, Optional, Sequence, Union
 
 import albumentations
 import cv2
@@ -273,6 +273,78 @@ class Dataset(DatasetInterface):
             raise NotImplementedError("`grayscale_mode`")
         return arr
 
+
+class ZarrDataset(Dataset):
+    """Base for zarr datasets
+
+    It is required to implement two methods: ``get_image()`` and
+    ``get_mask()`` as well as ``acronym``, ``bbox_shape`` and ``_root_dir`` for
+    each subclass.
+
+    Attributes
+    ----------
+    bbox_shape
+
+    Methods
+    -------
+    get_random_bbox_in_array
+
+    Notes
+    -----
+    Required attributes in subclass
+        - ``acronym``
+        - ``_root_dir``
+        - ``_output``
+        - ``_bbox_shape``
+        - ``get_image()``
+
+    See Also
+    --------
+    Dataset : super class
+
+    To do
+    -----
+        - grid bbox_in_array()
+        - create an enum for choosing the loading method
+        - allow to save custom list of bbox
+
+    """
+
+    @property
+    def bbox_shape(self) -> str:
+        """``bbox_shape`` is the default vector to determine an area according to a position to extract using ``get_image()``.
+
+        It must be the shape of the array.
+        For example a bbox_shape equals to [2, 3] at a position [10, 2] will create a bbox [[10, 2], [12, 5]]
+        """
+        return self._bbox_shape
+
+    @bbox_shape.setter
+    def bbox_shape(self, val):
+        self._bbox_shape = val
+
+    def get_random_bbox_in_array(self, array_shape: List[int]) -> List[List[int]]:
+        """_summary_
+
+        Parameters
+        ----------
+        array_shape : List[int]
+            shape of the array to determine a bbox inside the array.
+
+        Returns
+        -------
+        List[List[int]]
+            ``[[min_axis_1, min_axis_2, ...], [max_axis_1, max_axis_2, ...]]``
+        """
+        bbox_shape = self.bbox_shape
+
+        nb_axis = len(array_shape)
+
+        # get random position for the smallest corner of the bbox
+        bbox_pos = np.array([random.randint(0, array_shape[i] - bbox_shape[i]) for i in range(nb_axis)])
+
+        bbox = np.array([bbox_pos, bbox_pos + bbox_shape])
+        return bbox
 
 class MaskDataset(Dataset):
     """Base for datasets with mask annotation
