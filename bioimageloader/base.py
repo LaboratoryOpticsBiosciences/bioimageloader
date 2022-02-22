@@ -343,23 +343,34 @@ class ZarrDataset(Dataset):
         slices = tuple(slice(slice_pos[i], slice_pos[i]+slice_shape[i]) for i in range(nb_axis))
         return slices
 
+    def get_grid_slice_in_array(self, array_shape: List[int]) -> Tuple[Sequence[int]]:
+        """ returns a random slice position according to ``slice_shape``
 
         Parameters
         ----------
         array_shape : List[int]
-            shape of the array to determine a bbox inside the array.
+            shape of the array to determine slices inside it.
 
         Returns
         -------
-        List[List[int]]
-            ``[[min_axis_1, min_axis_2, ...], [max_axis_1, max_axis_2, ...]]``
+        Tuple[Sequence[int]]
+            ``(Slice(min_a, max_a), Slice(min_b, max_b)...)``
+
+        TO DO
+        -----
+        Add ``mode`` for grid (reflect, constant, nearest, mirror, wrap or 'cut' [name to define])
         """
-        bbox_shape = self.bbox_shape
+        slice_shape = self._slice_shape
 
         nb_axis = len(array_shape)
 
-        # get random position for the smallest corner of the bbox
-        bbox_pos = np.array([random.randint(0, array_shape[i] - bbox_shape[i]) for i in range(nb_axis)])
+        # get grid position for the smallest corner of the slice.
+        slice_pos = np.array([random.randrange(0, array_shape[i] - slice_shape[i], slice_shape[i])
+                                    if array_shape[i] - slice_shape[i] > 0 else 0 for i in range(nb_axis)])
+        # Create tuple of slice.
+        slices = tuple(slice(slice_pos[i], slice_pos[i]+slice_shape[i]) for i in range(nb_axis))
+        print(slices)
+        return slices
 
         bbox = np.array([bbox_pos, bbox_pos + bbox_shape])
         return bbox
