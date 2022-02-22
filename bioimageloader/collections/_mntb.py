@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union, overload
+from typing import Dict, List, Optional, Sequence, Union, Tuple, overload
 
 import albumentations
 import cv2
@@ -82,6 +82,9 @@ class MNTB(ZarrDataset):
         """
         array_path, slices = p
         zarr_array = zarr.open(array_path)
+        if isinstance(slices, str):
+            slicer = self.get_slicer(slices)
+            slices = slicer(self, zarr_array.shape) # to do : find another way to pass 'self'?
         img = zarr_array[slices]
         return img
 
@@ -89,5 +92,5 @@ class MNTB(ZarrDataset):
     def file_list(self) -> List[Union[str, tuple]]:
         """file_list for zarr format is a path to an array and slices in this array"""
         root_dir = self.root_dir
-        file_list = [(root_dir/"0", None)] # None will call get_random_bbox_in_array()
+        file_list = [(root_dir/"0", 'grid')] # None will call get_random_bbox_in_array()
         return file_list

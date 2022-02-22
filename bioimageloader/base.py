@@ -8,7 +8,7 @@
 import abc
 import random
 from pathlib import Path
-from typing import Any, Dict, List, Iterator, Optional, Sequence, Union
+from typing import Any, Dict, List, Iterator, Optional, Sequence, Union, Tuple
 
 import albumentations
 import cv2
@@ -304,9 +304,7 @@ class ZarrDataset(Dataset):
 
     To do
     -----
-        - grid bbox_in_array()
-        - create an enum for choosing the loading method
-        - allow to save custom list of bbox
+        - allow to save custom list of slices
 
     """
 
@@ -372,8 +370,20 @@ class ZarrDataset(Dataset):
         print(slices)
         return slices
 
-        bbox = np.array([bbox_pos, bbox_pos + bbox_shape])
-        return bbox
+    _slicer_modes = {
+        'random': get_random_slice_in_array,
+        'grid': get_grid_slice_in_array,
+    }
+
+    @property
+    def slicer_modes(self) -> List[Any]: # to do : find Function typing class
+        return list(self._slicer_modes)
+
+    def get_slicer(self, slicer_name) -> Function:
+        return self._slicer_modes[slicer_name]
+
+
+
 
 class MaskDataset(Dataset):
     """Base for datasets with mask annotation
