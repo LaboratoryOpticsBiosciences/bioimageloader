@@ -1,3 +1,59 @@
+"""(experimental) Easily load unknown datasets as Dataset or as MaskDataset
+
+Common dataset is a dataset which has expected structures that
+bioimageloader can easily access. Simply provide a path to root directory.
+
+This module is experimental.
+
+Currently it assumes two cases for MaskDataset,
+
+>>> 1. case: only images
+    case1/
+    ├── image00.tif
+    ├── image01.tif
+    ├── image02.tif
+    ├── image03.tif
+    ├── image04.tif
+    ├── image05.tif
+    ├── image06.tif
+    ├── image07.tif
+    ├── image08.tif
+    └── image09.tif
+
+>>> 2. case: images in "images/" and labels in "labels/"
+    case3/
+    ├── images
+    │   ├── 00.png
+    │   ├── 01.png
+    │   ├── 02.png
+    │   ├── 03.png
+    │   └── 04.png
+    └── labels
+        ├── 00.tif
+        ├── 01.tif
+        ├── 02.tif
+        ├── 03.tif
+        └── 04.tif
+
+Examples
+--------
+Case 1:
+
+>>> dataset = CommonDataset('./Data/case1')
+
+Case 3:
+
+>>> dataset = CommonMaskDataset('./Data/case3')
+
+see also ``utils.get_maskdatasets_from_directory``
+
+>>> datset = get_maskdataset_from_directory(
+        './Data/case3',
+        image_dir='images',
+        labels='labels',
+    )
+"""
+
 import os
 from functools import cached_property
 from pathlib import Path

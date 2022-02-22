@@ -46,8 +46,9 @@ class BBBC020(MaskDataset):
 
     Warnings
     --------
-    5 annotations are missing: `jw-30min 1, jw-30min 2, jw-30min 3, jw-30min 4,
-    jw-30min 5; ind={17,18,19,20,21}
+    5 annotations are missing: ind={17,18,19,20,21}
+    [jw-30min 1, jw-30min 2, jw-30min 3, jw-30min 4, jw-30min 5]
+
         - ./BBBC020_v1_images/jw-30min 1/jw-30min 1_(c1+c5).TIF
         - ./BBBC020_v1_images/jw-30min 2/jw-30min 2_(c1+c5).TIF
         - ./BBBC020_v1_images/jw-30min 3/jw-30min 3_(c1+c5).TIF

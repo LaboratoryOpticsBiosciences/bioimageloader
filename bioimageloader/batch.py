@@ -1,3 +1,6 @@
+"""Batch loader module
+"""
+
 import bisect
 import concurrent.futures
 import warnings

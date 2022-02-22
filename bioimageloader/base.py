@@ -1,4 +1,8 @@
-"""Define a base Dataset and its interface
+"""Define a base class and its interface
+
+``Dataset`` is the base of all datasets
+
+``MaskDataset`` is the base of datasets that have mask annotation
 """
 
 import abc

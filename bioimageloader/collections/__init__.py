@@ -1,3 +1,6 @@
+"""Collection of public bioimage datasets
+"""
+
 # import should not be sorted by isort
 from ._dsb2018 import DSB2018
 from ._tnbc import TNBC

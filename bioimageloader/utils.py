@@ -1,3 +1,6 @@
+"""Classic utils module
+"""
+
 import csv
 import random
 from copy import deepcopy
