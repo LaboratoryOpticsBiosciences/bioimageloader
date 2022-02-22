@@ -278,16 +278,16 @@ class ZarrDataset(Dataset):
     """Base for zarr datasets
 
     It is required to implement two methods: ``get_image()`` and
-    ``get_mask()`` as well as ``acronym``, ``bbox_shape`` and ``_root_dir`` for
+    ``get_mask()`` as well as ``acronym``, ``slice_shape`` and ``_root_dir`` for
     each subclass.
 
     Attributes
     ----------
-    bbox_shape
+    slice_shape
 
     Methods
     -------
-    get_random_bbox_in_array
+    get_random_slices_in_array
 
     Notes
     -----
@@ -295,7 +295,7 @@ class ZarrDataset(Dataset):
         - ``acronym``
         - ``_root_dir``
         - ``_output``
-        - ``_bbox_shape``
+        - ``_slice_shape``
         - ``get_image()``
 
     See Also
@@ -311,20 +311,38 @@ class ZarrDataset(Dataset):
     """
 
     @property
-    def bbox_shape(self) -> str:
-        """``bbox_shape`` is the default vector to determine an area according to a position to extract using ``get_image()``.
-
-        It must be the shape of the array.
-        For example a bbox_shape equals to [2, 3] at a position [10, 2] will create a bbox [[10, 2], [12, 5]]
+    def slice_shape(self) -> str:
+        """``slice_shape`` is the default vector to determine an area according to a position to extract using ``get_image()``.
         """
-        return self._bbox_shape
+        return self._slice_shape
 
-    @bbox_shape.setter
-    def bbox_shape(self, val):
-        self._bbox_shape = val
+    @slice_shape.setter
+    def slice_shape(self, val):
+        self.slice_shape = val
 
-    def get_random_bbox_in_array(self, array_shape: List[int]) -> List[List[int]]:
-        """_summary_
+    def get_random_slice_in_array(self, array_shape: List[int]) -> Tuple[Sequence[int]]:
+        """ returns a random slice position according to ``slice_shape``
+
+        Parameters
+        ----------
+        array_shape : List[int]
+            shape of the array to determine slices inside it.
+
+        Returns
+        -------
+        Tuple[Sequence[int]]
+            ``(Slice(min_a, max_a), Slice(min_b, max_b)...)``
+        """
+        slice_shape = self._slice_shape
+
+        nb_axis = len(array_shape)
+
+        # get random position for the smallest corner of the slice.
+        slice_pos = np.array([random.randint(0, array_shape[i] - slice_shape[i]) for i in range(nb_axis)])
+        # Create tuple of slice.
+        slices = tuple(slice(slice_pos[i], slice_pos[i]+slice_shape[i]) for i in range(nb_axis))
+        return slices
+
 
         Parameters
         ----------

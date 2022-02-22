@@ -57,7 +57,7 @@ class MNTB(ZarrDataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
-        bbox_shape: List[int] = [3,10,100,100],
+        slice_shape: Tuple[int] = (3,10,100,100),
         **kwargs
     ):
         self._root_dir = root_dir
@@ -65,37 +65,29 @@ class MNTB(ZarrDataset):
         self._num_calls = num_calls
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
-        self._bbox_shape = bbox_shape
+        self._slice_shape = slice_shape
 
     def get_image(self, p: Union[str, tuple]) -> np.ndarray:
-        """Get a cropped bbox from an array located in path/to/array
+        """Get a slice from an array located in path/to/array
 
         Parameters
         ----------
         p : Union[str, tuple]
-            bbox must be in the shape [[min_c, min_z, min_y, min_x], [max_c, max_z, max_y, max_x]].
-            If None, will call ``get_random_bbox_in_array()`` using ``bbox_shape``.
+            If None, will call ``get_random_slice_in_array()`` using ``slice_shape``.
 
         Returns
         -------
         np.ndarray
-            cropped bbox of the path/to/array
+            slice of the path/to/array
         """
-        array_path, bbox = p
+        array_path, slices = p
         zarr_array = zarr.open(array_path)
-        if bbox is None:
-            bbox = self.get_random_bbox_in_array(zarr_array.shape)
-        img = zarr_array[ # to-do : Find a more generic way to use fancy index?
-            bbox[0][0]:bbox[1][0],
-            bbox[0][1]:bbox[1][1],
-            bbox[0][2]:bbox[1][2],
-            bbox[0][3]:bbox[1][3],
-            ]
+        img = zarr_array[slices]
         return img
 
     @cached_property
     def file_list(self) -> List[Union[str, tuple]]:
-        """file_list for zarr format is a path to an array and a bounding box in this array"""
+        """file_list for zarr format is a path to an array and slices in this array"""
         root_dir = self.root_dir
         file_list = [(root_dir/"0", None)] # None will call get_random_bbox_in_array()
         return file_list
