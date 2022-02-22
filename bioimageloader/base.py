@@ -379,7 +379,7 @@ class ZarrDataset(Dataset):
     def slicer_modes(self) -> List[Any]: # to do : find Function typing class
         return list(self._slicer_modes)
 
-    def get_slicer(self, slicer_name) -> Function:
+    def get_slicer(self, slicer_name) -> Any:
         return self._slicer_modes[slicer_name]
 
 
