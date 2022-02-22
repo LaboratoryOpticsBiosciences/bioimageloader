@@ -6,7 +6,7 @@ to develop computer vision deep neural networks. Find supported templates down
 below [need tag link].
 
 
-# Todo for Alpha Release
+# Todo for the first Alpha Release v0.1.0
 I2K 2022 *“developing open source image analysis platforms/tools”*
 - Abstract til 1st March
 - Event 6-10 May (virtual)
@@ -23,7 +23,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     4. embed in docs and github readme
 - [x]  Docs, notebook examples
 - [ ]  Module docs
-- [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
+- [ ]  Quickstart
+- [ ]  clean README.md
+
 
 ## Utils
 - [x]  Data vis
@@ -36,6 +38,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [ ]  need 3D augmentation lib
 - [ ]  Custom augmentaino ex) 5 channels
 - [ ]  time-series
+- [ ]  CommonDataset, CommonMaskDataset
 
 ## Fix
 - [x]  Take out those that do not have mask anno and put them in `Dataset`
@@ -48,8 +51,10 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  update overview table
 - [ ]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
     Possible contribution chance to matplotlib!
+- [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ## Others
+- [ ]  Migrate repo to LOB account
 - [ ]  More data
     - CRCHisto
     - CEM500K
