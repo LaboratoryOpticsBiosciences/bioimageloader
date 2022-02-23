@@ -17,7 +17,7 @@ concatenate, perform image augmentation, and batch-load them.
 ## Table of Contents
 - [Quick overview](#quick-overview)
     - Load a single dataset
-    - oad multiple datasets
+    - Load multiple datasets
     - Batch-load datasets
 - [bioimageloader is not/does not](#bioimageloader-is-notdoes-not)
 - [Why bioimageloader](#why-bioimageloader)
@@ -124,7 +124,7 @@ Full documentation is available at DOCS
 ## Available collections
 22 datasets
 
-Checkout link to Catalogue
+Checkout link to DOCS:Catalogue
 
 Table
 - BBBC002
@@ -169,17 +169,21 @@ you may find it having an unexpected name. If it is the case, I apologize for
 bad names.
 
 If you still cannot find it. Then you have two options: either you do it
-yourself following the guideline or you can file an issue so that the community
-can update it.
+yourself following the guideline (we have examples in documentation, please check them
+out and please consider contributing!) or you can file an issue so that the community
+can help.
+
 
 ### Don't know how to write my own dataloader.
-Writing a dataloader requires a bit of python skills. No easy way. Please Read
+Writing a dataloader requires a bit of Python skills. No easy way. Please read
 templates carefully and see how others are implemented. File an issue, and I am
 willing to help.
 
+
 ### How to run a ML/DL model?
 _bioimageloader_ only helps loading images/annotations, not running ML/DL
-models. See ZeroCostDL4Mic.
+models. Check out [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic).
+
 
 ### I want more granular control over datasets individually
 Each bioimage dataset is very unique and it is natural that users want more controls
@@ -192,7 +196,7 @@ are useful with the template.
 
 
 ## Contributing
-Find guide [Contributing](DOCS)
+Find guide at DOCS
 
 
 ## Contact

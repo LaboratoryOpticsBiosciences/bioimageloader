@@ -1,6 +1,6 @@
 # Todo
-Todo for the first Alpha Release v0.1.0
----
+
+## Todo for the first Alpha Release v0.1.0
 I2K 2022 *“developing open source image analysis platforms/tools”*
 - Abstract til 1st March
 - Event 6-10 May (virtual)
@@ -17,8 +17,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     4. embed in docs and github readme
 - [x]  Docs, notebook examples
 - [x]  Module docs
+- [x]  Quickstart
 - [x]  clean README.md
-- [ ]  Quickstart
 
 ### Utils
 - [x]  Data vis
@@ -26,13 +26,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [x]  bioimage.io
 - [x]  Run and eval models
     - [ ]  Summary table which model excels in which dataset
-- [ ]  Download scripts
-- [ ]  3D [experimental]
-    - [ ]  need 3D augmentation lib
-- [ ]  Custom augmentaino ex) 5 channels
-- [ ]  time-series
 - [ ]  CommonDataset, CommonMaskDataset
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
+- [ ]  (maybe nope) Download scripts
 
 ### Fix
 - [x]  Take out those that do not have mask anno and put them in `Dataset`
@@ -55,6 +51,11 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
 
 
+## For later
+- [ ]  3D [experimental]
+    - [ ]  need 3D augmentation lib
+- [ ]  Custom augmentation ex) 5 channels
+- [ ]  time-series
 
 
 <!-- Put this in another README -->
