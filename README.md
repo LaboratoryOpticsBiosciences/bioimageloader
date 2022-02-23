@@ -16,10 +16,10 @@ concatenate, perform image augmentation, and batch-load them.
 
 ## Table of Contents
 - [Quick overview](#quick-overview)
-    - [Load a single dataset](#load-a-single-dataset)
-    - [Load multiple datasets](#load-multiple-datasets)
-    - [Batch-load datasets](#batch-load-datasets)
-- [bioimageloader is not/does not](#bioimageloader-is-not-does-not)
+    - Load a single dataset
+    - oad multiple datasets
+    - Batch-load datasets
+- [bioimageloader is not/does not](#bioimageloader-is-notdoes-not)
 - [Why bioimageloader](#why-bioimageloader)
 - [Installation](#installation)
 - [Documentation](#documentation)
@@ -50,7 +50,7 @@ concatenate, perform image augmentation, and batch-load them.
 
 2. Load multiple datasets
 
-    Load DSB2018 and [Triple Negative Breast Cancer (TNBC)](https://ieeexplore.ieee.org/document/8438559))
+    Load DSB2018 and [_Triple Negative Breast Cancer (TNBC)_](https://ieeexplore.ieee.org/document/8438559)
 
     ```python
     from bioimageloader import datasets_from_config, ConcatDataset
@@ -118,7 +118,7 @@ cd bioimageloader && pip install -e .
 ```
 
 ## Documentation
-Full documentation is available at [here](doc url)
+Full documentation is available at DOCS
 
 
 ## Available collections
@@ -154,50 +154,45 @@ Table
 
 ## QnA
 ### Why no direct download link to each dataset?
-
-    _bioimageloader_ provides only codes (interfaces) to load data but not data itself.
-    It comes down to the license issue, since some bioimages may have a complicated
-    procedure to get, for example reading and agreeing with terms. You still can find
-    links to their project pages or papers, and you need to find a way to get the data
-    following their instruction. Once you downloaded a dataset and unzipped it, (if it
-    is supported by _bioimageloader_) you simply pass its root directory as the first
-    argument to corresponding class from collections `bioimageloader.collections`.
+_bioimageloader_ provides only codes (interfaces) to load data but not data itself.
+It comes down to the license issue, since some bioimages may have a complicated
+procedure to get, for example reading and agreeing with terms. You still can find
+links to their project pages or papers, and you need to find a way to get the data
+following their instruction. Once you downloaded a dataset and unzipped it, (if it
+is supported by _bioimageloader_) you simply pass its root directory as the first
+argument to corresponding class from collections `bioimageloader.collections`.
 
 ## Dataset that I want is not in the supported list
+First of all, I named each dataset class rather arbitrary. Try to find the
+dataset you want with authors' names or with other keywords (if it has any), and
+you may find it having an unexpected name. If it is the case, I apologize for
+bad names.
 
-    First of all, I named each dataset class rather arbitrary. Try to find the
-    dataset you want with authors' names or with other keywords (if it has any), and
-    you may find it having an unexpected name. If it is the case, I apologize for
-    bad names.
-
-    If you still cannot find it. Then you have two options: either you do it
-    yourself following the guideline or you can file an issue so that the community
-    can update it.
+If you still cannot find it. Then you have two options: either you do it
+yourself following the guideline or you can file an issue so that the community
+can update it.
 
 ### Don't know how to write my own dataloader.
-
-    Writing a dataloader requires a bit of python skills. No easy way. Please Read
-    templates carefully and see how others are implemented. File an issue, and I am
-    willing to help.
+Writing a dataloader requires a bit of python skills. No easy way. Please Read
+templates carefully and see how others are implemented. File an issue, and I am
+willing to help.
 
 ### How to run a ML/DL model?
-
-    _bioimageloader_ only helps loading images/annotations, not running ML/DL
-    models. See ZeroCostDL4Mic.
+_bioimageloader_ only helps loading images/annotations, not running ML/DL
+models. See ZeroCostDL4Mic.
 
 ### I want more granular control over datasets individually
-
-    Each bioimage dataset is very unique and it is natural that users want more controls
-    and it was true for my work as well. Good news is that _bioimageloader_ suggests a
-    template that you can extend from and make a subclass in your liking. Bad news is
-    that you need to know how to make a subclass in Python (not so bad I hope. I suppose
-    that you may have knowledge of Python, if you want to develop ML/DL in Python
-    anyway). I included some examples of subclassing for my use case. I hope that they
-    are useful with the template.
+Each bioimage dataset is very unique and it is natural that users want more controls
+and it was true for my work as well. Good news is that _bioimageloader_ suggests a
+template that you can extend from and make a subclass in your liking. Bad news is
+that you need to know how to make a subclass in Python (not so bad I hope. I suppose
+that you may have knowledge of Python, if you want to develop ML/DL in Python
+anyway). I included some examples of subclassing for my use case. I hope that they
+are useful with the template.
 
 
 ## Contributing
-Find guide [here]()
+Find guide [Contributing](DOCS)
 
 
 ## Contact
