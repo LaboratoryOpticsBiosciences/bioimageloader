@@ -3,6 +3,7 @@ from typing import List, TypeVar, NewType, Any
 
 T = TypeVar('T')
 
+# Keep all ext in lower case
 PIL_IMAGE_EXT = [
     '.png',
     '.jpg',

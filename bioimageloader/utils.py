@@ -12,7 +12,7 @@ import albumentations
 import numpy as np
 from PIL import Image
 
-from .base import MaskDataset
+from .base import Dataset, MaskDataset
 from .types import Bundled
 
 T = TypeVar('T')
@@ -256,6 +256,67 @@ def expand_to_rgb(
     return stacked
 
 
+def get_dataset_from_directory(
+    root_dir: str,
+    *,
+    output: Optional[str] = None,
+    transforms: Optional[albumentations.Compose] = None,
+    num_calls: Optional[int] = None,
+    grayscale: Optional[bool] = None,
+    grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
+) -> Dataset:
+    """Construct MaskDataset by assuming the structure of given directory
+
+    """
+    # works with case1
+    # case1/                  *case2/                *case4/
+    # ├── image00.tif         ├── image00.tif         ├── images
+    # ├── image01.tif         ├── image01.tif         │   ├── 00.png
+    # ├── image02.tif         ├── image02.tif         │   ├── 01.png
+    # ├── image03.tif         ├── image03.tif         │   ├── 02.png
+    # ├── image04.tif         ├── image04.tif         │   ├── 03.png
+    # ├── image05.tif         ├── label00.tif         │   └── 04.png
+    # ├── image06.tif         ├── label01.tif         └── labels
+    # ├── image07.tif         ├── label02.tif             ├── 00
+    # ├── image08.tif         ├── label03.tif             │   ├── 0.jpg
+    # └── image09.tif         └── label04.tif             │   ├── 1.jpg
+    #                                                     │   ├── 3.jpg
+    # case3/                                              │   └── 4.jpg
+    # ├── images                                          ├── 01
+    # │   ├── 00.png                                      │   ├── 0.jpg
+    # │   ├── 01.png                                      │   ├── 1.jpg
+    # │   ├── 02.png                                      │   ├── 2.jpg
+    # │   ├── 03.png                                      │   ├── 3.jpg
+    # │   ├── 04.png                                      │   ├── 4.jpg
+    # │   ├── 05.png                                      │   ├── 5.jpg
+    # │   ├── 06.png                                      │   └── 6.jpg
+    # │   ├── 07.png                                      ├── 02
+    # │   ├── 08.png                                      │   ├── 0.jpg
+    # │   └── 09.png                                      │   ├── 1.jpg
+    # └── labels                                          │   └── 2.jpg
+    #     ├── 00.tif                                      ├── 03
+    #     ├── 01.tif                                      │   ├── 0.jpg
+    #     ├── 02.tif                                      │   ├── 1.jpg
+    #     ├── 03.tif                                      │   ├── 2.jpg
+    #     ├── 04.tif                                      │   ├── 3.jpg
+    #     ├── 05.tif                                      │   ├── 4.jpg
+    #     ├── 06.tif                                      │   └── 5.jpg
+    #     ├── 07.tif                                      └── 04
+    #     ├── 08.tif                                          ├── 0.jpg
+    #     └── 09.tif                                          └── 1.jpg
+
+    from .common import CommonDataset
+    mask_dataset = CommonDataset(
+        root_dir=root_dir,
+        output=output,
+        transforms=transforms,
+        num_calls=num_calls,
+        grayscale=grayscale,
+        grayscale_mode=grayscale_mode,
+    )
+    return mask_dataset
+
+
 def get_maskdataset_from_directory(
     root_dir: str,
     *,
@@ -270,6 +331,7 @@ def get_maskdataset_from_directory(
     """Construct MaskDataset by assuming the structure of given directory
 
     """
+    # work with case3
     # case1/                  *case2/                *case4/
     # ├── image00.tif         ├── image00.tif         ├── images
     # ├── image01.tif         ├── image01.tif         │   ├── 00.png
