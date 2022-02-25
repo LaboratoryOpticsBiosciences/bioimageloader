@@ -109,7 +109,7 @@ class BBBC008(MaskDataset):
         else:
             mask = stack_channels(tifffile.imread, p)
         # dtype=bool originally and bool is not well handled by albumentations
-        return (~mask).astype(np.float32)
+        return 255 * (~mask).astype(np.uint8)
 
     @cached_property
     def file_list(self) -> Union[List[Path], List[BundledPath]]:

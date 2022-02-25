@@ -53,6 +53,8 @@ class MurphyLab(MaskDataset):
 
     Notes
     -----
+    - 4 channel PNG format annotation mask even though mask is binary. But it is
+      not grayscale binary. They put value 255 only in red channel.
     - Two annotation formats; Photoshop and GIMP. It seems that two annotators
       worked separately. segmented-ashariff will be ignored. In total, 97
       segmented images (out of 100)
@@ -134,7 +136,7 @@ class MurphyLab(MaskDataset):
         # get image
         layer_borders = doc.getLayer(ind_layer)
         mask = layer_borders.image
-        return np.asarray(mask)
+        return np.asarray(mask)[..., 0]
 
     @cached_property
     def file_list(self) -> List[Path]:
@@ -173,7 +175,8 @@ class MurphyLab(MaskDataset):
         file_list = self.file_list
         anno_dict = self.anno_dict
         for i, p in anno_dict.items():
-            if p.name == 'dna-46.xcf':
+            # if p.name == 'dna-46.xcf':
+            if '/'.join([p.parent.name, p.name]) == 'ic100/dna-46.xcf':
                 file_list.pop(i)
                 anno_dict.pop(i)
                 break

@@ -139,6 +139,8 @@ class BBBC018(MaskDataset):
             mask = np.asarray(Image.open(p))
         else:
             mask = stack_channels(Image.open, p)
+        if mask.dtype == 'bool':
+            mask = 255 * mask.astype(np.uint8)
         # For some reason mask is -y
         return np.ascontiguousarray(mask[::-1, ...])
 

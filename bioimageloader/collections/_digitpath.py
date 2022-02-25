@@ -37,6 +37,7 @@ class DigitalPathology(MaskDataset):
     Notes
     -----
     - Annotation is partial
+    - Boolean mask to UINT8 mask (0, 255)
 
     References
     ----------
@@ -78,7 +79,7 @@ class DigitalPathology(MaskDataset):
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = np.asarray(Image.open(p))
-        return mask
+        return 255 * mask.astype(np.uint8)
 
     def __len__(self):
         if self.num_calls:
