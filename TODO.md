@@ -34,11 +34,18 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  Take out those that do not have mask anno and put them in `Dataset`
     - [x]  Implement `__getitem__` for `Dataset`
     - [x]  Change base for them
-- [ ]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
-- [ ]  Fix data['mask'].dtype == bool
+- [x]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
+    Not really necessary? Just have them (b, h, w) for now
+- [x]  Fix data['mask'].dtype == bool
     When mask has a single channel, make them have the same dtype.
-- [ ]  random sampling, shuffle in BatchDataLoader
+    Albumentations supports only UINT8 and FLOAT32.
+    - bool -> uint8
+    - or int16 (because why not...)
 - [ ]  update overview table
+    - [x]  Reordered
+    - [ ]  Add missing ones
+        - [ ]  BBBC041
+- [ ]  random sampling, shuffle in BatchDataLoader
 - [ ]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
     Possible contribution chance to matplotlib!
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)

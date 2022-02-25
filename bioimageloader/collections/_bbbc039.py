@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 import albumentations
 import cv2
 import numpy as np
+import scipy.ndimage as ndi
 import tifffile
 from PIL import Image
 
@@ -31,15 +32,21 @@ class BBBC039(MaskDataset):
     num_calls : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
-    training : bool or list of int
-        Load training data if True, else load testing data.
+    training : bool, default: True
+        Load training set if True, else load testing one
 
     Notes
     -----
     - Split (training/valiadation/test)
         - `training=True` combines 'training' with 'validation'
+    - Annotate objs not touching each other with 1 and use 2, 3, ... for the
+      touching ones. It is great and clever, but it does not follow the form of
+      other instance segmented masks. ``get_mask()`` will make a instance
+      labeled mask (each obj has unique labels). After labeling max label is 231
+      for training, and 202 for test. So having masks of dtype UINT8 is fine.
+    - Max label is 3 (in original annotation)
     - Sample of larger BBBC022 and did manual segmentation
-    - Overlap some with DSB2018
+    - Possible overlap some with DSB2018
     - Mask is png but (instance) value is only stored in RED channel
     - Maximum value is 2**12
 
@@ -84,7 +91,16 @@ class BBBC039(MaskDataset):
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = np.asarray(Image.open(p))[..., 0]
-        return mask > 0
+        max_val = mask.max()
+        if max_val == 0:
+            return mask
+        else:
+            inst_mask, n_labels = ndi.label(mask == 1, output='uint8')  # int32 by default
+            for m in range(2, max_val+1):
+                labeled, n = ndi.label(mask == m, output='uint8')
+                inst_mask += np.where(labeled == 0, 0, labeled + n_labels)
+                n_labels += n
+        return inst_mask
 
     @cached_property
     def file_list(self) -> List[Path]:
