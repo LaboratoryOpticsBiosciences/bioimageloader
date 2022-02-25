@@ -27,6 +27,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  Run and eval models
     - [ ]  Summary table which model excels in which dataset
 - [x]  CommonDataset, CommonMaskDataset
+- [ ]  random sampling, shuffle in BatchDataLoader
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts
 
@@ -47,7 +48,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [x]  Reordered
     - [x]  Add missing ones
         - [x]  BBBC041
-- [ ]  random sampling, shuffle in BatchDataLoader
+- [ ]  number of images, including test sets
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ### Others
@@ -56,7 +57,6 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - CRCHisto
     - CEM500K
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
-
 
 ## For later
 - [ ]  BboxDataset

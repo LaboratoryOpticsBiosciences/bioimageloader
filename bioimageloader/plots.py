@@ -1,14 +1,16 @@
 """Plot utilities to visualize statistics
 
 """
-from typing import Sequence
+from typing import Sequence, TypeVar
+
+T = TypeVar('T')
 
 
 def cycle_colors(
-    cm: Sequence,
+    cm: Sequence[T],
     length: int
-):
-    """Cycle matplotlib's categorical color maps
+) -> Sequence[T]:
+    """Cycle colors
 
     cm : sequence of colors
     length : int
