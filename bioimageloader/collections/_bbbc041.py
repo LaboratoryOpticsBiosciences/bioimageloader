@@ -12,13 +12,19 @@ from ..utils import imread_asarray
 
 
 class BBBC041(Dataset):
-    """P. vivax (malaria) infected human blood smears
+    """P. vivax (malaria) infected human blood smears [1]_
 
     Images are in .png or .jpg format. There are 3 sets of images consisting of
     1364 images (~80,000 cells) with different researchers having prepared each
     one: from Brazil (Stefanie Lopes), from Southeast Asia (Benoit Malleret),
     and time course (Gabriel Rangel). Blood smears were stained with Giemsa
     reagent.
+
+    These images were contributed by Jane Hung of MIT and the Broad Institute in
+    Cambridge, MA. [1]_
+
+    There is also a Github reposity that lists malaria parasite imaging datasets
+    (blood smears) [2]_.
 
     Parameters
     ----------
@@ -41,9 +47,15 @@ class BBBC041(Dataset):
 
     Notes
     -----
-    - 1208/120 training/test split
-    - png and jpg format; Mostly png, some jpg
-    - Two resolution; seems depending on the format
+    - Label categories: all 7 cats, ['difficult', 'gametocyte', 'leukocyte',
+      'red blood cell', 'ring', 'schizont', 'trophozoite']
+    - 1208/120 training/test split. So not 1368 images as written in the
+      description.
+    - png and jpg extension; training images are in RGB space in PNG format,
+      while test images are in YUV space in JPEG format.
+    - YUV will be automatically detected when read and cast to RGB
+    - Two resolutions; depending on training/test: (1200, 1600) for training,
+      (1383, 1944) for test
 
     References
     ----------

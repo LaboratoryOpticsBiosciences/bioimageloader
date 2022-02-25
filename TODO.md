@@ -26,7 +26,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [x]  bioimage.io
 - [x]  Run and eval models
     - [ ]  Summary table which model excels in which dataset
-- [ ]  CommonDataset, CommonMaskDataset
+- [x]  CommonDataset, CommonMaskDataset
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts
 
@@ -40,14 +40,14 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     When mask has a single channel, make them have the same dtype.
     Albumentations supports only UINT8 and FLOAT32.
     - bool -> uint8
-    - or int16 (because why not...)
-- [ ]  update overview table
+    - or int16 (because why not... mask.dtype does not matter)
+- [x]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
+    cv2.resize was an issue, not matplotlib
+- [x]  update overview table
     - [x]  Reordered
-    - [ ]  Add missing ones
-        - [ ]  BBBC041
+    - [x]  Add missing ones
+        - [x]  BBBC041
 - [ ]  random sampling, shuffle in BatchDataLoader
-- [ ]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
-    Possible contribution chance to matplotlib!
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ### Others
@@ -59,6 +59,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 
 
 ## For later
+- [ ]  BboxDataset
+    - [ ]  BBBC041
+    - [ ]  and more
 - [ ]  3D [experimental]
     - [ ]  need 3D augmentation lib
 - [ ]  Custom augmentation ex) 5 channels
