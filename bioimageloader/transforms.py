@@ -27,7 +27,7 @@ class HWCToCHW(albumentations.ImageOnlyTransform):
 
     >>> cfg = Config('config.yml')
     >>> transforms = A.Compose([
-            HWCToCWH(),
+            HWCToCHW(),
         ])
     >>> dataset = datasets_from_config(cfg, transforms=transforms)
     >>> data = dataset[0]
@@ -72,7 +72,7 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
 
     >>> cfg = Config('config.yml')
     >>> transforms = A.Compose([
-            HWCToCWH(),
+            HWCToCHW(),
             SqueezeGrayImageCHW(),
         ])
     >>> dataset = datasets_from_config(cfg, transforms=transforms)
@@ -84,7 +84,7 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
     require. But use ``SqueezeGrayImageHWC`` instead for that.
 
     >>> transforms = A.Compose([
-            HWCToCWH(),
+            HWCToCHW(),
             SqueezeGrayImageCHW(keep_dim=False),  # drop channel axis
         ])
     >>> dataset = datasets_from_config(cfg, transforms=transforms)
@@ -295,8 +295,28 @@ class ChannelReorder(albumentations.ImageOnlyTransform):
     --------
     albumentations.ImageOnlyTransform : super class
     albumentations.augmentations.transforms.ChannelShuffle : random shuffling
-    """
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from bioimageloader.transforms import ChannelReorder
+
+    >>> arr = np.arange(12).reshape((2, 2, 3))
+    >>> print(arr)
+    [[[ 0  1  2]
+      [ 3  4  5]]
+     [[ 6  7  8]
+      [ 9 10 11]]]
+
+    >>> reorder = ChannelReorder((2, 1, 0))
+    >>> arr_reordered = reorder.apply(arr)
+    >>> print(arr_reordered)
+    [[[ 2  1  0]
+      [ 5  4  3]]
+     [[ 8  7  6]
+      [11 10  9]]]
+
+    """
     def __init__(
             self,
             order: Tuple[int, int, int],
