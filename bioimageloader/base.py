@@ -83,7 +83,6 @@ class Dataset(DatasetInterface):
     output
     transforms
     num_calls
-    anno_dict : optional
     grayscale : optional
     grayscale_mode : optional
     num_channels : optional
@@ -97,6 +96,7 @@ class Dataset(DatasetInterface):
     Notes
     -----
     Required attributes in subclass
+        - ``anno_dict``
         - ``__getitem__()``
         - ``get_image()``
 
@@ -141,11 +141,6 @@ class Dataset(DatasetInterface):
         if hasattr(self, '_num_calls'):
             return getattr(self, '_num_calls')
         return None
-
-    @property
-    def anno_dict(self) -> Dict[int, Any]:
-        """Dictionary of pathes to annotation files"""
-        raise NotImplementedError
 
     @property
     def grayscale(self) -> Optional[bool]:
@@ -291,6 +286,7 @@ class MaskDataset(Dataset):
     Attributes
     ----------
     output
+    anno_dict
 
     Methods
     -------
@@ -321,6 +317,11 @@ class MaskDataset(Dataset):
     @output.setter
     def output(self, val):
         self._output = val
+
+    @property
+    def anno_dict(self) -> Dict[int, Any]:
+        """Dictionary of pathes to annotation files"""
+        raise NotImplementedError
 
     def __getitem__(self, ind: int) -> Dict[str, np.ndarray]:
         """Get image, mask, or both depending on ``output`` argument

@@ -3,6 +3,7 @@
 
 import bisect
 import concurrent.futures
+import random
 import warnings
 from math import ceil
 from typing import Dict, Iterator, List, Optional
@@ -54,14 +55,24 @@ class BatchDataloader:
         self,
         dataset: Dataset,
         batch_size: int = 16,
+        shuffle: bool = False,
         drop_last: bool = False,
         num_workers: Optional[int] = None,
     ):
         self.dataset = dataset
         self.batch_size = batch_size
+        self.shuffle = shuffle
         self.drop_last = drop_last
         self.num_workers = num_workers
         self.executor = concurrent.futures.ProcessPoolExecutor(max_workers=self.num_workers)
+
+        if shuffle:
+            idx = list(range(len(self.dataset)))
+            random.shuffle(idx)
+            dataset.file_list = [dataset.file_list[ind] for ind in idx]
+            if hasattr(dataset, 'anno_dict'):
+                dataset.anno_dict = dict((i, dataset.anno_dict[ind])
+                                         for i, ind in enumerate(idx))
 
     def __len__(self):
         if self.drop_last:

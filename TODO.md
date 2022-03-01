@@ -30,7 +30,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  CommonDataset, CommonMaskDataset
 - [x]  re-ordering channels
         np.ascontiguousarray, 'C' order, arr[..., (2, 1, 0)]
-- [ ]  random sampling, shuffle in BatchDataLoader
+- [x]  random sampling, shuffle in BatchDataLoader
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts
 
@@ -69,6 +69,10 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
 
 ## For later
+- [ ]  AnnoDatasetInterface
+    Interface for Dataset with annotation, base for all Dataset with annotation.
+    Currently attr like `anno_dict` is not an abstract property, though it should be
+    once we have other types, BboxDataset for instance,
 - [ ]  BboxDataset
     - [ ]  BBBC041
     - [ ]  and more
