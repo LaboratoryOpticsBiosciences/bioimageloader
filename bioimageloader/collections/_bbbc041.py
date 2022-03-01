@@ -85,7 +85,7 @@ class BBBC041(Dataset):
         training: bool = True,
         **kwargs
     ):
-        self._root_dir = os.path.join(root_dir, 'malaria')
+        self._root_dir = root_dir
         self._transforms = transforms
         self._num_calls = num_calls
         self._grayscale = grayscale

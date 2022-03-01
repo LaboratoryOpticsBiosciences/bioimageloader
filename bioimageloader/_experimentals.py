@@ -30,7 +30,7 @@ ROOTS = {
     'BBBC015'                 : '../Data/bbbc/015',
     'BBBC016'                 : '../Data/bbbc/016',
     'BBBC026'                 : '../Data/bbbc/026',
-    'BBBC041'                 : '../Data/bbbc/041',  # malaria
+    'BBBC041'                 : '../Data/bbbc/041/malaria',  # malaria
     'BBBC021'                 : '../Data/bbbc/021',  # huge number 132,000
 }
 

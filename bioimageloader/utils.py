@@ -269,6 +269,18 @@ def get_dataset_from_directory(
 ) -> Dataset:
     """Construct MaskDataset by assuming the structure of given directory
 
+    >>> case1/
+    ├── image00.tif
+    ├── image01.tif
+    ├── image02.tif
+    ├── image03.tif
+    ├── image04.tif
+    ├── image05.tif
+    ├── image06.tif
+    ├── image07.tif
+    ├── image08.tif
+    └── image09.tif
+
     """
     # works with case1
     # case1/                  *case2/                *case4/
@@ -331,6 +343,20 @@ def get_maskdataset_from_directory(
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
 ) -> MaskDataset:
     """Construct MaskDataset by assuming the structure of given directory
+
+    >>> case3/
+    ├── images
+    │   ├── 00.png
+    │   ├── 01.png
+    │   ├── 02.png
+    │   ├── 03.png
+    │   └── 04.png
+    └── labels
+        ├── 00.tif
+        ├── 01.tif
+        ├── 02.tif
+        ├── 03.tif
+        └── 04.tif
 
     """
     # work with case3

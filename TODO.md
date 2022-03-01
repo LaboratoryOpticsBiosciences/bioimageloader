@@ -48,12 +48,19 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [x]  Reordered
     - [x]  Add missing ones
         - [x]  BBBC041
+- [x]  consistent `root_dir`. Now it is a mess. We want something described in the
+  `docs/user_guides/basic0_prepare_datasets.rst`.
 - [ ]  number of images, including test sets
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ### Others
 - [ ]  Migrate repo to LOB account and open to public
 - [ ]  More data
+    - https://twitter.com/cmci_/status/1498156970700046337?t=9n2gDTpeM1Oq3JcCOV9QOg
+        All 3 are related. Rooted from one and modified somehow?
+        1. Romain Guiet. (2022). HeLa "Kyoto" cells under the scope (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6139958
+        2. Romain Guiet, & Olivier Burri. (2022). Cellpose models for Label Prediction from Brightfield and Digital Phase Contrast images (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6140111
+        3. Romain Guiet. (2022). Automatic labelling of HeLa "Kyoto" cells using Deep Learning tools (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6140064
     - CRCHisto
     - CEM500K
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
