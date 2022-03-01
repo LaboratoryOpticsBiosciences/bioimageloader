@@ -28,6 +28,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  Run and eval models
     - [ ]  Summary table which model excels in which dataset
 - [x]  CommonDataset, CommonMaskDataset
+- [x]  re-ordering channels
+        np.ascontiguousarray, 'C' order, arr[..., (2, 1, 0)]
 - [ ]  random sampling, shuffle in BatchDataLoader
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts

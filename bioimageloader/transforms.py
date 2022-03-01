@@ -2,7 +2,7 @@
 
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import albumentations
 import cv2
@@ -57,7 +57,7 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
         Keep channel axis to 1
     always_apply : bool, default: False
     p : float, default: 1.0
-        value between [0.0, 1.0]
+        Value between [0.0, 1.0]
 
     See Also
     --------
@@ -129,7 +129,7 @@ class SqueezeGrayImageHWC(albumentations.ImageOnlyTransform):
     keep_dim : bool, default: False
     always_apply : bool, default: False
     p : float, default: 1.0
-        value between [0.0, 1.0]
+        Value between [0.0, 1.0]
 
     See Also
     --------
@@ -276,3 +276,40 @@ class ToGrayBySum(albumentations.ImageOnlyTransform):
             img = np.sum(img, axis=-1) / self.num_channels
             return img.astype(dtype)
         return np.mean(img, axis=-1).astype(dtype)
+
+
+class ChannelReorder(albumentations.ImageOnlyTransform):
+    """Reorder channel
+
+    Expect images with 3 channels. Reorder and make it continuous in 'C' order.
+
+    Parameters
+    ----------
+    order : tuple of three integers
+        Reorder by indexing
+    always_apply : bool, default: False
+    p : float, default: 1.0
+        Value between [0.0, 1.0]
+
+    See Also
+    --------
+    albumentations.ImageOnlyTransform : super class
+    albumentations.augmentations.transforms.ChannelShuffle : random shuffling
+    """
+
+    def __init__(
+            self,
+            order: Tuple[int, int, int],
+            always_apply: bool = False,
+            p: float = 1.0,
+    ):
+        super().__init__(always_apply=always_apply, p=p)
+        self.order = order
+
+    def apply(self, img, **params):
+        return np.ascontiguousarray(img[..., self.order])
+
+    def get_transform_init_args_names(self):
+        return (
+            'order',
+        )
