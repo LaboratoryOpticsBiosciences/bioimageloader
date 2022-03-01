@@ -19,6 +19,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  Module docs
 - [x]  Quickstart
 - [x]  clean README.md
+- [ ]  indicate datasets that need pre-parse somehow?
 
 ### Utils
 - [x]  Data vis
