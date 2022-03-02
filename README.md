@@ -3,15 +3,15 @@ Load bioimages for machine leaning applications
 ---
 _bioimageloader_ is a python library to make it easy to load bioimage datasets for
 machine learning and deep learning. Bioimages come in numerous and inhomogeneous forms.
-_bioimageloader_ attempts to wrap them in an unified interface, so that you can easily
+_bioimageloader_ attempts to wrap them in unified interfaces, so that you can easily
 concatenate, perform image augmentation, and batch-load them.
 
 **_bioimageloader_ provides**
 
 1. collections of interfaces for popular and public bioimage datasets
-2. albumentations, which is the most popular and powerful image augmentation library, as
-   a image augmentation library
-3. compatibility with scikit-learn, tensorflow, and pytorch
+2. [albumentations], which is the most popular and powerful
+   image augmentation library, as a image augmentation library
+3. compatibility with [scikit-learn], [tensorflow], and [pytorch]
 
 
 ## Table of Contents
@@ -104,13 +104,14 @@ encountered many issues to load and process them, which were sometimes technical
 rooted from the nature of bioimages. For instances of technical issues, some datasets
 were missing one or two pairs of image and annotation, had broken files, had very
 specific file formats that cannot be easily read in python, or provided mask annotation
-not in image format but in .xml format. It was a big pain in the ass to deal with all
-these edge cases one by one. But anyway I did it and I thought it would be valuable to
-package and share it with community so that others do not have to suffer.
+not in image format but in .xml format. It was rather pain to deal with all these edge
+cases one by one. But anyway I did it and I thought it would be valuable to package and
+share it with community so that others do not have to suffer.
 
 
 ## Installation
-_bioimageloader_ requires Python 3.8 or higher. Install the latest version from PyPI
+<!-- Install the latest version from PyPI -->
+_bioimageloader_ requires Python 3.8 or higher. Find more options at [bioimageloader-docs:Installation]
 
 ```bash
 git clone https://github.com/LaboratoryOpticsBiosciences/bioimageloader.git
@@ -118,11 +119,11 @@ cd bioimageloader && pip install -e .
 ```
 
 ## Documentation
-Full documentation is available at https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/
+Full documentation is available at [bioimageloader-docs]
 
 
 ## Available collections
-Go to [bioimageloader-docs:Catalogue](https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/catalogue/index.html)
+Go to [bioimageloader-docs:Catalogue]
 
 
 ## QnA
@@ -169,7 +170,7 @@ are useful with the template.
 
 
 ## Contributing
-Find guide at https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/contributing/index.html
+Find guide at [bioimageloader-docs:Contributing](https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/contributing/index.html)
 
 
 ## Contact
@@ -178,3 +179,12 @@ I am open to any suggestions and discussions. Contact me through github or email
 Seongbin Lim
 - Homepage: https://sbinnee.github.io/
 - Email: seongbin.lim _at_ polytechnique.edu, sungbin246 _at_ gmail.com
+
+<!-- links -->
+[albumentations]: https://albumentations.ai/
+[scikit-learn]:  https://scikit-learn.org/stable/index.html
+[tensorflow]: https://www.tensorflow.org/
+[pytorch]: https://pytorch.org/
+[bioimageloader-docs]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/
+[bioimageloader-docs:Installation]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/installation/index.html
+[bioimageloader-docs:Catalogue]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/catalogue/index.html
