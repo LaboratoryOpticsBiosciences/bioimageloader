@@ -110,12 +110,11 @@ share it with community so that others do not have to suffer.
 
 
 ## Installation
-<!-- Install the latest version from PyPI -->
-_bioimageloader_ requires Python 3.8 or higher. Find more options at [bioimageloader-docs:Installation]
+Install the latest version from PyPI. _bioimageloader_ requires Python 3.8 or higher.
+Find more options at [bioimageloader-docs:Installation]
 
 ```bash
-git clone https://github.com/LaboratoryOpticsBiosciences/bioimageloader.git
-cd bioimageloader && pip install -e .
+pip install bioimageloader
 ```
 
 ## Documentation
