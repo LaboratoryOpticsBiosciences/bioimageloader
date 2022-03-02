@@ -113,43 +113,16 @@ package and share it with community so that others do not have to suffer.
 _bioimageloader_ requires Python 3.8 or higher. Install the latest version from PyPI
 
 ```bash
-git clone https://github.com/sbinnee/bioimageloader
+git clone https://github.com/LaboratoryOpticsBiosciences/bioimageloader.git
 cd bioimageloader && pip install -e .
 ```
 
 ## Documentation
-Full documentation is available at DOCS
+Full documentation is available at https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/
 
 
 ## Available collections
-22 datasets
-
-Checkout link to DOCS:Catalogue
-
-Table
-- BBBC002
-- BBBC006
-- BBBC007
-- BBBC008
-- BBBC013
-- BBBC014
-- BBBC015
-- BBBC016
-- BBBC018
-- BBBC020
-- BBBC021
-- BBBC026
-- BBBC039
-- BBBC041
-- ComputationalPathology
-- DSB2018
-- DigitalPathology
-- FRUNet
-- MurphyLab
-- S_BSST265
-- TNBC
-- UCSB
-
+Go to [bioimageloader-docs:Catalogue](https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/catalogue/index.html)
 
 
 ## QnA
@@ -196,7 +169,7 @@ are useful with the template.
 
 
 ## Contributing
-Find guide at DOCS
+Find guide at https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/contributing/index.html
 
 
 ## Contact
