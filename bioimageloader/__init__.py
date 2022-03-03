@@ -1,6 +1,6 @@
 """Root module of ``bioimageloader``
 
-Expose core classs and functions
+Expose core classes and functions
 """
 
 from .batch import BatchDataloader, ConcatDataset

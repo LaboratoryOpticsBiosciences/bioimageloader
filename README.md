@@ -1,6 +1,11 @@
+
 # bioimageloader
-Load bioimages for machine leaning applications
----
+> _Load bioimages for machine leaning applications_
+
+[[!Python version](https://img.shields.io/pypi/pyversions/bioimageloader)](https://pypi.org/project/bioimageloader/)
+[![PyPI version](https://img.shields.io/pypi/v/bioimageloader)](https://pypi.org/project/bioimageloader/)
+[![License](https://img.shields.io/github/license/LaboratoryOpticsBiosciences/bioimageloader)](https://github.com/LaboratoryOpticsBiosciences/bioimageloader/blob/main/LICENSE)
+
 _bioimageloader_ is a python library to make it easy to load bioimage datasets for
 machine learning and deep learning. Bioimages come in numerous and inhomogeneous forms.
 _bioimageloader_ attempts to wrap them in unified interfaces, so that you can easily
@@ -97,7 +102,7 @@ concatenate, perform image augmentation, and batch-load them.
 
 ## Why _bioimageloader_
 _bioimagesloader_ is a by-product of my thesis. This library collected bioimage datasets
-for machine learning and deep learning. I needed a lot of diverse bioimaes for
+for machine learning and deep learning. I needed a lot of diverse bioimages for
 self-supervised neural networks for my thesis. While I managed to find many great
 datasets, they all came with different folder structures and formats. In addition, I
 encountered many issues to load and process them, which were sometimes technical or just
