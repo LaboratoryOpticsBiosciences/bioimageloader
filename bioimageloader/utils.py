@@ -254,7 +254,7 @@ def expand_to_rgb(
         axis=-1,
     )
     if dtype is not None:
-        return stacked.astype(dtype)
+        return stacked.astype(dtype, copy=False)
     return stacked
 
 

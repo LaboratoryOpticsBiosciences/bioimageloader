@@ -1,6 +1,4 @@
-# Todo
-
-## Todo for the first Alpha Release v0.1.0
+# Todo for the first Alpha Release v0.1.0
 I2K 2022 *“developing open source image analysis platforms/tools”*
 - Abstract til 1st March
 - Event 6-10 May (virtual)
@@ -59,6 +57,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 ### Others
 - [ ]  Migrate repo to LOB account and open to public
 - [ ]  More data
+    - StarDist (subset of DSB2018)
+    - Cellpose
     - https://twitter.com/cmci_/status/1498156970700046337?t=9n2gDTpeM1Oq3JcCOV9QOg
         All 3 are related. Rooted from one and modified somehow?
         1. Romain Guiet. (2022). HeLa "Kyoto" cells under the scope (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6139958

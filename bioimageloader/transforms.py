@@ -2,7 +2,7 @@
 
 """
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import albumentations
 import cv2
@@ -318,10 +318,10 @@ class ChannelReorder(albumentations.ImageOnlyTransform):
 
     """
     def __init__(
-            self,
-            order: Tuple[int, int, int],
-            always_apply: bool = False,
-            p: float = 1.0,
+        self,
+        order: Tuple[int, int, int],
+        always_apply: bool = False,
+        p: float = 1.0,
     ):
         super().__init__(always_apply=always_apply, p=p)
         self.order = order
@@ -332,4 +332,106 @@ class ChannelReorder(albumentations.ImageOnlyTransform):
     def get_transform_init_args_names(self):
         return (
             'order',
+        )
+
+
+class NormalizePercentile(albumentations.ImageOnlyTransform):
+    """Normalize using percentile
+
+    Compute q-th percentile min- and max-values from given image array and
+    normalize.
+
+    Use ``numpy.percentile()`` [1]_
+
+    Expect images with 3 channels. Reorder and make it continuous in 'C' order.
+
+    Parameters
+    ----------
+    qmin : float, default: 0.0
+        Lower bound quantile in range of [0, 100)
+    qmax : float, default: 99.8
+        Upper bound quantile in range of (0, 100]
+    per_channel : bool, default: False
+        Whether to calculate percentile per channel or not
+    clip : bool, default: False
+        Whether to clip in [0, 1] or not. Read more in Returns section.
+    order : tuple of three integers
+        Reorder by indexing
+    always_apply : bool, default: False
+    p : float, default: 1.0
+        Value between [0.0, 1.0]
+
+    Returns
+    -------
+    img_norm
+        Normalized image in float32 in range of [0.0, 1.0] if ``clip`` set to
+        True, else its value overflows lower beyond 0.0 and higher beyond 1.0.
+
+    See Also
+    --------
+    albumentations.ImageOnlyTransform : super class
+    albumentations.augmentations.transforms.ChannelShuffle : random shuffling
+
+    References
+    ----------
+    .. [1] https://numpy.org/doc/stable/reference/generated/numpy.percentile.html
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from bioimageloader.transforms import ChannelReorder
+
+    >>> arr = np.arange(12).reshape((2, 2, 3))
+    >>> print(arr)
+    [[[ 0  1  2]
+      [ 3  4  5]]
+     [[ 6  7  8]
+      [ 9 10 11]]]
+
+    >>> reorder = ChannelReorder((2, 1, 0))
+    >>> arr_reordered = reorder.apply(arr)
+    >>> print(arr_reordered)
+    [[[ 2  1  0]
+      [ 5  4  3]]
+     [[ 8  7  6]
+      [11 10  9]]]
+
+    """
+    def __init__(
+        self,
+        qmin: float = 0.0,
+        qmax: float = 99.8,
+        per_channel: bool = False,
+        clip: bool = False,
+        always_apply: bool = False,
+        p: float = 1.0,
+    ):
+        super().__init__(always_apply=always_apply, p=p)
+        self.qmin = qmin
+        self.qmax = qmax
+        self.per_channel = per_channel
+        self._per_channel = (0, 1) if per_channel else None
+        self.clip = clip
+
+    def apply(self, img, **params):
+        if self.qmin == 0:
+            vmin = 0.0
+            vmax = np.percentile(img, self.qmax,
+                                 axis=self._per_channel, keepdims=True)
+        else:
+            v = np.percentile(img, (self.qmin, self.qmax),
+                              axis=self._per_channel, keepdims=True)
+            vmin = v[0]
+            vmax = v[1]
+        img = (img - vmin) / (vmax - vmin)
+        if self.clip:
+            img = np.clip(img, 0, 1)
+        return img.astype(np.float32)
+
+    def get_transform_init_args_names(self):
+        return (
+            'qmin',
+            'qmax',
+            'per_channel',
+            'clip',
         )

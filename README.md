@@ -14,8 +14,8 @@ concatenate, perform image augmentation, and batch-load them.
 **_bioimageloader_ provides**
 
 1. collections of interfaces for popular and public bioimage datasets
-2. [albumentations], which is the most popular and powerful
-   image augmentation library, as a image augmentation library
+2. image augmentation using [albumentations], which is the most popular and powerful
+   image augmentation library (for 2D images) at the time of writing.
 3. compatibility with [scikit-learn], [tensorflow], and [pytorch]
 
 
@@ -34,6 +34,8 @@ concatenate, perform image augmentation, and batch-load them.
 - [Contact](#contact)
 
 ## Quick overview
+Find full guides at [bioimageloader-docs:User Guides]
+
 1. Load a single dataset
 
     Load and iterate [_2018 Data Science Bowl_](https://www.kaggle.com/c/data-science-bowl-2018/)
@@ -96,7 +98,7 @@ concatenate, perform image augmentation, and batch-load them.
 
 - a full pipeline for ML/DL
 - a hub to bioimage datasets (if it ever becomes one, it would be awesome though)
-- transform or modify the original source
+- overwrite the source data
 - does not provide direct links for downloading data
 
 
@@ -109,9 +111,10 @@ encountered many issues to load and process them, which were sometimes technical
 rooted from the nature of bioimages. For instances of technical issues, some datasets
 were missing one or two pairs of image and annotation, had broken files, had very
 specific file formats that cannot be easily read in python, or provided mask annotation
-not in image format but in .xml format. It was rather pain to deal with all these edge
-cases one by one. But anyway I did it and I thought it would be valuable to package and
-share it with community so that others do not have to suffer.
+not in image format but in .xml format. It was rather painful to deal with all these
+edge cases one by one. But anyway I did it and I thought it would be valuable to package
+and share it with community even though the number of datasets is small for the moment,
+so that others do not have to suffer.
 
 
 ## Installation
@@ -132,12 +135,13 @@ Go to [bioimageloader-docs:Catalogue]
 
 ## QnA
 ### Why no direct download link to each dataset?
-_bioimageloader_ provides only codes (interfaces) to load data but not data itself.
-It comes down to the license issue, since some bioimages may have a complicated
-procedure to get, for example reading and agreeing with terms. You still can find
-links to their project pages or papers, and you need to find a way to get the data
-following their instruction. Once you downloaded a dataset and unzipped it, (if it
-is supported by _bioimageloader_) you simply pass its root directory as the first
+_bioimageloader_ provides only codes (interfaces) to load data but not data itself. We
+believe that it is important for you to go there, read papers, understand terms and
+licenses before using their works to appreciate their works, because bioimages
+themselves are results of paramount time, efforts, and resources. You still can find
+links to their project pages or papers at [bioimageloader-docs:Catalogue], and you need
+follow their instruction to get data. Once you downloaded a dataset and unzipped it, (if
+it is supported by _bioimageloader_) you simply pass its root directory as the first
 argument to corresponding class from collections `bioimageloader.collections`.
 
 ### Dataset that I want is not in the supported list
@@ -154,13 +158,14 @@ can help.
 
 ### Don't know how to write my own dataloader.
 Writing a dataloader requires a bit of Python skills. No easy way. Please read
-templates carefully and see how others are implemented. File an issue, and I am
+[templates] carefully and see how others are implemented. File an [issue], and I am
 willing to help.
 
 
 ### How to run a ML/DL model?
 _bioimageloader_ only helps loading images/annotations, not running ML/DL
-models. Check out [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic).
+models. Still you may find simple examples from [bioimageloader-docs:User Guides].
+Also check out [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic).
 
 
 ### I want more granular control over datasets individually
@@ -169,12 +174,11 @@ and it was true for my work as well. Good news is that _bioimageloader_ suggests
 template that you can extend from and make a subclass in your liking. Bad news is
 that you need to know how to make a subclass in Python (not so bad I hope. I suppose
 that you may have knowledge of Python, if you want to develop ML/DL in Python
-anyway). I included some examples of subclassing for my use case. I hope that they
-are useful with the template.
+anyway). This guide [Modifying existing collections] covers it.
 
 
 ## Contributing
-Find guide at [bioimageloader-docs:Contributing](https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/contributing/index.html)
+Find guide at [bioimageloader-docs:Contributing]
 
 
 ## Contact
@@ -192,3 +196,8 @@ Seongbin Lim
 [bioimageloader-docs]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/
 [bioimageloader-docs:Installation]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/installation/index.html
 [bioimageloader-docs:Catalogue]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/catalogue/index.html
+[bioimageloader-docs:User Guides]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/user_guides/index.html
+[templates]:  https://github.com/LaboratoryOpticsBiosciences/bioimageloader/blob/main/bioimageloader/template.py
+[issue]: https://github.com/LaboratoryOpticsBiosciences/bioimageloader/issues
+[Modifying existing collections]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/user_guides/more2_subclassing.html
+[bioimageloader-docs:Contributing]: https://laboratoryopticsbiosciences.github.io/bioimageloader-docs/contributing/index.html
