@@ -2,7 +2,7 @@
 # bioimageloader
 > _Load bioimages for machine leaning applications_
 
-[[!Python version](https://img.shields.io/pypi/pyversions/bioimageloader)](https://pypi.org/project/bioimageloader/)
+[![Python version](https://img.shields.io/pypi/pyversions/bioimageloader)](https://pypi.org/project/bioimageloader/)
 [![PyPI version](https://img.shields.io/pypi/v/bioimageloader)](https://pypi.org/project/bioimageloader/)
 [![License](https://img.shields.io/github/license/LaboratoryOpticsBiosciences/bioimageloader)](https://github.com/LaboratoryOpticsBiosciences/bioimageloader/blob/main/LICENSE)
 
@@ -14,8 +14,8 @@ concatenate, perform image augmentation, and batch-load them.
 **_bioimageloader_ provides**
 
 1. collections of interfaces for popular and public bioimage datasets
-2. image augmentation using [albumentations], which is the most popular and powerful
-   image augmentation library (for 2D images) at the time of writing.
+2. image augmentation using [albumentations], which is popular and powerful
+   image augmentation library (for 2D images)
 3. compatibility with [scikit-learn], [tensorflow], and [pytorch]
 
 
@@ -99,7 +99,7 @@ Find full guides at [bioimageloader-docs:User Guides]
 - a full pipeline for ML/DL
 - a hub to bioimage datasets (if it ever becomes one, it would be awesome though)
 - overwrite the source data
-- does not provide direct links for downloading data
+- does not provide one-click links for downloading data
 
 
 ## Why _bioimageloader_
@@ -137,7 +137,7 @@ Go to [bioimageloader-docs:Catalogue]
 ### Why no direct download link to each dataset?
 _bioimageloader_ provides only codes (interfaces) to load data but not data itself. We
 believe that it is important for you to go there, read papers, understand terms and
-licenses before using their works to appreciate their works, because bioimages
+licenses before using their works to **appreciate their works**, because bioimages
 themselves are results of paramount time, efforts, and resources. You still can find
 links to their project pages or papers at [bioimageloader-docs:Catalogue], and you need
 follow their instruction to get data. Once you downloaded a dataset and unzipped it, (if
@@ -164,7 +164,7 @@ willing to help.
 
 ### How to run a ML/DL model?
 _bioimageloader_ only helps loading images/annotations, not running ML/DL
-models. Still you may find simple examples from [bioimageloader-docs:User Guides].
+models. Still, you may find some examples useful at [bioimageloader-docs:User Guides].
 Also check out [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic).
 
 
@@ -182,7 +182,8 @@ Find guide at [bioimageloader-docs:Contributing]
 
 
 ## Contact
-I am open to any suggestions and discussions. Contact me through github or email.
+I am open to any feedbacks, suggestions, and discussions. Reach out to me by github or
+email.
 
 Seongbin Lim
 - Homepage: https://sbinnee.github.io/
