@@ -12,7 +12,7 @@ from ..utils import imread_asarray, rle_decoding_inseg, read_csv, ordered_unique
 
 
 class DSB2018(MaskDataset):
-    """Data Science Bowl 2018 [1]_
+    """Data Science Bowl 2018 [1]_ also known as BBBC038 [2]_
 
     Find the nuclei in divergent images to advance medical discovery
 
@@ -40,6 +40,7 @@ class DSB2018(MaskDataset):
     References
     ----------
     .. [1] https://www.kaggle.com/c/data-science-bowl-2018/
+    .. [2] https://bbbc.broadinstitute.org/BBBC038/
 
     See Also
     --------

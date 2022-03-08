@@ -5,7 +5,12 @@ from typing import Dict, List, Optional
 
 import albumentations
 import numpy as np
-from gimpformats.gimpXcfDocument import GimpDocument
+try:
+    from gimpformats.gimpXcfDocument import GimpDocument
+except ModuleNotFoundError as e:
+    print("Install `gimpformats` pkg")
+    raise e
+
 from PIL import Image
 
 from ..base import MaskDataset

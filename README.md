@@ -144,7 +144,7 @@ follow their instruction to get data. Once you downloaded a dataset and unzipped
 it is supported by _bioimageloader_) you simply pass its root directory as the first
 argument to corresponding class from collections `bioimageloader.collections`.
 
-### Dataset that I want is not in the supported list
+### Dataset that I want is not in the [bioimageloader-docs:Catalogue]
 First of all, I named each dataset class rather arbitrary. Try to find the
 dataset you want with authors' names or with other keywords (if it has any), and
 you may find it having an unexpected name. If it is the case, I apologize for
