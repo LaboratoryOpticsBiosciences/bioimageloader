@@ -138,12 +138,12 @@ Go to [bioimageloader-docs:Catalogue]
 ### Why no direct download link to each dataset?
 _bioimageloader_ provides only codes (interfaces) to load data but not data itself. We
 believe that it is important for you to go there, read papers, understand terms and
-licenses before using their works to **appreciate their works**, because bioimages
-themselves are results of paramount time, efforts, and resources. You still can find
-links to their project pages or papers at [bioimageloader-docs:Catalogue], and you need
-follow their instruction to get data. Once you downloaded a dataset and unzipped it, (if
-it is supported by _bioimageloader_) you simply pass its root directory as the first
-argument to corresponding class from collections `bioimageloader.collections`.
+licenses to **appreciate their works**, because bioimages themselves are sciences and
+results of time, efforts, and resources. You still can find links to their project pages
+or papers at [bioimageloader-docs:Catalogue], and you need to follow their instruction
+to get data. Once you downloaded a dataset and unzipped it, (if it is supported by
+_bioimageloader_) you simply pass its root directory as the first argument to
+corresponding class from collections `bioimageloader.collections`.
 
 ### Dataset that I want is not in the [bioimageloader-docs:Catalogue]
 First of all, I named each dataset class rather arbitrary. Try to find the
