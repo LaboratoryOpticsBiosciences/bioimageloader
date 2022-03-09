@@ -151,10 +151,9 @@ dataset you want with authors' names or with other keywords (if it has any), and
 you may find it having an unexpected name. If it is the case, I apologize for
 bad names.
 
-If you still cannot find it. Then you have two options: either you do it
-yourself following the guideline (we have examples in documentation, please check them
-out and please consider contributing!) or you can file an issue so that the community
-can help.
+If you still cannot find it, then you have two options: either you do it yourself (see
+below question and please consider contributing!), or you can file an issue so that the
+community can help.
 
 
 ### Don't know how to write my own dataloader.

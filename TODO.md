@@ -53,6 +53,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  consistent `root_dir`. Now it is a mess. We want something described in the
   `docs/user_guides/basic0_prepare_datasets.rst`.
 - [x]  substitute `num_calls` with `num_samples`? (I think samples sound right)
+- [ ]  FRUNet `normalize`, better way? correct way?
 - [ ]  number of images, including test sets
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 

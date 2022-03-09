@@ -1,0 +1,140 @@
+# All collections with their arguments set to default values
+# It assumes that all datasets reside under ../Data
+# Argument `transforms` does not belong in config. You should pass it to
+# `Config.load_datasets()` method.
+DSB2018:
+  root_dir: ../Data/DSB2018
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: cv2
+  training: true
+ComputationalPathology:
+  root_dir: ../Data/ComputationalPathology
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: cv2
+  mask_tif: false
+FRUNet:
+  root_dir: ../Data/FRU_processing
+  output: both
+  num_samples: null
+  normalize: true
+S_BSST265:
+  root_dir: ../Data/BioStudies
+  output: both
+  num_samples: null
+BBBC006:
+  root_dir: ../Data/bbbc/006/
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  uint8: true
+  z_ind: 16
+BBBC020:
+  root_dir: ../Data/bbbc/020
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  anno_ch: [nuclei, ]
+  drop_missing_pairs: true
+BBBC039:
+  root_dir: ../Data/bbbc/039
+  output: both
+  num_samples: null
+  training: true
+TNBC:
+  root_dir: ../Data/TNBC_NucleiSegmentation
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+BBBC008:
+  root_dir: ../Data/bbbc/008
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [DNA, actin]
+  anno_ch: [DNA, ]
+MurphyLab:
+  root_dir: ../Data/2009_ISBI_2DNuclei_code_data
+  output: both
+  num_samples: null
+  drop_missing_pairs: true
+  drop_broken_files: true
+  filled_mask: false
+BBBC007:
+  root_dir: ../Data/bbbc/007
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [DNA, actin]
+  anno_ch: [DNA, ]
+BBBC018:
+  root_dir: ../Data/bbbc/018
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  anno_ch: [DNA, ]
+  drop_missing_pairs: true
+DigitalPathology:
+  root_dir: ../Data/DigitalPathology
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: cv2
+UCSB:
+  root_dir: ../Data/UCSB_BioSegmentation
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: cv2
+  category: [malignant, ]
+BBBC002:
+  root_dir: ../Data/bbbc/002
+  num_samples: null
+BBBC013:
+  root_dir: ../Data/bbbc/013
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [GFP, DNA]
+BBBC014:
+  root_dir: ../Data/bbbc/014
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [DAPI, FITC]
+BBBC015:
+  root_dir: ../Data/bbbc/015
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [b2AR, arrestin]
+BBBC016:
+  root_dir: ../Data/bbbc/016
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [GFP, DNA]
+BBBC026:
+  root_dir: ../Data/bbbc/026
+  num_samples: null
+BBBC041:
+  root_dir: ../Data/bbbc/041/malaria
+  num_samples: null
+  grayscale: false
+  grayscale_mode: cv2
+  training: true
+BBBC021:
+  root_dir: ../Data/bbbc/021
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  image_ch: [DNA, actin, tublin]
