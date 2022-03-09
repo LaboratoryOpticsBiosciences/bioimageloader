@@ -1,4 +1,6 @@
-from typing import List, Optional, Union, Dict
+import os.path
+from functools import cached_property
+from typing import Dict, List, Optional, Union
 
 import albumentations
 import yaml
@@ -54,6 +56,27 @@ class Config(dict):
             else:
                 exec(f'datasets.append({dataset}(transforms=transforms, **kwargs))')
         return datasets
+
+    @cached_property
+    def commonpath(self):
+        commonpath = os.path.commonpath([
+            p for p in map(lambda x: x['root_dir'], self.values())
+        ])
+        return commonpath
+
+    def replace_commonpath(self, new: str):
+        """Replace common path for all ``root_dir`` with a new one
+
+        All ``root_dir`` should have a commonpath. Do not put trailing '/' at
+        the end.
+
+        You made a config with root_dir being relative path. You do not need to
+        replace them manually with this method.
+        """
+        for k in self.keys():
+            p = self[k]['root_dir']
+            self[k]['root_dir'] = p.replace(self.commonpath, new)
+        delattr(self, 'commonpath')
 
 
 class _Config(Config):
