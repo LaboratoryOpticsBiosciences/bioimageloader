@@ -24,7 +24,7 @@ class DigitalPathology(MaskDataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
         sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     grayscale : bool, default: False
@@ -61,7 +61,7 @@ class DigitalPathology(MaskDataset):
         *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         **kwargs
@@ -69,7 +69,7 @@ class DigitalPathology(MaskDataset):
         self._root_dir = os.path.join(root_dir, 'nuclei')
         self._output = output
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
 
@@ -82,8 +82,8 @@ class DigitalPathology(MaskDataset):
         return 255 * mask.astype(np.uint8)
 
     def __len__(self):
-        if self.num_calls:
-            return self.num_calls
+        if self.num_samples:
+            return self.num_samples
         return len(self.file_list)
 
     @cached_property

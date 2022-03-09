@@ -82,7 +82,7 @@ class Dataset(DatasetInterface):
     root_dir
     output
     transforms
-    num_calls
+    num_samples
     grayscale : optional
     grayscale_mode : optional
     num_channels : optional
@@ -106,9 +106,9 @@ class Dataset(DatasetInterface):
         return self.acronym
 
     def __len__(self):
-        """Length of dataset. Can be overwritten with ``num_calls``"""
-        if self.num_calls is not None:
-            return self.num_calls
+        """Length of dataset. Can be overwritten with ``num_samples``"""
+        if self.num_samples is not None:
+            return self.num_samples
         return len(self.file_list)
 
     def __iter__(self):
@@ -136,10 +136,10 @@ class Dataset(DatasetInterface):
         return None
 
     @property
-    def num_calls(self) -> Optional[int]:
+    def num_samples(self) -> Optional[int]:
         """Number of calls that will override __len__"""
-        if hasattr(self, '_num_calls'):
-            return getattr(self, '_num_calls')
+        if hasattr(self, '_num_samples'):
+            return getattr(self, '_num_samples')
         return None
 
     @property
@@ -189,15 +189,15 @@ class Dataset(DatasetInterface):
         Other Parameters
         ----------------
         self._transforms
-        self._num_calls
+        self._num_samples
         self._grayscale
         self._grayscale_mode
         self._num_channels
 
         """
-        # Randomize `ind` when `num_calls` set
-        if self.num_calls is not None:
-            if ind >= self.num_calls:
+        # Randomize `ind` when `num_samples` set
+        if self.num_samples is not None:
+            if ind >= self.num_samples:
                 raise IndexError('list index out of range')
             ind_max = len(self.file_list)
             ind = random.randrange(0, ind_max)
@@ -342,15 +342,15 @@ class MaskDataset(Dataset):
         Other Parameters
         ----------------
         self._transforms
-        self._num_calls
+        self._num_samples
         self._grayscale
         self._grayscale_mode
         self._num_channels
 
         """
-        # Randomize `ind` when `num_calls` set
-        if self.num_calls is not None:
-            if ind >= self.num_calls:
+        # Randomize `ind` when `num_samples` set
+        if self.num_samples is not None:
+            if ind >= self.num_samples:
                 raise IndexError('list index out of range')
             ind_max = len(self.file_list)
             if (self.output != 'image') and (self.anno_dict is not None):

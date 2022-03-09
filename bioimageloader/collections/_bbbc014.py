@@ -32,7 +32,7 @@ class BBBC014(Dataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
         sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     grayscale : bool, default: False
@@ -71,7 +71,7 @@ class BBBC014(Dataset):
         root_dir: str,
         *,
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
@@ -80,7 +80,7 @@ class BBBC014(Dataset):
     ):
         self._root_dir = root_dir
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         # specific to this dataset

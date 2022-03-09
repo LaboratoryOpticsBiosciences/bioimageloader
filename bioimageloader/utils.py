@@ -263,7 +263,7 @@ def get_dataset_from_directory(
     *,
     output: Optional[str] = None,
     transforms: Optional[albumentations.Compose] = None,
-    num_calls: Optional[int] = None,
+    num_samples: Optional[int] = None,
     grayscale: Optional[bool] = None,
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
 ) -> Dataset:
@@ -324,7 +324,7 @@ def get_dataset_from_directory(
         root_dir=root_dir,
         output=output,
         transforms=transforms,
-        num_calls=num_calls,
+        num_samples=num_samples,
         grayscale=grayscale,
         grayscale_mode=grayscale_mode,
     )
@@ -338,7 +338,7 @@ def get_maskdataset_from_directory(
     label_dir: Optional[str] = None,
     output: Optional[str] = None,
     transforms: Optional[albumentations.Compose] = None,
-    num_calls: Optional[int] = None,
+    num_samples: Optional[int] = None,
     grayscale: Optional[bool] = None,
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
 ) -> MaskDataset:
@@ -401,7 +401,7 @@ def get_maskdataset_from_directory(
         root_dir=root_dir,
         output=output,
         transforms=transforms,
-        num_calls=num_calls,
+        num_samples=num_samples,
         grayscale=grayscale,
         grayscale_mode=grayscale_mode,
     )

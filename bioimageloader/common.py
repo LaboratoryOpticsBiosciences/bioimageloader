@@ -76,7 +76,7 @@ class CommonDataset(Dataset):
     root_dir
     output : optional
     transforms : optional
-    num_calls : optional
+    num_samples : optional
     grayscale : optional
     grayscale_mode : optional
     num_channels : optional
@@ -107,7 +107,7 @@ class CommonDataset(Dataset):
         *,
         output: Optional[str] = None,
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: Optional[bool] = None,
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         **kwargs
@@ -117,7 +117,7 @@ class CommonDataset(Dataset):
         # keywords
         self._setattr_ifvalue('_output', output)
         self._setattr_ifvalue('_transforms', transforms)
-        self._setattr_ifvalue('_num_calls', num_calls)
+        self._setattr_ifvalue('_num_samples', num_samples)
         self._setattr_ifvalue('_grayscale', grayscale)
         self._setattr_ifvalue('_grayscale_mode', grayscale_mode)
         # count # of instances
@@ -155,7 +155,7 @@ class CommonMaskDataset(CommonDataset, MaskDataset):
     root_dir
     output : optional
     transforms : optional
-    num_calls : optional
+    num_samples : optional
     grayscale : optional
     grayscale_mode : optional
     num_channels : optional
@@ -188,7 +188,7 @@ class CommonMaskDataset(CommonDataset, MaskDataset):
         *,
         output: Optional[str] = None,
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: Optional[bool] = None,
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
         **kwargs
@@ -197,7 +197,7 @@ class CommonMaskDataset(CommonDataset, MaskDataset):
             root_dir=root_dir,
             output=output,
             transforms=transforms,
-            num_calls=num_calls,
+            num_samples=num_samples,
             grayscale=grayscale,
             grayscale_mode=grayscale_mode,
             **kwargs

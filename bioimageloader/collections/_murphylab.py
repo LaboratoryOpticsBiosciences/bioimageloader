@@ -29,7 +29,7 @@ class MurphyLab(MaskDataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines
         augmentation in sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     drop_missing_pairs : bool, default: True
@@ -100,7 +100,7 @@ class MurphyLab(MaskDataset):
         *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         # Specific to this dataset
         drop_missing_pairs: bool = True,
         drop_broken_files: bool = True,
@@ -111,7 +111,7 @@ class MurphyLab(MaskDataset):
         self._root_dir = os.path.join(root_dir, 'data', 'images')
         self._output = output
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         # Specific to this dataset
         self.drop_missing_pairs = drop_missing_pairs
         self.drop_broken_files = drop_broken_files

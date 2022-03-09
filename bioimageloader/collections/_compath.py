@@ -25,7 +25,7 @@ class ComputationalPathology(MaskDataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
         sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ```transforms``` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     grayscale : bool, default: False
@@ -49,8 +49,8 @@ class ComputationalPathology(MaskDataset):
       long time to parse and to reconstruct mask images dynamically during
       training. Drawing masks beforehand makes training much faster. Use
       ``mask_tif`` in that case.
-    - When ``augmenters`` is provided, set the ``num_calls`` argument
-      30x1000x1000 -> 16x30=480 patches. Thus, the default ``num_calls=720``
+    - When ``augmenters`` is provided, set the ``num_samples`` argument
+      30x1000x1000 -> 16x30=480 patches. Thus, the default ``num_samples=720``
       (x1.5)
     - dtype of 'gt' is int16. However, to make batching easier, it will be
       casted to float32
@@ -81,7 +81,7 @@ class ComputationalPathology(MaskDataset):
         *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         # specific to this dataset
@@ -91,7 +91,7 @@ class ComputationalPathology(MaskDataset):
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         # specific to this dataset

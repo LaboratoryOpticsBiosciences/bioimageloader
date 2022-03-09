@@ -25,7 +25,7 @@ class FRUNet(MaskDataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines augmentation in
         sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     normalize : bool, default: True
@@ -62,7 +62,7 @@ class FRUNet(MaskDataset):
         *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         # specific to this dataset
         normalize: bool = True,
         **kwargs
@@ -70,7 +70,7 @@ class FRUNet(MaskDataset):
         self._root_dir = os.path.join(root_dir, 'code', 'data')
         self._output = output
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         # specific to this dataset
         self.normalize = normalize
 

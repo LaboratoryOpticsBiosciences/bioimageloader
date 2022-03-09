@@ -22,7 +22,7 @@ class UCSB(MaskDataset):
     transforms : albumentations.Compose, optional
         An instance of Compose (albumentations pkg) that defines
         augmentation in sequence.
-    num_calls : int, optional
+    num_samples : int, optional
         Useful when ``transforms`` is set. Define the total length of the
         dataset. If it is set, it overwrites ``__len__``.
     grayscale : bool, default: False
@@ -43,7 +43,7 @@ class UCSB(MaskDataset):
     Notes
     -----
     - 32 'benign', 26 'malignant' images (58 images in total)
-    - 58x768x896 -> ~600 patches. Thus, the defulat `num_calls=900` (x1.5).
+    - 58x768x896 -> ~600 patches. Thus, the defulat `num_samples=900` (x1.5).
     - Images are not fully annotated
 
     References
@@ -62,7 +62,7 @@ class UCSB(MaskDataset):
         *,
         output: str = 'both',
         transforms: Optional[albumentations.Compose] = None,
-        num_calls: Optional[int] = None,
+        num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',
         # specific to this dataset
@@ -72,7 +72,7 @@ class UCSB(MaskDataset):
         self._root_dir = root_dir
         self._output = output
         self._transforms = transforms
-        self._num_calls = num_calls
+        self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         # specific to this dataset
