@@ -23,14 +23,15 @@ class HWCToCHW(albumentations.ImageOnlyTransform):
     Examples
     --------
     >>> import albumentations as A
-    >>> from bioimageloader import Config, datasets_from_config
+    >>> from bioimageloader import Config
 
     >>> cfg = Config('config.yml')
     >>> transforms = A.Compose([
             HWCToCHW(),
         ])
-    >>> dataset = datasets_from_config(cfg, transforms=transforms)
-    >>> data = dataset[0]
+    >>> datasets = cfg.load_datasets(transforms=transforms)
+    >>> dset = datasets[0]  # select only the first dataset
+    >>> data = dset[0]  # select only the first image
     >>> print(data['image'].shape)
     (3, H, W)
 
@@ -68,15 +69,16 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
     Examples
     --------
     >>> import albumentations as A
-    >>> from bioimageloader import Config, datasets_from_config
+    >>> from bioimageloader import Config
 
     >>> cfg = Config('config.yml')
     >>> transforms = A.Compose([
             HWCToCHW(),
             SqueezeGrayImageCHW(),
         ])
-    >>> dataset = datasets_from_config(cfg, transforms=transforms)
-    >>> data = dataset[0]
+    >>> datasets = cfg.load_datasets(transforms=transforms)
+    >>> dset = datasets[0]  # select only the first dataset
+    >>> data = dset[0]  # select only the first image
     >>> print(data['image'].shape)
     (1, H, W)
 
@@ -87,8 +89,9 @@ class SqueezeGrayImageCHW(albumentations.ImageOnlyTransform):
             HWCToCHW(),
             SqueezeGrayImageCHW(keep_dim=False),  # drop channel axis
         ])
-    >>> dataset = datasets_from_config(cfg, transforms=transforms)
-    >>> data = dataset[0]
+    >>> datasets = cfg.load_datasets(transforms=transforms)
+    >>> dset = datasets[0]  # select only the first dataset
+    >>> data = dset[0]  # select only the first image
     >>> print(data['image'].shape)
     (H, W)
 
@@ -139,14 +142,15 @@ class SqueezeGrayImageHWC(albumentations.ImageOnlyTransform):
     Examples
     --------
     >>> import albumentations as A
-    >>> from bioimageloader import Config, datasets_from_config
+    >>> from bioimageloader import Config
 
     >>> cfg = Config('config.yml')
     >>> transforms = A.Compose([
             SqueezeGrayImageHWC(),
         ])
-    >>> dataset = datasets_from_config(cfg, transforms=transforms)
-    >>> data = dataset[0]
+    >>> datasets = cfg.load_datasets(transforms=transforms)
+    >>> dset = datasets[0]  # select only the first dataset
+    >>> data = dset[0]  # select only the first image
     >>> print(data['image'].shape)
     (H, W)
 

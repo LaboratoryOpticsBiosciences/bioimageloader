@@ -60,7 +60,7 @@ Find full guides at [bioimageloader-docs:User Guides]
     Load DSB2018 and [_Triple Negative Breast Cancer (TNBC)_](https://ieeexplore.ieee.org/document/8438559)
 
     ```python
-    from bioimageloader import datasets_from_config, ConcatDataset
+    from bioimageloader import Config, ConcatDataset
     from bioimageloader.collections import DSB2018, TNBC
     import albumentations as A
 
@@ -73,7 +73,8 @@ Find full guides at [bioimageloader-docs:User Guides]
         'DSB2018': { 'root_dir': 'path/to/root_dir' },
         'TNBC'   : { 'root_dir': 'path/to/root_dir' },
     }
-    datasets = datasets_from_config(cfg, transforms=transforms)
+    config = Config.from_dict(cfg)
+    datasets = config.load_datasets(transforms=transforms)
     cat = ConcatDataset(datasets)
     for meow in cat:
         image = meow['image']
