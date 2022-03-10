@@ -6,7 +6,7 @@
 import os.path
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union, Any
+from typing import Dict, List, Optional
 
 import albumentations
 import cv2
@@ -14,8 +14,6 @@ import numpy as np
 import tifffile
 
 from ..base import MaskDataset
-from ..types import BundledPath
-from ..utils import imread_asarray, rle_decoding_inseg, read_csv, ordered_unique
 
 
 class StarDist(MaskDataset):
