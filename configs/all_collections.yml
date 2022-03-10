@@ -9,6 +9,11 @@ DSB2018:
   grayscale: false
   grayscale_mode: cv2
   training: true
+StarDist:
+  root_dir: ../Data/stardist
+  output: both
+  num_samples: null
+  training: true
 ComputationalPathology:
   root_dir: ../Data/ComputationalPathology
   output: both

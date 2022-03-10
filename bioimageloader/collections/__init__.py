@@ -6,6 +6,7 @@
 #   full anno
 #     instance
 from ._dsb2018 import DSB2018
+from ._stardist import StarDist
 from ._compath import ComputationalPathology
 from ._frunet import FRUNet
 from ._s_bsst265 import S_BSST265
@@ -57,6 +58,7 @@ __all__ = [
     'FRUNet',
     'MurphyLab',
     'S_BSST265',
+    'StarDist',
     'TNBC',
     'UCSB',
 ]

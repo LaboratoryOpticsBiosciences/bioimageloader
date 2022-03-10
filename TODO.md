@@ -58,7 +58,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 
 ### Others
-- [ ]  Migrate repo to LOB account and open to public
+- [x]  Migrate repo to LOB account and open to public
+- [x]  DatasetList: List[Dataset]
+        to do batch processing, such as `foreach_sample_by_indices`
 - [ ]  More data
     - StarDist (subset of DSB2018)
     - Cellpose

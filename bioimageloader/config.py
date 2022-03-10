@@ -1,4 +1,5 @@
 import os.path
+import warnings
 from functools import cached_property
 from typing import Dict, List, Optional, Union
 
@@ -7,6 +8,7 @@ import yaml
 
 from .base import Dataset
 from .collections import *
+from .types import DatasetList
 
 
 class Config(dict):
@@ -35,7 +37,7 @@ class Config(dict):
     def load_datasets(
         self,
         transforms: Optional[Union[albumentations.Compose, Dict[str, albumentations.Compose]]] = None,
-    ) -> List[Dataset]:
+    ) -> DatasetList:
         """Load multiple datasets from a yaml file
 
         Parameters
@@ -55,7 +57,7 @@ class Config(dict):
                 exec(f'datasets.append({dataset}(transforms=transforms[dataset], **kwargs))')
             else:
                 exec(f'datasets.append({dataset}(transforms=transforms, **kwargs))')
-        return datasets
+        return DatasetList(datasets)
 
     @cached_property
     def commonpath(self):
@@ -75,8 +77,32 @@ class Config(dict):
         """
         for k in self.keys():
             p = self[k]['root_dir']
-            self[k]['root_dir'] = p.replace(self.commonpath, new)
+            self[k]['root_dir'] = p.replace(self.commonpath, new.rstrip('/'))
         delattr(self, 'commonpath')
+
+    def set_training(self, val: bool):
+        """Iterate config and set all ``training`` to given value
+
+        It only affects those that have ``training`` kwarg.
+
+        """
+        attr = 'training'
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        for k in self.keys():
+            if attr in self[k]:
+                self[k][attr] = val
+
+    def set_ouput(self, val: str):
+        """Iterate config and set all ``output`` to given value
+
+        It only affects those that have ``output`` kwarg.
+
+        """
+        attr = 'output'
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        for k in self.keys():
+            if attr in self[k]:
+                self[k][attr] = val
 
 
 class _Config(Config):
