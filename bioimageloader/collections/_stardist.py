@@ -17,7 +17,9 @@ from ..base import MaskDataset
 
 
 class StarDist(MaskDataset):
-    """Training set for StarDist [1]_, [2]_
+    """Dataset for StarDist [1]_, [2]_
+
+    Cell Detection with Star-convex Polygons
 
     StarDist data is a subset of Data Science Bowl 2018 [3]_
 
@@ -38,13 +40,16 @@ class StarDist(MaskDataset):
 
     Notes
     -----
+    - StarDist data is a subset of Data Science Bowl 2018 [3]_
     - ``root_dir`` is not 'dsb2018' even though the archive name is 'dsb2018',
       because it conflicts with the original DSB2018. Make a new directory.
     - All images have grayscale
 
     References
     ----------
-    .. [1] https://arxiv.org/abs/1806.03535
+    .. [1] U. Schmidt, M. Weigert, C. Broaddus, and G. Myers, “Cell Detection
+       with Star-convex Polygons,” arXiv:1806.03535 [cs], vol. 11071, pp.
+       265–273, 2018, doi: 10.1007/978-3-030-00934-2_30.
     .. [2] https://github.com/stardist/stardist/releases/download/0.1.0/dsb2018.zip
     .. [3] https://www.kaggle.com/c/data-science-bowl-2018/
 

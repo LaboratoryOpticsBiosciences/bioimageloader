@@ -29,7 +29,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  re-ordering channels
         np.ascontiguousarray, 'C' order, arr[..., (2, 1, 0)]
 - [x]  random sampling, shuffle in BatchDataLoader
-- [ ]  `indices` to index in hard-coded way for those that have no training/test split
+- [x]  `DatasetList`
+        - [ ]  Where to put? types.py is not a good place...
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts
 
@@ -59,8 +60,13 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 
 ### Others
 - [x]  Migrate repo to LOB account and open to public
-- [x]  DatasetList: List[Dataset]
-        to do batch processing, such as `foreach_sample_by_indices`
+- [ ]  DatasetList: List[Dataset]
+        - [x]  to do batch processing, such as `foreach_sample_by_indices`
+        - [ ]  Where to put? `types.py` is not a good place
+- [ ]  Normalization `normalize` and `normalize_mode`?
+- [ ]  `grayscale_mode`: list[float]
+    Important one. Images with 2 channels using `grayscale_mode=eqaul` should be fixed
+    by list[float].
 - [ ]  More data
     - StarDist (subset of DSB2018)
     - Cellpose
@@ -69,6 +75,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
         1. Romain Guiet. (2022). HeLa "Kyoto" cells under the scope (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6139958
         2. Romain Guiet, & Olivier Burri. (2022). Cellpose models for Label Prediction from Brightfield and Digital Phase Contrast images (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6140111
         3. Romain Guiet. (2022). Automatic labelling of HeLa "Kyoto" cells using Deep Learning tools (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6140064
+    - CellImageLibrary http://www.cellimagelibrary.org/images/CCDB_6843
+        Included in Cellpose dataset, cytoplasmic (phalloidin) and nuclear stains (DAPI)
     - CRCHisto
     - CEM500K
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)

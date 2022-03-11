@@ -51,6 +51,15 @@ BBBC039:
   output: both
   num_samples: null
   training: true
+Cellpose:
+  root_dir: ../Data/cellpose
+  output: both
+  num_samples: null
+  grayscale: false
+  grayscale_mode: equal
+  training: true
+  gray_is_not_green: true
+  specialized_data: false
 TNBC:
   root_dir: ../Data/TNBC_NucleiSegmentation
   output: both
