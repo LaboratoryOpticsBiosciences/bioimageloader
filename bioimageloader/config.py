@@ -104,6 +104,18 @@ class Config(dict):
             if attr in self[k]:
                 self[k][attr] = val
 
+    def set_grayscale(self, val: bool):
+        """Iterate config and set all ``grayscale`` to given value
+
+        It only affects those that have ``grayscale`` kwarg.
+
+        """
+        attr = 'grayscale'
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        for k in self.keys():
+            if attr in self[k]:
+                self[k][attr] = val
+
 
 class _Config(Config):
     """Config.from_dict()"""
