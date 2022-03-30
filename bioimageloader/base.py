@@ -376,8 +376,9 @@ class MaskDataset(Dataset):
         elif self.output == 'mask':
             pm = self.anno_dict[ind]
             mask = self.get_mask(pm)
+            _image = np.zeros_like(mask, dtype=np.uint8)  # dummy image
             if self.transforms is not None:
-                mask = self.transforms(mask=mask)['mask']
+                mask = self.transforms(image=_image, mask=mask)['mask']
                 # # Filtering out empty masks
                 # while mask.max() == 0:
                 #     mask = self.transforms.augment_image(mask)
