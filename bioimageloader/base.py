@@ -213,6 +213,12 @@ class Dataset(DatasetInterface):
         image = self.get_image(p)
         if self.grayscale:
             num_channels = self.num_channels
+            # exception
+            if hasattr(self, 'image_ch') and len(self.image_ch) == 1:
+                # BBBC020: `_num_channels=2`. When `image_ch` is set to one
+                # channel, output images become grayscale and `to_gray()`
+                # got `num_channels=2`.
+                num_channels = 3
             if num_channels is None:
                 num_channels = len(p) if isinstance(p, list) else 3
             image = self.to_gray(
@@ -369,6 +375,12 @@ class MaskDataset(Dataset):
             image = self.get_image(p)
             if self.grayscale:
                 num_channels = self.num_channels
+                # exception
+                if hasattr(self, 'image_ch') and len(self.image_ch) == 1:
+                    # BBBC020: `_num_channels=2`. When `image_ch` is set to one
+                    # channel, output images become grayscale and `to_gray()`
+                    # got `num_channels=2`.
+                    num_channels = 3
                 if num_channels is None:
                     num_channels = len(p) if isinstance(p, list) else 3
                 image = self.to_gray(
@@ -400,6 +412,12 @@ class MaskDataset(Dataset):
             mask = self.get_mask(pm)
             if self.grayscale:
                 num_channels = self.num_channels
+                # exception
+                if hasattr(self, 'image_ch') and len(self.image_ch) == 1:
+                    # BBBC020: `_num_channels=2`. When `image_ch` is set to one
+                    # channel, output images become grayscale and `to_gray()`
+                    # got `num_channels=2`.
+                    num_channels = 3
                 if num_channels is None:
                     num_channels = len(p) if isinstance(p, list) else 3
                 image = self.to_gray(
