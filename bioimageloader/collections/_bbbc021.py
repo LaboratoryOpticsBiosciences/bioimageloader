@@ -86,7 +86,7 @@ class BBBC021(Dataset):
         self._grayscale_mode = grayscale_mode
         self.image_ch = image_ch
         if not any([ch in ('DNA', 'actin', 'tublin') for ch in image_ch]):
-            raise ValueError("Set `anno_ch` in ('DNA', 'actin', 'tublin') in sequence")
+            raise ValueError("Set `image_ch` in ('DNA', 'actin', 'tublin') in sequence")
 
     def get_image(self, p: Union[Path, List[Path]]) -> np.ndarray:
         # 3 channels; DAPI(w1), Tubulin(w2), Actin(w4)

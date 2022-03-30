@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 from PIL import Image
@@ -44,12 +45,18 @@ class BBBC006(MaskDataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
+    image_ch : {'hoechst', 'phalloidin'}, default: ('hoechst', 'phalloidin')
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
     uint8 : bool, default: True
         Whether to convert images to UINT8. It will divide image by 2**12 and
         cast it to UINT8. If set False, no process will be applied. Read more
         about rationales in Notes section.
     z_ind : int, default: 16
         Select one z stack. Default is 16, because 16 is the most in-focus.
+
+    TIF format, LZW compression. Each image filename includes either 'w1' to
+    denote Hoechst images or 'w2' to denote phalloidin images.
 
     Notes
     -----
@@ -85,6 +92,7 @@ class BBBC006(MaskDataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
+        image_ch: Sequence[str] = ('hoechst', 'phalloidin'),
         uint8: bool = True,
         z_ind: int = 16,
         **kwargs
@@ -96,10 +104,17 @@ class BBBC006(MaskDataset):
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         # specific to this dataset
+        self.image_ch = image_ch
         self.uint8 = uint8
         self.z_ind = z_ind
+        if not any([ch in ('hoechst', 'phalloidin') for ch in image_ch]):
+            raise ValueError("Set `anno_ch` in ('hoechst', 'phalloidin') in sequence")
 
-    def get_image(self, p: BundledPath) -> np.ndarray:
+    def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
+        if isinstance(p, Path):
+            img = tifffile.imread(p)
+            img = (img / 2**8).astype(np.uint8)
+            return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         # 2 channels
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
         # UINT12
@@ -112,12 +127,19 @@ class BBBC006(MaskDataset):
         return np.asarray(mask)
 
     @cached_property
-    def file_list(self) -> List[BundledPath]:
+    def file_list(self) -> Union[List[Path], List[BundledPath]]:
+        key_ch = {
+            'hoechst': 'w1',
+            'phalloidin': 'w2',
+        }
         root_dir = self.root_dir
         parent = f'BBBC006_v1_images_z_{self.z_ind:02d}'
         _file_list = sorted(root_dir.glob(f'{parent}/*.tif'))
-        file_list = bundle_list(_file_list, 2)
-        return file_list
+        if len(self.image_ch) == 1:
+            return list(filter(
+                lambda p: key_ch[self.image_ch[0]] in p.stem,
+                _file_list))
+        return bundle_list(_file_list, 2)
 
     @cached_property
     def anno_dict(self) -> Dict[int, Path]:

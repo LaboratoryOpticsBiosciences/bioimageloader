@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 
@@ -37,6 +38,9 @@ class BBBC020(MaskDataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
+    image_ch : {'cell', 'nuclei'}, default: ('cell', 'nuclei')
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
     anno_ch : {'nuclei', 'cells'}, default: ('nuclei',)
         Which channel(s) to load as annotation. Make sure to give it as a
         Sequence when choose a single channel.
@@ -60,9 +64,10 @@ class BBBC020(MaskDataset):
     Notes
     -----
     - Anotations are instance segmented where each of them is saved as a single
-      image file. It loads and aggregates them as a single array. Later label
-      will overlap the former ones. If you do not want this behavior, modify
-      subclass this class and override ``get_mask()`` method.
+      image file. It loads and aggregates them as a single array. Label loaded
+      after will override the one loaded before. If you do not want this
+      behavior, make a subclass out of this class and override ``get_mask()``
+      method, accordingly.
     - 2 channels; R channel is the same as G, R==G!=B
         Assign 0 to red channel
     - BBBC has received a complaint that "BBB020_v1_outlines_nuclei" appears
@@ -97,6 +102,7 @@ class BBBC020(MaskDataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
+        image_ch: Sequence[str] = ('nuclei', 'cells'),
         anno_ch: Sequence[str] = ('nuclei',),
         drop_missing_pairs: bool = True,
         **kwargs
@@ -109,7 +115,10 @@ class BBBC020(MaskDataset):
         self._grayscale_mode = grayscale_mode
         # specific to this dataset
         self._num_channels = 2  # explicit for `grayscale`
+        self.image_ch = image_ch
         self.anno_ch = anno_ch
+        if not any([ch in ('nuclei', 'cells') for ch in image_ch]):
+            raise ValueError("Set `image_ch` in ('nuclei', 'cells') in sequence")
         if not any([ch in ('nuclei', 'cells') for ch in anno_ch]):
             raise ValueError("Set `anno_ch` in ('nuclei', 'cells') in sequence")
         self.drop_missing_pairs = drop_missing_pairs
@@ -121,6 +130,13 @@ class BBBC020(MaskDataset):
         img = tifffile.imread(p)
         # R==G, zero 0
         img[..., 0] = 0
+        if len(ch := self.image_ch) == 1:
+            if ch[0] == 'cells':
+                return cv2.cvtColor(img[..., 1], cv2.COLOR_GRAY2RGB)
+            elif ch[0] == 'nuclei':
+                return cv2.cvtColor(img[..., 2], cv2.COLOR_GRAY2RGB)
+            else:
+                raise ValueError
         return img
 
     def get_mask(self, lst_p: Union[BundledPath, List[BundledPath]]) -> np.ndarray:
@@ -169,6 +185,13 @@ class BBBC020(MaskDataset):
     def file_list(self) -> List[Path]:
         root_dir = self.root_dir
         parent = 'BBBC020_v1_images'
+        if len(ch := self.image_ch) == 1:
+            if ch[0] == 'cells':
+                return sorted(root_dir.glob(f'{parent}/*/*_c1.TIF'))
+            elif ch[0] == 'nuclei':
+                return sorted(root_dir.glob(f'{parent}/*/*_c5.TIF'))
+            else:
+                raise ValueError
         file_list = sorted(root_dir.glob(f'{parent}/*/*_(c1+c5).TIF'))
         return file_list
 
