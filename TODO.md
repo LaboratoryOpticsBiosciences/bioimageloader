@@ -57,6 +57,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [ ]  FRUNet `normalize`, better way? correct way?
 - [ ]  number of images, including test sets
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
+- [ ]  `image_ch` if possible (in any case where channels are separable)
+    - Done: BBBC006, BBBC020
+    - Not done: need to find them
 
 ### Others
 - [x]  Migrate repo to LOB account and open to public
@@ -82,6 +85,10 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
 
 ## For later
+- [ ]  Config.expand(): concatenate Configs. Q) What if there are overlaps?
+- [ ]  Refactor `__getitem__()` for "image" in `Dataset` and `MaskDataset`, so that they
+  can share the same code for getting "image". Also it is repeated in `output=image` and
+  `output=both`.
 - [ ]  AnnoDatasetInterface
     Interface for Dataset with annotation, base for all Dataset with annotation.
     Currently attr like `anno_dict` is not an abstract property, though it should be
