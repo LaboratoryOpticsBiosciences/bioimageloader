@@ -6,6 +6,7 @@
 """
 
 import abc
+import inspect
 import random
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Sequence, Union
@@ -103,7 +104,13 @@ class Dataset(DatasetInterface):
     """
 
     def __repr__(self):
-        return self.acronym
+        signature = inspect.signature(self.__init__)
+        params = list(signature.parameters.keys())
+        # remove 'kwargs'. try/except would be a better choice.
+        if 'kwargs' in params:
+            params.remove('kwargs')
+        init_args_str = '(' + ', '.join(f'{k}={getattr(self, k)}' for k in params) + ')'
+        return self.acronym + init_args_str
 
     def __len__(self):
         """Length of dataset. Can be overwritten with ``num_samples``"""
