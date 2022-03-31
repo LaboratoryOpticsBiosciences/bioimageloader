@@ -87,7 +87,9 @@ class StarDist(MaskDataset):
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     def get_mask(self, p: Path) -> np.ndarray:
-        return tifffile.imread(p)
+        mask = tifffile.imread(p)
+        # originally uint16, which pytorch doesn't like
+        return mask.astype(np.int16)
 
     @cached_property
     def file_list(self) -> List[Path]:
