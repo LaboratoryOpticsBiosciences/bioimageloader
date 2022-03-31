@@ -178,46 +178,42 @@ class SqueezeGrayImageHWC(albumentations.ImageOnlyTransform):
 
 
 class ExpandToRGB(albumentations.DualTransform):
-    """Make sure image has 3 channels, RGB
+    """Make sure image/mask has 3 channels, either from HW or HW1 to HW3
 
-    Expand axis of image that has 2 channels to have 3 channels mainly for
-    visualization. Albumentations ver.
+    Expand the channel axis of image array
 
-    Warnings
-    --------
-    This will be deprecated. Grayscale conversion is done in eash Dataset
+    Notes
+    -----
+    When used with ``albumentations.pytoch.ToTensorV2``, set
+    ``transpose_mask=True`` to transpose masks.
+
+    Targets:
+        image, mask
 
     """
     def __init__(
         self,
         always_apply: bool = False,
         p: float = 1.0,
-        select_mask_channel: Optional[int] = None,
     ):
         super().__init__(always_apply=always_apply, p=p)
-        self.select_mask_channel = select_mask_channel
 
     def apply(self, img, **params):
-        num_channels = img.shape[-1]
-        if num_channels != 2:
-            raise ValueError
-        stacked = np.concatenate(
-            [img, np.zeros_like(img[..., 0])[..., np.newaxis]],
-            axis=-1,
-        )
-        # if dtype is not None:
-        #     return stacked.astype(dtype)
-        return stacked
+        if (ch := img.shape[-1]) == 3:
+            # HW3: do nothing
+            return img
+        elif ch == 1:
+            # HW1
+            print(img.shape)
+            return img.repeat(3, axis=-1)
+        # HW
+        return img[..., np.newaxis].repeat(3, axis=-1)
 
     def apply_to_mask(self, img, **params):
-        if (ch := self.select_mask_channel) is not None:
-            return img[..., ch]
-        return img
+        return self.apply(img, **params)
 
     def get_transform_init_args_names(self):
-        return (
-            'select_mask_channel',
-        )
+        return ()
 
 
 class RGBToGray(albumentations.ImageOnlyTransform):
@@ -367,7 +363,7 @@ class NormalizePercentile(albumentations.ImageOnlyTransform):
 
     Returns
     -------
-    img_norm
+    img_norm : numpy.ndarray
         Normalized image in float32 in range of [0.0, 1.0] if ``clip`` set to
         True, else its value overflows lower beyond 0.0 and higher beyond 1.0.
 
@@ -439,3 +435,79 @@ class NormalizePercentile(albumentations.ImageOnlyTransform):
             'per_channel',
             'clip',
         )
+
+
+class BinarizeMask(albumentations.DualTransform):
+    """Transform instance masks into binary masks
+
+    Note that when composed with other transforms, BinarizeMask would rather
+    come after them, because dtype will be boolean and ``albumentations`` does
+    not like it. When you set ``val`` and ``dtype`` compatible with
+    ``albumentations``, you can place BinarizeMask in any order safely.
+
+    Parameters
+    ----------
+    always_apply : bool, default: False
+    p : float, default: 1.0
+        Value between [0.0, 1.0]
+    dtype : str or dtype, optional
+        Determine dtype. Default dtype becomes float32, when ``val`` is set.
+        Otherwise, it becomes boolean.
+    val : float, optional
+        Change binarized mask value other than True if set. It also enforces
+        dtype to be float32.
+
+    Returns
+    -------
+    mask : numpy.ndarray
+        Mask that has binary value either [False, True] or [0, ``val``]
+
+    See Also
+    --------
+    albumentations.DualTransform : super class
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from bioimageloader.transforms import BinarizeMask
+
+    >>> # instance mask
+    >>> mask_inst = np.arange(12).reshape((3, 4))
+    >>> print(mask_inst)
+    [[ 0  1  2  3]
+     [ 4  5  6  7]
+     [ 8  9 10 11]]
+
+    >>> binarizemask = BinarizeMask()
+    >>> mask_binary = binarizemask.apply_to_mask(mask_inst)
+    >>> print(mask_binary)
+    [[False  True  True  True]
+     [ True  True  True  True]
+     [ True  True  True  True]]
+
+    """
+    def __init__(
+        self,
+        always_apply: bool = False,
+        p: float = 1.0,
+        dtype: Optional[str] = None,
+        val: Optional[Union[float, int]] = None,
+    ):
+        super().__init__(always_apply=always_apply, p=p)
+        self.dtype = dtype
+        self.val = val
+
+    def apply(self, img, **params):
+        return img
+
+    def apply_to_mask(self, img, **params):
+        mask = img > 0
+        if (val := self.val) is not None:
+            mask = mask.astype('float32')  # make sure float before multiplication
+            mask = val * mask
+        if (dtype := self.dtype) is not None:
+            mask = mask.astype(dtype)
+        return mask
+
+    def get_transform_init_args_names(self):
+        return ()
