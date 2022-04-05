@@ -35,9 +35,11 @@ class ConcatDataset:
         # Check and Warn
         if any([s == 0 for s in self.sizes]):
             i = self.sizes.index(0)
-            warnings.warn(f"ind={i} {self.datasets[i].acronym} is empty")
+            warnings.warn(f"ind={i} {self.datasets[i].acronym} is empty",
+                          stacklevel=2)
         if len(set(outputs := [dset.output for dset in self.datasets])) != 1:
-            warnings.warn(f"output types do not match {outputs}")
+            warnings.warn(f"output types do not match {outputs}",
+                          stacklevel=2)
 
     def __len__(self):
         return self.cumulative_sizes[-1]

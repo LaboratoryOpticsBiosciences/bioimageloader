@@ -87,7 +87,8 @@ class Config(dict):
 
         """
         attr = 'training'
-        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.",
+                      stacklevel=2)
         for k in self.keys():
             if attr in self[k]:
                 self[k][attr] = val
@@ -99,7 +100,8 @@ class Config(dict):
 
         """
         attr = 'output'
-        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.",
+                      stacklevel=2)
         for k in self.keys():
             if attr in self[k]:
                 self[k][attr] = val
@@ -111,7 +113,8 @@ class Config(dict):
 
         """
         attr = 'grayscale'
-        warnings.warn(f"This method only set those that have `{attr}` kwarg.")
+        warnings.warn(f"This method only set those that have `{attr}` kwarg.",
+                      stacklevel=2)
         for k in self.keys():
             if attr in self[k]:
                 self[k][attr] = val
