@@ -14,6 +14,7 @@ from ._bbbc006 import BBBC006
 from ._bbbc020 import BBBC020
 from ._bbbc039 import BBBC039
 from ._cellpose import Cellpose
+from ._livecell import LIVECell
 #     semantic (fg/bg)
 from ._tnbc import TNBC
 from ._bbbc008 import BBBC008
@@ -58,6 +59,7 @@ __all__ = [
     'DSB2018',
     'DigitalPathology',
     'FRUNet',
+    'LIVECell',
     'MurphyLab',
     'S_BSST265',
     'StarDist',
