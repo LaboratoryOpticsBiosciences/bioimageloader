@@ -31,6 +31,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  random sampling, shuffle in BatchDataLoader
 - [x]  `DatasetList`
         - [ ]  Where to put? types.py is not a good place...
+- [ ]  Way to set `num_samples` with `transforms` argument in `Config`
+        Two arguments are closely related
 - [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
 - [ ]  (maybe nope) Download scripts
 
@@ -54,12 +56,16 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  consistent `root_dir`. Now it is a mess. We want something described in the
   `docs/user_guides/basic0_prepare_datasets.rst`.
 - [x]  substitute `num_calls` with `num_samples`? (I think samples sound right)
+- [ ]  Differentiate ● (O) and ● (OI: instance outlines)
 - [ ]  FRUNet `normalize`, better way? correct way?
 - [ ]  number of images, including test sets
 - [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
 - [ ]  `image_ch` if possible (in any case where channels are separable)
     - Done: BBBC006, BBBC020
     - Not done: need to find them
+- [ ]  BBBC020 anno dir name is not `BBBC020*` but `BBC020*`. Need to check if it's the
+  case for both types. Follow `BBC020*`?
+
 
 ### Others
 - [x]  Migrate repo to LOB account and open to public
@@ -83,6 +89,8 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     - CRCHisto
     - CEM500K
     - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
+- [ ]  hydra for Config
+    https://hydra.cc/docs/intro/
 
 ## For later
 - [ ]  Config.expand(): concatenate Configs. Q) What if there are overlaps?
