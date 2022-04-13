@@ -17,6 +17,9 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - [x]  Module docs
 - [x]  Quickstart
 - [x]  clean README.md
+- [ ]  Hard-code numbers of datasets so that developers don't need to download all
+  datasets to plot histograms.
+    - [ ]  Modify the plotting notebook accordingly
 - [ ]  indicate datasets that need pre-parse somehow?
 
 ### Utils

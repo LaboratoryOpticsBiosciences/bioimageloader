@@ -45,6 +45,8 @@ class DatasetList(list):
     def foreach_sample_by_indices(self, indices: Dict[str, List[int]]):
         """Iter Datasets and sample by indices
 
+        Set attribute `_indices`
+
         Arguments
         ---------
         indices : dictionary
@@ -54,7 +56,9 @@ class DatasetList(list):
 
         for i, dset in enumerate(self):
             if (name := dset.acronym) in indices:
-                self[i] = split_dataset_by_indices(dset, indices[name])
+                _indices = indices[name]
+                self[i] = split_dataset_by_indices(dset, _indices)
+                setattr(self[i], '_indices', _indices)
 
 # def split_dataset_by_indices(
 #     dataset: MaskDatasetProto,
