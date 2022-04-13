@@ -19,11 +19,12 @@ class Config(dict):
     filename : str
         Path to config file
     """
-    def __init__(self, filename):
-        self.filename = filename
-        cfg = self._read_yaml()
-        for k, v in cfg.items():
-            self[k] = v
+    def __init__(self, filename=None):
+        if filename is not None:
+            self.filename = filename
+            cfg = self._read_yaml()
+            for k, v in cfg.items():
+                self[k] = v
 
     def _read_yaml(self) -> dict:
         with open(self.filename, 'r') as f:
