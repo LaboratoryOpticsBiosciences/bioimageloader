@@ -41,6 +41,9 @@ class Config(dict):
     ) -> DatasetList:
         """Load multiple datasets from a yaml file
 
+        Note that when you provide a dictionray for ``transforms``, keys should
+        be the class names, not their acronyms.
+
         Parameters
         ----------
         config : configuration object
@@ -49,13 +52,16 @@ class Config(dict):
         transforms : albumentations.Compose or dictionary, optional
             Either apply a single composed transformations for every datasets or
             pass a dictionary that defines transformations for each dataset with
-            keys being the acronyms of datsets.
+            keys being the class names of collections.
 
         """
         datasets: List[Dataset] = []
         for dataset, kwargs in self.items():
             if isinstance(transforms, dict):
-                exec(f'datasets.append({dataset}(transforms=transforms[dataset], **kwargs))')
+                if dataset in transforms:
+                    exec(f'datasets.append({dataset}(transforms=transforms[dataset], **kwargs))')
+                else:
+                    exec(f'datasets.append({dataset}(**kwargs))')
             else:
                 exec(f'datasets.append({dataset}(transforms=transforms, **kwargs))')
         return DatasetList(datasets)

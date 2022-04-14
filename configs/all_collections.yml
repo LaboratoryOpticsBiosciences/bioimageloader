@@ -65,7 +65,7 @@ TNBC:
   output: both
   num_samples: null
   grayscale: false
-  grayscale_mode: equal
+  grayscale_mode: cv2
 BBBC008:
   root_dir: ../Data/bbbc/008
   output: both
