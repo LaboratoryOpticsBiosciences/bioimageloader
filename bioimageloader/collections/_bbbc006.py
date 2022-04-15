@@ -113,8 +113,10 @@ class BBBC006(MaskDataset):
     def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             img = tifffile.imread(p)
-            img = (img / 2**8).astype(np.uint8)
-            return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            if self.uint8:
+                img = (img / 2**4).astype(np.uint8)
+                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            return img
         # 2 channels
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
         # UINT12
