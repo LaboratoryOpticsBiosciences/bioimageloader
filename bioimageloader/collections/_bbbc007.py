@@ -145,11 +145,11 @@ class BBBC007(MaskDataset):
             elif ch[0] == 'actin':
                 file_list = _file_list[1::2]
             else:
-                raise ValueError("Set `anno_ch` in ('DNA', 'actin')")
+                raise ValueError("Set `image_ch` in ('DNA', 'actin')")
         elif len(ch) == 2:
             file_list = bundle_list(_file_list, 2)
         else:
-            raise ValueError("Set `anno_ch` in ('DNA', 'actin') or all")
+            raise ValueError("Set `image_ch` in ('DNA', 'actin') or all")
         return file_list
 
     @cached_property

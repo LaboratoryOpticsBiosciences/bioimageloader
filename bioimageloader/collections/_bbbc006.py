@@ -49,9 +49,10 @@ class BBBC006(MaskDataset):
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
     uint8 : bool, default: True
-        Whether to convert images to UINT8. It will divide image by 2**12 and
-        cast it to UINT8. If set False, no process will be applied. Read more
-        about rationales in Notes section.
+        Whether to convert images to UINT8. It will divide images by a certain
+        value so that they have a reasonable range of pixel values when cast
+        into UINT8. If set False, no process will be applied. Read more about
+        rationales in Notes section.
     z_ind : int, default: 16
         Select one z stack. Default is 16, because 16 is the most in-focus.
 
