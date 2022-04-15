@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import albumentations
-import cv2
+import os
 import numpy as np
 import tifffile
 from pycocotools import coco
