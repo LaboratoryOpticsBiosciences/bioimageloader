@@ -151,4 +151,5 @@ BBBC021:
   num_samples: null
   grayscale: false
   grayscale_mode: equal
+  uint8: true
   image_ch: [DNA, actin, tublin]
