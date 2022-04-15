@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 from PIL import Image
@@ -48,6 +49,9 @@ class BBBC018(MaskDataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
+    image_ch : {'DNA', 'actin', 'pH3'}, default: ('DNA', 'actin', 'pH3')
+        Which channel(s) to load as image. Make sure to give it as a Sequence
+        when choose a single channel.
     anno_ch : {'DNA', 'actin'}, default: ('DNA',)
         Which channel(s) to load as annotation. Make sure to give it as a
         Sequence when choose a single channel.
@@ -105,7 +109,7 @@ class BBBC018(MaskDataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
-        # image_ch: Sequence[str] = ('DNA', 'actin',),
+        image_ch: Sequence[str] = ('DNA', 'actin', 'pH3'),
         anno_ch: Sequence[str] = ('DNA',),
         drop_missing_pairs: bool = True,
         **kwargs
@@ -116,7 +120,7 @@ class BBBC018(MaskDataset):
         self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
-        # self.image_ch = image_ch
+        self.image_ch = image_ch
         self.anno_ch = anno_ch
         self.drop_missing_pairs = drop_missing_pairs
 
@@ -128,10 +132,22 @@ class BBBC018(MaskDataset):
         img = Image.open(p)
         return np.asarray(img)[..., 1]
 
-    def get_image(self, p: BundledPath) -> np.ndarray:
+    def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
         # Second channel has objects
         # Order = (DNA,actin,pH3)
-        img = stack_channels_to_rgb(self._imread_handler, p, 2, 0, 1)
+        if isinstance(p, Path):
+            img = self._imread_handler(p)
+            return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        else:
+            # order = {
+            #     'DNA': 2,
+            #     'actin': 0,
+            #     'pH3': 1,
+            # }
+            if len(ch := self.image_ch) == 3:
+                img = stack_channels_to_rgb(self._imread_handler, p, 2, 0, 1)
+            else:
+                raise NotImplementedError
         return img
 
     def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
@@ -145,12 +161,20 @@ class BBBC018(MaskDataset):
         return np.ascontiguousarray(mask[::-1, ...])
 
     @cached_property
-    def file_list(self) -> List[BundledPath]:
+    def file_list(self) -> Union[List[Path], List[BundledPath]]:
         root_dir = self.root_dir
         parent = 'BBBC018_v1_images'
         # Order = (DNA,actin,pH3)
-        _file_list = sorted(root_dir.glob(f'{parent}/*.DIB'))
-        return bundle_list(_file_list, 3)
+        if len(ch := self.image_ch) == 3:
+            _file_list = sorted(root_dir.glob(f'{parent}/*.DIB'))
+            return bundle_list(_file_list, 3)
+        elif len(ch) == 2:
+            raise NotImplementedError
+        elif len(ch) == 1:
+            file_list = sorted((root_dir / parent).glob(f'*-{ch[0]}.DIB'))
+        else:
+            raise ValueError("Set `image_ch` in ('DNA', 'actin', 'pH3')")
+        return file_list
 
     @cached_property
     def anno_dict(self) -> Union[Dict[int, Path], Dict[int, BundledPath]]:
