@@ -82,6 +82,7 @@ class BBBC021(Dataset):
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # # specific to this dataset
         uint8: bool = True,
+        denominator: float = 2**8,
         image_ch: Sequence[str] = ('DNA', 'actin', 'tublin'),
         **kwargs
     ):
@@ -91,6 +92,7 @@ class BBBC021(Dataset):
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         self.uint8 = uint8
+        self.denominator = denominator  # ***
         self.image_ch = image_ch
         if not any([ch in ('DNA', 'actin', 'tublin') for ch in image_ch]):
             raise ValueError("Set `image_ch` in ('DNA', 'actin', 'tublin') in sequence")
@@ -100,7 +102,7 @@ class BBBC021(Dataset):
         if isinstance(p, Path):
             img = tifffile.imread(p)
             if self.uint8:
-                img = (img / 2**8).astype(np.uint8)
+                img = (img / self.denominator).astype(np.uint8)
                 return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             return img
         if len(self.image_ch) == 2:
@@ -116,11 +118,11 @@ class BBBC021(Dataset):
             order = map(_map_ch_to_ind, p)
             img = stack_channels_to_rgb(tifffile.imread, p, *order)
             if self.uint8:
-                img = (img / 2**8).astype(np.uint8)
+                img = (img / self.denominator).astype(np.uint8)
             return img
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 1, 0)
         if self.uint8:
-            img = (img / 2**8).astype(np.uint8)
+            img = (img / self.denominator).astype(np.uint8)
         return img
 
     @cached_property
