@@ -14,6 +14,7 @@ from ._bbbc006 import BBBC006
 from ._bbbc020 import BBBC020
 from ._bbbc039 import BBBC039
 from ._cellpose import Cellpose
+from ._bbbc009 import BBBC009
 from ._bbbc030 import BBBC030
 #     semantic (fg/bg)
 from ._tnbc import TNBC
@@ -44,6 +45,7 @@ __all__ = [
     'BBBC006',
     'BBBC007',
     'BBBC008',
+    'BBBC009',
     'BBBC013',
     'BBBC014',
     'BBBC015',
