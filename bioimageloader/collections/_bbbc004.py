@@ -1,5 +1,5 @@
 from functools import cached_property
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import List, Optional, Sequence, Union, Dict
 
 import albumentations
