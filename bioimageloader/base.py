@@ -149,6 +149,10 @@ class Dataset(DatasetInterface):
             return getattr(self, '_num_samples')
         return None
 
+    @num_samples.setter
+    def num_samples(self, val):
+        self._num_samples = val
+
     @property
     def grayscale(self) -> Optional[bool]:
         """Flag for grayscale conversion"""

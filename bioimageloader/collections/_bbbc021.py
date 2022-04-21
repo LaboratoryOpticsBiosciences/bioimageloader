@@ -41,6 +41,11 @@ class BBBC021(Dataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
+    uint8 : bool, default: True
+        Whether to convert images to UINT8. It will divide images by a certain
+        value so that they have a reasonable range of pixel values when cast
+        into UINT8. If set False, no process will be applied. Read more about
+        rationales in Notes section.
     image_ch : {'DNA', 'actin'}, default: ('DNA', 'actin', 'tublin')
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
@@ -76,6 +81,8 @@ class BBBC021(Dataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # # specific to this dataset
+        uint8: bool = True,
+        denominator: float = 2**8,
         image_ch: Sequence[str] = ('DNA', 'actin', 'tublin'),
         **kwargs
     ):
@@ -84,6 +91,8 @@ class BBBC021(Dataset):
         self._num_samples = num_samples
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
+        self.uint8 = uint8
+        self.denominator = denominator  # ***
         self.image_ch = image_ch
         if not any([ch in ('DNA', 'actin', 'tublin') for ch in image_ch]):
             raise ValueError("Set `image_ch` in ('DNA', 'actin', 'tublin') in sequence")
@@ -92,8 +101,10 @@ class BBBC021(Dataset):
         # 3 channels; DAPI(w1), Tubulin(w2), Actin(w4)
         if isinstance(p, Path):
             img = tifffile.imread(p)
-            img = (img / 2**8).astype(np.uint8)
-            return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            if self.uint8:
+                img = (img / self.denominator).astype(np.uint8)
+                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            return img
         if len(self.image_ch) == 2:
             def _map_ch_to_ind(p: Path):
                 if 'w1' in p.stem:
@@ -106,10 +117,12 @@ class BBBC021(Dataset):
                 return 0
             order = map(_map_ch_to_ind, p)
             img = stack_channels_to_rgb(tifffile.imread, p, *order)
-            img = (img / 2**8).astype(np.uint8)
+            if self.uint8:
+                img = (img / self.denominator).astype(np.uint8)
             return img
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 1, 0)
-        img = (img / 2**8).astype(np.uint8)
+        if self.uint8:
+            img = (img / self.denominator).astype(np.uint8)
         return img
 
     @cached_property
