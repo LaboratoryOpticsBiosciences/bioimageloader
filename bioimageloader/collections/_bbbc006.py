@@ -49,9 +49,10 @@ class BBBC006(MaskDataset):
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
     uint8 : bool, default: True
-        Whether to convert images to UINT8. It will divide image by 2**12 and
-        cast it to UINT8. If set False, no process will be applied. Read more
-        about rationales in Notes section.
+        Whether to convert images to UINT8. It will divide images by a certain
+        value so that they have a reasonable range of pixel values when cast
+        into UINT8. If set False, no process will be applied. Read more about
+        rationales in Notes section.
     z_ind : int, default: 16
         Select one z stack. Default is 16, because 16 is the most in-focus.
 
@@ -113,8 +114,10 @@ class BBBC006(MaskDataset):
     def get_image(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             img = tifffile.imread(p)
-            img = (img / 2**8).astype(np.uint8)
-            return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            if self.uint8:
+                img = (img / 2**4).astype(np.uint8)
+                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            return img
         # 2 channels
         img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
         # UINT12
