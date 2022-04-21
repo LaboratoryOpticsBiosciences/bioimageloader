@@ -61,7 +61,7 @@ class TNBC(MaskDataset):
         **kwargs
     ):
         # Interface and super-class arguments
-        self._root_dir = os.path.join(root_dir, 'TNBC_NucleiSegmentation')
+        self._root_dir = root_dir
         self._output = output
         self._transforms = transforms
         self._num_samples = num_samples
