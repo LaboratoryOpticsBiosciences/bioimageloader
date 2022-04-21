@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import albumentations
 import cv2
@@ -11,7 +11,11 @@ import tifffile
 from ..base import MaskDataset
 
 class BBBC009(MaskDataset):
-    """Template for MaskDataset
+    """Human red blood cells
+
+    This image set consists of five differential interference contrast (DIC) images of red bood cells.
+
+
     Parameters
     ----------
     root_dir : str
@@ -73,10 +77,11 @@ class BBBC009(MaskDataset):
         return file_list
 
     @cached_property
-    def anno_dict(self) -> List[Path]:
+    def anno_dict(self) -> Dict[int, Path]:
         # Important to decorate with `cached_property` in general
         #file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'human_rbc_dic_outlines'
-        file_list = sorted(root_dir.glob(f'{parent}/*.tif'))
-        return file_list
+        anno_list = sorted(root_dir.glob(f'{parent}/*.tif'))
+        anno_dict = dict((k, v) for k, v in enumerate(anno_list))
+        return anno_dict
