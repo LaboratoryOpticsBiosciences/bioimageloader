@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 import tifffile
 from pycocotools import coco
-import os
 
 from ..base import MaskDataset
 
@@ -29,7 +28,7 @@ class LIVECell(MaskDataset):
         dataset. If it is set, it overwrites ``__len__``.
     training : bool, default: True
         Load training set if True, else load testing one
-    save_tif : bool, default: True
+    save_tif : bool, default: False
         Save COCO annotations as tif mask images in a new ./root_dir/masks directory.
 
     References
@@ -56,7 +55,7 @@ class LIVECell(MaskDataset):
         num_samples: Optional[int] = None,
         # specific to this dataset
         training: bool = True,
-        save_tif: bool = True,
+        save_tif: bool = False,
         **kwargs
     ):
         self._root_dir = root_dir
@@ -69,16 +68,14 @@ class LIVECell(MaskDataset):
 
         # Read training/val or test annotations from json
         # Save the masks as tif files if save_tif = True
-        if not os.path.exists(root_dir + "/masks"):
-            os.makedirs(root_dir + "/masks")
-        if not os.path.exists(root_dir + "/masks/livecell_train_val_masks"):
-            os.makedirs(root_dir + "/masks/livecell_train_val_masks")
-        if not os.path.exists(root_dir + "/masks/livecell_test_masks"):
-            os.makedirs(root_dir + "/masks/livecell_test_masks")
-
+        try:
+            Path(root_dir + "/masks/livecell_train_val_masks").mkdir(parents=True, exist_ok=False)
+            Path(root_dir + "/masks/livecell_test_masks").mkdir(parents=True, exist_ok=False)
+        except  FileExistsError:
+            pass
         if self.training and self.save_tif:
             print("making instances masks and saving as tif files")
-            for img in tqdm(self.anno_dictionary):
+            for img in self.anno_dictionary:
                 try:
                     annIds = self.coco_tr.getAnnIds(imgIds=img["id"], iscrowd=None)
                     anns = self.coco_tr.loadAnns(annIds)
@@ -101,7 +98,7 @@ class LIVECell(MaskDataset):
             self.coco_te = coco.COCO(root_dir + "/livecell_coco_test.json")
             img_te = self.coco_te.loadImgs(self.coco_te.getImgIds())
             self.anno_dictionary = img_te
-            for img in tqdm(self.anno_dictionary):
+            for img in self.anno_dictionary:
                 annIds = self.coco_te.getAnnIds(imgIds=img["id"], iscrowd=None)
                 anns = self.coco_te.loadAnns(annIds)
                 mask = self.coco_te.annToMask(anns[0])
@@ -110,6 +107,9 @@ class LIVECell(MaskDataset):
                     mask |= self.coco_te.annToMask(anns[i]) * i
                 tifffile.imsave(root_dir + "/masks/livecell_test_masks/" + img["file_name"], mask)
             print("Done!")
+
+        if not self.save_tif and not any(Path(root_dir + "/masks/livecell_test_masks").iterdir()):
+            raise Exception("No masks in .tif format. Set save_tif=True")
 
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
