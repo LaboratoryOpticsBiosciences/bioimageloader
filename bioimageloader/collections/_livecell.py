@@ -113,7 +113,7 @@ class LIVECell(MaskDataset):
                 tifffile.imsave(root_dir + "/masks/livecell_test_masks/" + img["file_name"], mask)
             print("Done!")
 
-        if not self.save_tif and not any(Path(root_dir + "/masks/livecell_test_masks").iterdir()):
+        if not self.save_tif and (not any(Path(root_dir + "/masks/livecell_test_masks").iterdir()) or not any(Path(root_dir + "/masks/livecell_train_val_masks").iterdir())):
             raise Exception("No masks in .tif format. Set save_tif=True")
 
     def get_image(self, p: Path) -> np.ndarray:
