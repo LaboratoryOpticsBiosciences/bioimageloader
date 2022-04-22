@@ -75,6 +75,11 @@ class LIVECell(MaskDataset):
             pass
         if self.training and self.save_tif:
             print("making instances masks and saving as tif files")
+            self.coco_tr = coco.COCO(root_dir + "/livecell_coco_train.json")
+            img_tr = self.coco_tr.loadImgs(self.coco_tr.getImgIds())
+            self.coco_val = coco.COCO(root_dir + "/livecell_coco_val.json")
+            img_val = self.coco_val.loadImgs(self.coco_val.getImgIds())
+            self.anno_dictionary = img_val + img_tr
             for img in self.anno_dictionary:
                 try:
                     annIds = self.coco_tr.getAnnIds(imgIds=img["id"], iscrowd=None)
