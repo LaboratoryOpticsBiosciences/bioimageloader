@@ -50,7 +50,7 @@ def random_label_cmap(n=2**16, h=(0, 1), l=(.4, 1), s=(.2, .8)):
 
 def imread_asarray(p: Path, dtype=None) -> np.ndarray:
     '''Read an image using PIL then convert it into numpy array'''
-    img = np.asarray(Image.open(p), dtype=dtype)
+    img = np.array(Image.open(p), dtype=dtype)
     return img
 
 
