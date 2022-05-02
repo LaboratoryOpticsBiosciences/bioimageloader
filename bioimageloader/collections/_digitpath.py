@@ -89,13 +89,13 @@ class DigitalPathology(MaskDataset):
     @cached_property
     def file_list(self) -> List[Path]:
         root_dir = self.root_dir
-        parent = 'original'
-        file_list = sorted(root_dir.glob(f'*{parent}.tif'))
+        suffix = 'original'
+        file_list = sorted(root_dir.glob(f'*{suffix}.tif'))
         return file_list
 
     @cached_property
     def anno_dict(self) -> Dict[int, Path]:
         root_dir = self.root_dir
-        parent = 'mask'
-        anno_list = sorted(root_dir.glob(f'*{parent}.png'))
+        suffix = 'mask'
+        anno_list = sorted(root_dir.glob(f'*{suffix}.png'))
         return dict((k, v) for k, v in enumerate(anno_list))

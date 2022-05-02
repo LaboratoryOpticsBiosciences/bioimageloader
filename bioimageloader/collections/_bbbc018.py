@@ -187,7 +187,7 @@ class BBBC018(MaskDataset):
             anno_dict: Dict[int, Path] = {}
             target = stain_to_target[ch[0]]
             for i, p in enumerate(self.file_list):
-                name = p[0].stem.split('-')[0]
+                name = p[0].stem.split('-')[0] if isinstance(p, list) else p.stem.split('-')[0]
                 fn = root_dir / parent / f'{name}-{target}.png'
                 if fn.exists():
                     anno_dict[i] = fn
@@ -195,7 +195,8 @@ class BBBC018(MaskDataset):
         elif len(ch) == 2:
             anno_bdict: Dict[int, BundledPath] = {}
             for i, p in enumerate(self.file_list):
-                name = p[0].stem.split('-')[0]
+                name = p[0].stem.split('-')[0] if isinstance(p, list) else p.stem.split('-')[0]
+                # name = p[0].stem.split('-')[0]
                 lst_fn = []
                 for c in ch:
                     target = stain_to_target[c]
