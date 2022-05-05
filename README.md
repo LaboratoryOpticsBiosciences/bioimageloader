@@ -1,6 +1,6 @@
 
 # bioimageloader
-> _Load bioimages for machine leaning applications_
+> _Load bioimages for machine learning applications_
 
 [![Python version](https://img.shields.io/pypi/pyversions/bioimageloader)](https://pypi.org/project/bioimageloader/)
 [![PyPI version](https://img.shields.io/pypi/v/bioimageloader)](https://pypi.org/project/bioimageloader/)
