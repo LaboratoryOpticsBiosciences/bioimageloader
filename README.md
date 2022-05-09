@@ -150,7 +150,7 @@ corresponding class from collections `bioimageloader.collections`.
 First of all, I named each dataset class rather arbitrary. Try to find the
 dataset you want with authors' names or with other keywords (if it has any), and
 you may find it having an unexpected name. If it is the case, I apologize for
-bad names.
+bad naming.
 
 If you still cannot find it, then you have two options: either you do it yourself (see
 below question and please consider contributing!), or you can file an issue so that the
@@ -165,7 +165,7 @@ willing to help.
 
 ### How to run a ML/DL model?
 _bioimageloader_ only helps loading images/annotations, not running ML/DL
-models. Still, you may find some examples useful at [bioimageloader-docs:User Guides].
+models. Still, you may find some useful examples at [bioimageloader-docs:User Guides].
 Also check out [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic).
 
 
