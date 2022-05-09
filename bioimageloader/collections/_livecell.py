@@ -52,7 +52,7 @@ class LIVECell(MaskDataset):
     mask_tif : bool, default: False
         Use saved COCO annotations as tif mask images in a new ./root_dir/masks
         directory. It will greatly improve loading speed. Available after
-        calling ``func``.
+        calling ``save_coco_to_tif()``.
 
     Notes
     -----

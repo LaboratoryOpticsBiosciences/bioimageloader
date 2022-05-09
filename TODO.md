@@ -96,6 +96,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     https://hydra.cc/docs/intro/
 
 ## For later
+- [ ]  Multi-threading LIVECell
 - [ ]  Config.expand(): concatenate Configs. Q) What if there are overlaps?
 - [ ]  Refactor `__getitem__()` for "image" in `Dataset` and `MaskDataset`, so that they
   can share the same code for getting "image". Also it is repeated in `output=image` and
