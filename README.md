@@ -97,10 +97,11 @@ Find full guides at [bioimageloader-docs:User Guides]
 
 ## bioimageloader is not/does not
 
-- a full pipeline for ML/DL
-- a hub to bioimage datasets (if it ever becomes one, it would be awesome though)
-- overwrite the source data
-- does not provide one-click links for downloading data
+- _not_ a full pipeline for ML/DL
+- _not_ a hub to bioimage datasets (if it ever becomes one, it would be awesome though)
+- _does not_ host data (only interfaces)
+- _does not_ provide one-click links for downloading data
+- _does not_ overwrite the source data
 
 
 ## Why _bioimageloader_
@@ -179,6 +180,8 @@ anyway). This guide [Modifying existing collections] covers it.
 
 ## Contributing
 Find guide at [bioimageloader-docs:Contributing]
+
+Also check out [TODO list](./TODO.md).
 
 
 ## Contact
