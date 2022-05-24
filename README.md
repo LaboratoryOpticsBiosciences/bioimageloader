@@ -4,6 +4,7 @@
 
 [![Python version](https://img.shields.io/pypi/pyversions/bioimageloader)](https://pypi.org/project/bioimageloader/)
 [![PyPI version](https://img.shields.io/pypi/v/bioimageloader)](https://pypi.org/project/bioimageloader/)
+[![PyPI download per month](https://img.shields.io/pypi/dm/bioimageloader)](https://pypi.org/project/bioimageloader/)
 [![License](https://img.shields.io/github/license/LaboratoryOpticsBiosciences/bioimageloader)](https://github.com/LaboratoryOpticsBiosciences/bioimageloader/blob/main/LICENSE)
 
 _bioimageloader_ is a python library to make it easy to load bioimage datasets for
