@@ -111,13 +111,26 @@ for machine learning and deep learning. I needed a lot of diverse bioimages for
 self-supervised neural networks for my thesis. While I managed to find many great
 datasets, they all came with different folder structures and formats. In addition, I
 encountered many issues to load and process them, which were sometimes technical or just
-rooted from the nature of bioimages. For instances of technical issues, some datasets
-were missing one or two pairs of image and annotation, had broken files, had very
-specific file formats that cannot be easily read in python, or provided mask annotation
-not in image format but in .xml format. It was rather painful to deal with all these
-edge cases one by one. But anyway I did it and I thought it would be valuable to package
-and share it with community even though the number of datasets is small for the moment,
-so that others do not have to suffer.
+rooted from the nature of bioimages.
+
+For instances of technical issues, some datasets were missing one or two pairs of image
+and annotation, had broken files, had very specific file formats that cannot be easily
+read in python, or provided mask annotation not in image format but in .xml format. Some
+filenames have typos, so sometimes I failed to iterate them.
+
+For an example of intrinsic issues of bioimages, selecting a certain channel was an
+important functionality that I needed, and it was not easy for bioimage datasets. When a
+dataset provided separate files for each channel image, it was easy to select one. But
+in many cases, they just put all channels together in one image file. And even worse for
+2 channel images (which are quite common), if they chose to use RGB(A) image formats
+such as JPEG or PNG other than TIFF, I needed to figure out manually which channel
+refers to what and which channel is the empty one.
+
+There were other issues not mentioned above of course. It was rather painful to deal
+with all these edge cases one by one. But anyway I did it and I thought it would be
+valuable to package and share it with community so that others do not have to suffer,
+even though the number of implemented datasets is small for the moment,
+
 
 
 ## Installation
