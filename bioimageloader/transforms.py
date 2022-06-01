@@ -14,7 +14,7 @@ class HWCToCHW(albumentations.ImageOnlyTransform):
 
     By default, ``bioimageloader`` returns images in shape of (H, W, C=3)
     regardless of its color mode for easy handling. Some models expect (C, H, W)
-    shape of images as input. It converts (C, H, W) to (C, H, W).
+    shape of images as input. It converts (H, W, C) to (C, H, W).
 
     See Also
     --------
