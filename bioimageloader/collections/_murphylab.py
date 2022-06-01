@@ -129,7 +129,7 @@ class MurphyLab(MaskDataset):
     def get_mask(self, p: Path) -> np.ndarray:
         if self.filled_mask:
             mask = Image.open(p)
-            return np.asarray(mask, dtype=np.float32)
+            return np.asarray(mask, dtype=np.float32)[..., 0]
         doc = GimpDocument(p.as_posix())
         layers = [layer.name for layer in doc.layers]
         try:
@@ -163,7 +163,8 @@ class MurphyLab(MaskDataset):
         ext = '.png' if self.filled_mask else '.xcf'
         anno_dict = {}
         for i, p in enumerate(self.file_list):
-            p_anno = '/'.join([p.parent.stem, p.stem + ext])
+            stem = p.stem + '-filled' if self.filled_mask else p.stem
+            p_anno = '/'.join([p.parent.stem, stem + ext])
             # Ignore 'segmented-ashariff`. It seems that Ashariff got bored
             # after 10 images.
             anno = p.parents[2] / 'segmented-lpc' / p_anno

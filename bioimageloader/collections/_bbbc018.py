@@ -70,9 +70,13 @@ class BBBC018(MaskDataset):
     BBBC018_v1_images/10779 annotation is missing. len(anno_dict) =
     len(file_list) - 1; ind={26}
 
-        - PosixPath('images/bbbc/018/BBBC018_v1_images/10779-DNA.DIB')
-        - PosixPath('images/bbbc/018/BBBC018_v1_images/10779-actin.DIB')
-        - PosixPath('images/bbbc/018/BBBC018_v1_images/10779-pH3.DIB')
+        - PosixPath('BBBC018_v1_images/10779-DNA.DIB')
+        - PosixPath('BBBC018_v1_images/10779-actin.DIB')
+        - PosixPath('BBBC018_v1_images/10779-pH3.DIB')
+
+    This one is not properly saved after annotation. It has annotation overlaid
+    on top to image. Need to filter ``mask==255`.
+        - 'BBBC018_v1_outlines/17675-nuclei.png'
 
     Notes
     -----
@@ -153,6 +157,9 @@ class BBBC018(MaskDataset):
     def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             mask = np.asarray(Image.open(p))
+            if p.name == '17675-nuclei.png':
+                # 'BBBC018_v1_outlines/17675-nuclei.png' See Notes
+                mask = mask == 255
         else:
             mask = stack_channels(Image.open, p)
         if mask.dtype == 'bool':
