@@ -46,7 +46,7 @@ class BBBC021(Dataset):
         value so that they have a reasonable range of pixel values when cast
         into UINT8. If set False, no process will be applied. Read more about
         rationales in Notes section.
-    image_ch : {'DNA', 'actin'}, default: ('DNA', 'actin', 'tublin')
+    image_ch : {'DNA', 'actin', 'tublin'}, default: ('DNA', 'actin', 'tublin')
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
 
