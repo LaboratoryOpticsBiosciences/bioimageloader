@@ -10,7 +10,7 @@ from PIL import Image
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels_to_rgb
+from ..utils import bundle_list, imread_stack_channels_to_rgb
 
 
 class BBBC006(MaskDataset):
@@ -111,7 +111,7 @@ class BBBC006(MaskDataset):
             img = img / np.float32(self._max_val)
             return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         # 2 channels
-        img = stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
+        img = imread_stack_channels_to_rgb(tifffile.imread, p, 2, 0, 1)
         # UINT12
         img = img / np.float32(self._max_val)
         return img

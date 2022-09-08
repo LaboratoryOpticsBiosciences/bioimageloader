@@ -10,7 +10,7 @@ from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
+from ..utils import bundle_list, imread_stack_channels, imread_stack_channels_to_rgb
 
 
 class BBBC008(MaskDataset):
@@ -101,14 +101,14 @@ class BBBC008(MaskDataset):
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         else:
             # ch1 to red, ch3 to blue
-            img = stack_channels_to_rgb(tifffile.imread, p, 0, 2, 1)
+            img = imread_stack_channels_to_rgb(tifffile.imread, p, 0, 2, 1)
         return img_as_float32(img)
 
     def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):
             mask = tifffile.imread(p)
         else:
-            mask = stack_channels(tifffile.imread, p)
+            mask = imread_stack_channels(tifffile.imread, p)
         # dtype=bool originally and bool is not well handled by albumentations
         return 255 * (~mask).astype(np.uint8)
 
