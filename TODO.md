@@ -4,70 +4,73 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
 - Event 6-10 May (virtual)
 - https://forum.image.sc/t/i2k-2022-conference-talk-workshop-submissions-are-open/62833
 
+### TissueNet
+- [ ] v1.1
+
 ### Zarr
-- [ ]  Zarr and in-house data [experimental]
+- [ ] Zarr and in-house data [experimental]
 
 ### Docs
-- [x]  Overview table
+- [ ]  Hard-code numbers of datasets so that developers don't need to download all
+  datasets to plot histograms.
+    - [ ] Modify the plotting notebook accordingly
+- [ ] indicate datasets that need pre-parse somehow?
+- [x] Overview table
     1. `.md` for maintaining
     2. `.html` (use table gen service, which I don’t like it... but whatever)
     3. put sample image links
     4. embed in docs and github readme
-- [x]  Docs, notebook examples
-- [x]  Module docs
-- [x]  Quickstart
-- [x]  clean README.md
-- [ ]  Hard-code numbers of datasets so that developers don't need to download all
-  datasets to plot histograms.
-    - [ ]  Modify the plotting notebook accordingly
-- [ ]  indicate datasets that need pre-parse somehow?
+- [x] Docs, notebook examples
+- [x] Module docs
+- [x] Quickstart
+- [x] clean README.md
 
 ### Utils
-- [x]  Data vis
-- [x]  Models
-    - [x]  bioimage.io
-- [x]  Run and eval models
-    - [ ]  Summary table which model excels in which dataset
-- [x]  CommonDataset, CommonMaskDataset
-- [x]  re-ordering channels
-        np.ascontiguousarray, 'C' order, arr[..., (2, 1, 0)]
-- [x]  random sampling, shuffle in BatchDataLoader
-- [x]  `DatasetList`
-        - [ ]  Where to put? types.py is not a good place...
-- [ ]  Way to set `num_samples` with `transforms` argument in `Config`
+- [ ] Way to set `num_samples` with `transforms` argument in `Config`
         Two arguments are closely related
-- [ ]  Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
-- [ ]  (maybe nope) Download scripts
+- [ ] Metrics for benchmarking (StarDist has done a great job, their license is BSD-3)
+- [x] Data vis
+- [x] Models
+    - [x] bioimage.io
+- [x] Run and eval models
+    - [ ] Summary table which model excels in which dataset
+- [x] CommonDataset, CommonMaskDataset
+- [x] re-ordering channels
+        np.ascontiguousarray, 'C' order, arr[..., (2, 1, 0)]
+- [x] random sampling, shuffle in BatchDataLoader
+- [x] `DatasetList`
+        - [ ] Where to put? types.py is not a good place...
 
 ### Fix
-- [x]  Take out those that do not have mask anno and put them in `Dataset`
+- [ ] Change default dtype to float32?
+- [ ] Differentiate ● (O) and ● (OI: instance outlines)
+- [ ] FRUNet `normalize`, better way? correct way?
+- [ ] number of images, including test sets
+- [ ] Load all anno types, if there are more than one (e.g. BBBC007)
+- [ ] `image_ch` if possible (in any case where channels are separable)
+    - Done: BBBC006, BBBC020
+    - Not done: need to find them
+- [ ] BBBC020 anno dir name is not `BBBC020*` but `BBC020*`. Need to check if it's the
+  case for both types. Follow `BBC020*`?
+- [x] Take out those that do not have mask anno and put them in `Dataset`
     - [x]  Implement `__getitem__` for `Dataset`
     - [x]  Change base for them
-- [x]  Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
+- [x] Fix data[’mask’]  # (b, h, w) → (b, 1, h, w)? (necessary?)
     Not really necessary? Just have them (b, h, w) for now
-- [x]  Fix data['mask'].dtype == bool
+- [x] Fix data['mask'].dtype == bool
     When mask has a single channel, make them have the same dtype.
     Albumentations supports only UINT8 and FLOAT32.
     - bool -> uint8
     - or int16 (because why not... mask.dtype does not matter)
-- [x]  fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
+- [x] fix plt.rcParams['image.interpolation'] does not work in `./notebooks/_sample_images.ipynb`
     cv2.resize was an issue, not matplotlib
-- [x]  update overview table
-    - [x]  Reordered
-    - [x]  Add missing ones
+- [x] update overview table
+    - [x] Reordered
+    - [x] Add missing ones
         - [x]  BBBC041
-- [x]  consistent `root_dir`. Now it is a mess. We want something described in the
+- [x] consistent `root_dir`. Now it is a mess. We want something described in the
   `docs/user_guides/basic0_prepare_datasets.rst`.
-- [x]  substitute `num_calls` with `num_samples`? (I think samples sound right)
-- [ ]  Differentiate ● (O) and ● (OI: instance outlines)
-- [ ]  FRUNet `normalize`, better way? correct way?
-- [ ]  number of images, including test sets
-- [ ]  Load all anno types, if there are more than one (e.g. BBBC007)
-- [ ]  `image_ch` if possible (in any case where channels are separable)
-    - Done: BBBC006, BBBC020
-    - Not done: need to find them
-- [ ]  BBBC020 anno dir name is not `BBBC020*` but `BBC020*`. Need to check if it's the
-  case for both types. Follow `BBC020*`?
+- [x] substitute `num_calls` with `num_samples`? (I think samples sound right)
 
 
 ### Others
