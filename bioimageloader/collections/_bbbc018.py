@@ -9,7 +9,7 @@ from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels, stack_channels_to_rgb
+from ..utils import bundle_list, imread_stack_channels, imread_stack_channels_to_rgb
 
 if TYPE_CHECKING:
     import albumentations
@@ -151,7 +151,7 @@ class BBBC018(MaskDataset):
             #     'pH3': 1,
             # }
             if len(ch := self.image_ch) == 3:
-                img = stack_channels_to_rgb(self._imread_handler, p, 2, 0, 1)
+                img = imread_stack_channels_to_rgb(self._imread_handler, p, 2, 0, 1)
             else:
                 raise NotImplementedError
         return img_as_float32(img)
@@ -163,7 +163,7 @@ class BBBC018(MaskDataset):
                 # 'BBBC018_v1_outlines/17675-nuclei.png' See Notes
                 mask = mask == 255
         else:
-            mask = stack_channels(Image.open, p)
+            mask = imread_stack_channels(Image.open, p)
         if mask.dtype == 'bool':
             mask = 255 * mask.astype(np.uint8)
         # For some reason mask is -y

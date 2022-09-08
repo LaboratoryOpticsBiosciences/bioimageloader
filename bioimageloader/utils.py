@@ -149,7 +149,7 @@ def split_dataset_by_indices(
     return subset(dataset, indices)
 
 
-def stack_channels(
+def imread_stack_channels(
     imread_handler: Callable[[Path], np.ndarray],
     p_lst: List[Path],
     *axis_order: int
@@ -188,8 +188,24 @@ def stack_channels(
         return ordered
     return stacked
 
-
 def stack_channels_to_rgb(
+    imgs: Sequence[np.ndarray],
+    *axis_order: int
+) -> np.ndarray:
+    num_channels = len(imgs)
+    stacked = np.stack(imgs, axis=-1)
+    if num_channels < 3:
+        # it happens to be only 2 channels
+        stacked = np.concatenate([stacked, np.zeros_like(imgs[0])[..., np.newaxis]], axis=-1)
+    if axis_order:
+        ordered = np.zeros_like(stacked)
+        for i, o in enumerate(axis_order):
+            ordered[..., o] = stacked[..., i]
+        return ordered
+    return stacked
+
+
+def imread_stack_channels_to_rgb(
     imread_handler: Callable[[Path], np.ndarray],
     p_lst: List[Path],
     *axis_order: int
@@ -221,16 +237,7 @@ def stack_channels_to_rgb(
     images = []
     for p in p_lst:
         images.append(imread_handler(p))
-    num_channels = len(images)
-    stacked = np.stack(images, axis=-1)
-    if num_channels < 3:
-        # it happens to be only 2 channels
-        stacked = np.concatenate([stacked, np.zeros_like(images[0])[..., np.newaxis]], axis=-1)
-    if axis_order:
-        ordered = np.zeros_like(stacked)
-        for i, o in enumerate(axis_order):
-            ordered[..., o] = stacked[..., i]
-        return ordered
+    stacked = stack_channels_to_rgb(images, *axis_order)
     return stacked
 
 

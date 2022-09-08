@@ -10,7 +10,7 @@ from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels_to_rgb
+from ..utils import bundle_list, imread_stack_channels_to_rgb
 
 if TYPE_CHECKING:
     import albumentations
@@ -107,9 +107,9 @@ class BBBC021(Dataset):
                 # w4 'tublin' red
                 return 0
             order = map(_map_ch_to_ind, p)
-            img = stack_channels_to_rgb(tifffile.imread, p, *order)
+            img = imread_stack_channels_to_rgb(tifffile.imread, p, *order)
             return img_as_float32(img)
-        img = stack_channels_to_rgb(tifffile.imread, p, 2, 1, 0)
+        img = imread_stack_channels_to_rgb(tifffile.imread, p, 2, 1, 0)
         return img_as_float32(img)
 
     @cached_property

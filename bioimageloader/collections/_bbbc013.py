@@ -9,7 +9,7 @@ from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..types import BundledPath
-from ..utils import bundle_list, stack_channels_to_rgb
+from ..utils import bundle_list, imread_stack_channels_to_rgb
 
 if TYPE_CHECKING:
     import albumentations
@@ -87,7 +87,7 @@ class BBBC013(Dataset):
             img = np.asarray(Image.open(p))
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         else:
-            img = stack_channels_to_rgb(Image.open, p)
+            img = imread_stack_channels_to_rgb(Image.open, p)
         return img_as_float32(img)
 
     @cached_property

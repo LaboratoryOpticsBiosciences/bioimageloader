@@ -7,7 +7,7 @@ from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..types import BundledPath
-from ..utils import bundle_list, imread_asarray, stack_channels_to_rgb
+from ..utils import bundle_list, imread_asarray, imread_stack_channels_to_rgb
 
 if TYPE_CHECKING:
     import albumentations
@@ -95,7 +95,7 @@ class BBBC015(Dataset):
         if isinstance(p, Path):
             img = imread_asarray(p)
         else:
-            img = stack_channels_to_rgb(
+            img = imread_stack_channels_to_rgb(
                 lambda x: imread_asarray(x)[..., 0], p, 1, 0, 2
             )
         return img_as_float32(img)
