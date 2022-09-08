@@ -70,6 +70,7 @@ class TissueNetV1(MaskDataset):
     - .npy file comes with a header whose size is 128 bytes and ends with
       newline char
     - there is no `file_list`
+    - image has channel order [nuclei, cells] but mask has [cells, nuclei]
 
     References
     ----------
@@ -191,9 +192,9 @@ class TissueNetV1(MaskDataset):
         )
         if len(image_ch := self.image_ch) == 1:
             ch = image_ch[0]
-            if ch == 'cells':
+            if ch == 'nuclei':
                 return img[..., 0]
-            elif ch == 'nuclei':
+            elif ch == 'cells':
                 return img[..., 1]
         return img
 
