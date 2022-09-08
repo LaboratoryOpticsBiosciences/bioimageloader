@@ -1,18 +1,15 @@
-from typing import TYPE_CHECKING
-
-import numpy as np
+from typing import TYPE_CHECKING, IO
 
 if TYPE_CHECKING:
     import zipfile
 
 from functools import cached_property
-from typing import Dict, List, Optional, Sequence, Union, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import albumentations
 import numpy as np
 
 from ..base import MaskDataset
-from ..types import BundledPath
 from ..utils import bundle_list, stack_channels_to_rgb
 
 
@@ -130,10 +127,11 @@ class TissueNetV1(MaskDataset):
         self._npz = np.load(
             self.root_dir / 'tissuenet_v1.0_train.npz'
         )
-        self._f_X = self._npz.zip.open('X.npy')
-        self._f_y = self._npz.zip.open('y.npy')
+        self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
         self.tissue_list = self._npz['tissue_list']
         self.platform_list = self._npz['platform_list']
+        self._f_X: IO[bytes] = self._npz_zip.open('X.npy')
+        self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
 
         self._validate_selected()
 
@@ -153,7 +151,7 @@ class TissueNetV1(MaskDataset):
         return np.unique(self.platform_list)
 
     def _validate_selected(self):
-        # validate selected_tissue and selected_platform
+        """validate selected_tissue and selected_platform"""
         if self.selected_tissue not in self.valid_tissues and self.selected_tissue != 'all':
             raise ValueError('Selected tissue must be either be part of the valid_tissues list, or all')
         if self.selected_platform not in self.valid_platforms and self.selected_platform != 'all':
@@ -216,7 +214,7 @@ class TissueNetV1(MaskDataset):
         return mask
 
     @cached_property
-    def file_list(self):
+    def file_list(self) -> List[int]:
         """Dummy file list
         """
         if self.selected_tissue == 'all':
@@ -234,13 +232,13 @@ class TissueNetV1(MaskDataset):
         return idx.tolist()
 
     @cached_property
-    def anno_dict(self):
+    def anno_dict(self) -> Dict[int, str]:
         """Dummy annotation dictionary
         """
         return dict((i, str(i)) for i in self.file_list)
 
     @classmethod
-    def _seek_header(cls, f: 'zipfile.ZipExtFile'):
+    def _seek_header(cls, f: IO[bytes]):
         if f.tell() != 0:
             f.seek(0)
         f.readline()
@@ -249,7 +247,7 @@ class TissueNetV1(MaskDataset):
     @classmethod
     def _read_chunk(
         cls,
-        f: 'zipfile.ZipExtFile',
+        f: IO[bytes],
         chunk: Tuple[int],
         dtype: str,
         ind: int,
