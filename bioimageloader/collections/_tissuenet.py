@@ -10,7 +10,7 @@ import albumentations
 import numpy as np
 
 from ..base import MaskDataset
-from ..utils import bundle_list, stack_channels_to_rgb
+from ..utils import stack_channels_to_rgb
 
 
 class TissueNetV1(MaskDataset):
@@ -196,7 +196,8 @@ class TissueNetV1(MaskDataset):
                 return img[..., 0]
             elif ch == 'cells':
                 return img[..., 1]
-        return img
+        img_rgb = stack_channels_to_rgb([img[..., i] for i in range(2)], 1, 2)
+        return (255 * img_rgb).astype(np.uint8) if self.uint8 else img_rgb
 
     def get_mask(self, p: str) -> np.ndarray:
         mask = self._read_chunk(

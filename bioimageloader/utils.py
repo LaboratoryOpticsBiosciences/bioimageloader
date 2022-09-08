@@ -188,6 +188,7 @@ def imread_stack_channels(
         return ordered
     return stacked
 
+
 def stack_channels_to_rgb(
     imgs: Sequence[np.ndarray],
     *axis_order: int
