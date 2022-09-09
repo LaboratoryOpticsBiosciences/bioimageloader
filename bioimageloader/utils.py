@@ -2,7 +2,9 @@
 """
 
 import csv
+import functools
 import random
+import time
 from copy import deepcopy
 from itertools import accumulate
 from pathlib import Path
@@ -30,6 +32,19 @@ class MaskDatasetProto(Protocol):
 
     def __len__(self):
         ...
+
+
+def timer(func):
+    """Print the runtime of the decorated function"""
+    @functools.wraps(func)
+    def wrapper_timer(*args, **kwargs):
+        start_time = time.perf_counter()
+        value = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        run_time = end_time - start_time
+        print(f"Finished {func.__name__!r} in {run_time:.4f} secs")
+        return value
+    return wrapper_timer
 
 
 def random_label_cmap(n=2**16, h=(0, 1), l=(.4, 1), s=(.2, .8)):
