@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, IO
 
 if TYPE_CHECKING:
     import zipfile
+    from pathlib import Path
 
 from functools import cached_property
 from typing import Dict, List, Optional, Sequence, Tuple, Union
@@ -47,6 +48,8 @@ class TissueNetV1(MaskDataset):
         How to convert to grayscale. If set to 'cv2', it follows opencv
         implementation. Else if set to 'equal', it sums up values along channel
         axis, then divides it by the number of expected channels.
+    selected_subset : {'train', 'val', 'test'}, default: 'train'
+        Select a subset
     image_ch : {'cells', 'nuclei'}, default: ('cells', 'nuclei')
         Which channel(s) to load as image. Make sure to give it as a Sequence
         when choose a single channel.
@@ -65,6 +68,7 @@ class TissueNetV1(MaskDataset):
 
     Notes
     -----
+    - TissueNet v1.0 was the dataset for [1]_ paper and released in 2021
     - stored in .npz format
     - train, val, test are all big .npy raw file
     - .npy file comes with a header whose size is 128 bytes and ends with
@@ -99,7 +103,7 @@ class TissueNetV1(MaskDataset):
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'equal',
         # specific to this dataset
-        training: Union[bool, str] = True,
+        selected_subset: str = 'train',
         image_ch: Sequence[str] = ('cells', 'nuclei'),
         anno_ch: Sequence[str] = ('cells', 'nuclei'),
         selected_tissue: str = 'all',
@@ -114,20 +118,20 @@ class TissueNetV1(MaskDataset):
         self._grayscale = grayscale
         self._grayscale_mode = grayscale_mode
         # specific to this dataset
-        self.training = training
+        self.selected_subset = selected_subset
         self.image_ch = image_ch
         self.anno_ch = anno_ch
         self.selected_tissue = selected_tissue
         self.selected_platform = selected_platform
         self.uint8 = uint8
+        if selected_subset not in ('train', 'val', 'test'):
+            raise ValueError("Set `selected_subset` to one of ('train', 'val', 'test')")
         if not any([ch in ('cells', 'nuclei') for ch in image_ch]):
             raise ValueError("Set `image_ch` in ('cells', 'nuclei') in sequence")
         if not any([ch in ('cells', 'nuclei') for ch in anno_ch]):
             raise ValueError("Set `anno_ch` in ('cells', 'nuclei') in sequence")
 
-        self._npz = np.load(
-            self.root_dir / 'tissuenet_v1.0_train.npz'
-        )
+        self._npz = np.load(self.search_npz())
         self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
         self.tissue_list = self._npz['tissue_list']
         self.platform_list = self._npz['platform_list']
@@ -135,6 +139,21 @@ class TissueNetV1(MaskDataset):
         self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
 
         self._validate_selected()
+
+    def search_npz(self) -> 'Path':
+        """Search a subset .npz file based on params
+
+        Parameters
+        ----------
+        self.root_dir
+        self.selected_subset
+        """
+        target = f'tissuenet_v1.0_{self.selected_subset}.npz'
+        try:
+            p = next(filter(lambda s: s.name == target, self.root_dir.iterdir()))
+        except StopIteration:
+            raise FileNotFoundError(f"File '{self.root_dir / target}' not found")
+        return p
 
     def __exit__(self):
         # make sure to close files
