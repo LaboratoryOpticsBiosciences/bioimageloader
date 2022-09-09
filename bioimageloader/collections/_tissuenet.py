@@ -1,14 +1,16 @@
-from typing import TYPE_CHECKING, IO
+from typing import IO, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import zipfile
     from pathlib import Path
 
 from functools import cached_property
+from itertools import product
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import albumentations
 import numpy as np
+import pandas as pd
 
 from ..base import MaskDataset
 from ..utils import stack_channels_to_rgb
@@ -68,7 +70,7 @@ class TissueNetV1(MaskDataset):
 
     Notes
     -----
-    - TissueNet v1.0 was the dataset for [1]_ paper and released in 2021
+    - TissueNet v1.0 was the dataset for [1]_ paper and released on July 2021
     - stored in .npz format
     - train, val, test are all big .npy raw file
     - .npy file comes with a header whose size is 128 bytes and ends with
@@ -92,6 +94,7 @@ class TissueNetV1(MaskDataset):
     """
     # Dataset's acronym
     acronym = 'TissueNetV1'
+    valid_subset = ('train', 'val', 'test')
 
     def __init__(
         self,
@@ -124,8 +127,8 @@ class TissueNetV1(MaskDataset):
         self.selected_tissue = selected_tissue
         self.selected_platform = selected_platform
         self.uint8 = uint8
-        if selected_subset not in ('train', 'val', 'test'):
-            raise ValueError("Set `selected_subset` to one of ('train', 'val', 'test')")
+        if selected_subset not in self.valid_subset:
+            raise ValueError(f"Set `selected_subset` to one of {self.valid_subset}")
         if not any([ch in ('cells', 'nuclei') for ch in image_ch]):
             raise ValueError("Set `image_ch` in ('cells', 'nuclei') in sequence")
         if not any([ch in ('cells', 'nuclei') for ch in anno_ch]):
@@ -279,3 +282,51 @@ class TissueNetV1(MaskDataset):
         buf = f.read(chunk_nbytes)
         arr = np.frombuffer(buf, dtype=dtype)
         return arr.reshape(chunk)
+
+    @classmethod
+    def generate_summary(
+        cls,
+        root_dir: str,
+    ) -> pd.DataFrame:
+        """Generate summary of numbers of data points depending on platforms,
+        tissues, and subsets ('train', 'val', 'test')
+
+        Parameters
+        ----------
+        root_dir : str
+            Path to root directory
+        """
+        tissue = cls(
+            root_dir,
+            selected_tissue='all',
+            selected_platform='all',
+        )
+        # define multi-indexed DataFrame
+        valid_platforms = tissue.valid_platforms
+        valid_tissues = tissue.valid_tissues
+        multi_index = pd.MultiIndex.from_product(
+            [valid_platforms, valid_tissues],
+            names=['platform', 'tissue']
+        )
+        df_tissuenet = pd.DataFrame(index=multi_index,
+                                    columns=cls.valid_subset)
+        df_tissuenet = df_tissuenet.fillna(0)
+        # Fill the table
+        for selected_subset in cls.valid_subset:
+            total = 0
+            for plat, tiss in product(valid_platforms, valid_tissues):
+                _tissue = cls(
+                    root_dir,
+                    selected_subset=selected_subset,
+                    selected_platform=plat,
+                    selected_tissue=tiss,
+                )
+                total += len(_tissue)
+                # print(f'{plat:10s} {tiss:10s}: {len(_tissue)}')
+                df_tissuenet.loc[plat, tiss][selected_subset] = len(_tissue)
+            # print(f'total ({selected_subset:5s}): {total}')
+        # Add Total at both ends of index and column
+        df_tissuenet.loc['Total', :] = df_tissuenet.sum().values
+        df_tissuenet['Total'] = df_tissuenet.sum(axis=1)
+        df_tissuenet = df_tissuenet.convert_dtypes()
+        return df_tissuenet
