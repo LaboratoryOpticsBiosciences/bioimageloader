@@ -215,19 +215,23 @@ class TissueNetV1(MaskDataset):
         if self.selected_platform not in self.valid_platforms and self.selected_platform != 'all':
             raise ValueError('Selected platform must be either be part of the valid_platforms list, or all')
 
-    @property
+    @cached_property
     def image_shape(self):
-        return (512, 512, 2)
+        if self.selected_subset == 'train':
+            return (512, 512, 2)
+        return (256, 256, 2)
 
-    @property
+    @cached_property
     def image_dtype(self):
         return 'float32'
 
-    @property
+    @cached_property
     def mask_shape(self):
-        return (512, 512, 2)
+        if self.selected_subset == 'train':
+            return (512, 512, 2)
+        return (256, 256, 2)
 
-    @property
+    @cached_property
     def mask_dtype(self):
         return 'int32'
 
