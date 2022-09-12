@@ -19,7 +19,7 @@ from ..utils import stack_channels_to_rgb
 
 
 class TissueNetV1(MaskDataset):
-    """TissueNet v1.0 [1]_
+    """TissueNet v1.0 [1]_. Download data from deepcell.org [2]_.
 
     The TissueNet data is composed of a train, val, and test split. The train
     split is composed of images which are 512x512 pixels. During training, we
@@ -32,7 +32,8 @@ class TissueNetV1(MaskDataset):
     accuracy, but we want to ensure that we evaluate each epoch's loss against a
     range of image sizes
 
-    License: Modified Apache License Version 2.0. Read the license for more.
+    License: Modified Apache License Version 2.0. Read the included license for
+    more.
 
     Parameters
     ----------
@@ -70,16 +71,28 @@ class TissueNetV1(MaskDataset):
     selected_platform : str, default: 'all'
         Print `self.valid_platforms` for valid list
     decompress : bool, default: False
-        Unzip .npz file for small memory consumption and fast random access
+        Unzip .npz file for small memory consumption and fast random access.
+        Read ``unzip()`` for more.
+    in_memory: bool, default: False
+        Load the whole data in memory. Memory footprint will be about 10GB+. If
+        your memory pool is large enough, this method will guarantee the fastest
+        loading speed. This argument is only valid when ``decompress`` is set to
+        False.
 
     Notes
     -----
     - TissueNet v1.0 was the dataset for [1]_ paper and released on July 2021
-    - stored in .npz format
-    - train, val, test are all big .npy raw file
+    - Data is stored in .npz format
+    - Train, val, test are all big .npy raw file
+    - Highly recommend using ``unzip()`` to decompress .npy files for fast
+      random accessing with small memory footprint. Then set ``decompress``
+      argument to True to load them.
+    - If you have a large memory available (10GB+), you could use ``in_memory``
+      option.
+    - when ``decompress`` is set to False, ``file_list`` and ``anno_dict`` are
+      dummy lists.
     - .npy file comes with a header whose size is 128 bytes and ends with
       newline char
-    - there is no `file_list`
     - image has channel order [nuclei, cells] but mask has [cells, nuclei]
 
     References
@@ -88,6 +101,7 @@ class TissueNetV1(MaskDataset):
     with human-level performance using large-scale data annotation and deep
     learning,” Nat Biotechnol, vol. 40, no. 4, Art. no. 4, Apr. 2022, doi:
     10.1038/s41587-021-01094-0.
+    .. [2] https://www.deepcell.org/
 
     See Also
     --------
@@ -98,7 +112,10 @@ class TissueNetV1(MaskDataset):
     """
     # Dataset's acronym
     acronym = 'TissueNetV1'
+    # allowed argument sets
     valid_subset = ('train', 'val', 'test')
+    valid_image_ch = ('cells', 'nuclei')
+    valid_anno_ch = ('cells', 'nuclei')
 
     def __init__(
         self,
@@ -117,6 +134,7 @@ class TissueNetV1(MaskDataset):
         selected_platform: str = 'all',
         uint8: bool = True,
         decompress: bool = False,
+        in_memory: bool = False,
         **kwargs
     ):
         self._root_dir = root_dir
@@ -133,33 +151,54 @@ class TissueNetV1(MaskDataset):
         self.selected_platform = selected_platform
         self.uint8 = uint8
         self.decompress = decompress
+        self.in_memory = in_memory
+        # check some arguemnts
+        if decompress:
+            assert not in_memory, "`in_memory` and `decompress` cannot be set True at the same time"
+        if in_memory:
+            assert not decompress, "`in_memory` and `decompress` cannot be set True at the same time"
         if selected_subset not in self.valid_subset:
             raise ValueError(f"Set `selected_subset` to one of {self.valid_subset}")
-        if not any([ch in ('cells', 'nuclei') for ch in image_ch]):
-            raise ValueError("Set `image_ch` in ('cells', 'nuclei') in sequence")
-        if not any([ch in ('cells', 'nuclei') for ch in anno_ch]):
-            raise ValueError("Set `anno_ch` in ('cells', 'nuclei') in sequence")
+        if not any([ch in self.valid_image_ch for ch in image_ch]):
+            raise ValueError(f"Set `image_ch` in {self.valid_image_ch} in sequence")
+        if not any([ch in self.valid_anno_ch for ch in anno_ch]):
+            raise ValueError(f"Set `anno_ch` in {self.valid_anno_ch} in sequence")
 
         if decompress:
+            # load unzipped files
             if not self.is_unzipped:
                 raise FileNotFoundError(
-                    "Call `self.unzip()` before setting `decompress` argument",
+                    f"'{self.root_unzip}' is not found. Call `self.unzip()` "
+                    "before setting `decompress` argument",
                 )
             self.tissue_list = np.load(self.root_unzip / 'tissue_list.npy')
             self.platform_list = np.load(self.root_unzip / 'platform_list.npy')
         else:
-            warnings.warn(
-                f"Loading {self.__class__.__name__} can be slow because it "
-                "will load compressed buffer directly. Consider using "
-                "`self.unzip()` to decompress dataset and set "
-                "`decompress=True`."
-            )
+            # load raw files
             self._npz = np.load(self.search_npz())
-            self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
             self.tissue_list = self._npz['tissue_list']
             self.platform_list = self._npz['platform_list']
-            self._f_X: IO[bytes] = self._npz_zip.open('X.npy')
-            self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
+            if in_memory:
+                # load the whole raw files in memory
+                warnings.warn(
+                    "Loading big raw .npy files in memory. It roughly requires "
+                    "10GB+ of memory and takes some time. If you'd like to "
+                    "reduce the memory footprint, consider using `decompress` "
+                    "argument."
+                )
+                self.X = self._npz['X']
+                self.y = self._npz['y']
+            else:
+                # load each chunk at a time. random accessing becomes an issue
+                warnings.warn(
+                    f"Loading {self.__class__.__name__} can be slow because it "
+                    "will load compressed buffer directly. Consider using "
+                    "`self.unzip()` to decompress dataset and set "
+                    "`decompress=True`."
+                )
+                self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
+                self._f_X: IO[bytes] = self._npz_zip.open('X.npy')
+                self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
 
         self._validate_selected()
 
@@ -193,7 +232,8 @@ class TissueNetV1(MaskDataset):
 
     @cached_property
     def is_unzipped(self):
-        """Check if unzipped files exist. See `self.unzip` for more"""
+        """Check if unzipped files exist or if ``self.unzip`` was called before.
+        See ``self.unzip`` for more"""
         if self.root_unzip.is_dir() and self.root_unzip.exists():
             return True
         return False
@@ -248,13 +288,17 @@ class TissueNetV1(MaskDataset):
             # is_unzipped == True
             img = tifffile.imread(p)
         else:
-            img = self._read_chunk(
-                self._f_X,
-                chunk=self.image_shape,
-                dtype=self.image_dtype,
-                ind=p,
-                header_offset=self._image_header_offset
-            )
+            if self.in_memory:
+                img = self.X[p]
+            else:
+                # otherwise, seek for starting byte and load a chunk
+                img = self._read_chunk(
+                    self._f_X,
+                    chunk=self.image_shape,
+                    dtype=self.image_dtype,
+                    ind=p,
+                    header_offset=self._image_header_offset
+                )
         if len(image_ch := self.image_ch) == 1:
             ch = image_ch[0]
             if ch == 'nuclei':
@@ -269,13 +313,16 @@ class TissueNetV1(MaskDataset):
             # is_unzipped == True
             mask = tifffile.imread(p)
         else:
-            mask = self._read_chunk(
-                self._f_y,
-                chunk=self.mask_shape,
-                dtype=self.mask_dtype,
-                ind=int(p),
-                header_offset=self._mask_header_offset
-            )
+            if self.in_memory:
+                mask = self.y[int(p)]
+            else:
+                mask = self._read_chunk(
+                    self._f_y,
+                    chunk=self.mask_shape,
+                    dtype=self.mask_dtype,
+                    ind=int(p),
+                    header_offset=self._mask_header_offset
+                )
         if len(anno_ch := self.anno_ch) == 1:
             ch = anno_ch[0]
             if ch == 'cells':
@@ -286,8 +333,6 @@ class TissueNetV1(MaskDataset):
 
     @cached_property
     def file_list(self) -> Union[List[Path], List[int]]:
-        """Dummy file list
-        """
         # tissue
         if self.selected_tissue == 'all':
             tissue_idx = np.repeat(True, len(self.tissue_list))
@@ -302,18 +347,22 @@ class TissueNetV1(MaskDataset):
         idx = np.where(combined_idx)[0]
         idx = idx.tolist()
 
+        if self.in_memory:
+            return idx
         if self.is_unzipped:
             subdir = self.root_unzip / 'X'
             return [sorted(subdir.iterdir())[i] for i in idx]
+        # dummy file list
         return idx
 
     @cached_property
-    def anno_dict(self) -> Dict[int, Union[Path, str]]:
-        """Dummy annotation dictionary
-        """
+    def anno_dict(self) -> Union[Dict[int, Path], Dict[int, str]]:
+        if self.in_memory:
+            return dict((i, str(i)) for i in self.file_list)
         if self.is_unzipped:
             subdir = self.root_unzip / 'y'
             return dict((i, subdir / p.name) for i, p in enumerate(self.file_list))
+        # Dummy annotation dictionary
         return dict((i, str(i)) for i in self.file_list)
 
     @classmethod
@@ -395,7 +444,8 @@ class TissueNetV1(MaskDataset):
         split to individual files. Images will be extracted to a directory "X"
         and masks to a directory "y" with 6-zero-padded index in tiff format.
         The decompressed data can be loaded by setting `decompress=True` when
-        initializing a new instance.
+        initializing a new instance. Note that it will require a few GBs for
+        each "train", "val", and "test" set.
 
         The original format .npz is a zipped numpy format. It contains multiple
         .npy files and they are basically raw files. Accessing them sequentially
@@ -470,5 +520,5 @@ class TissueNetV1(MaskDataset):
                 compression=compression
             )
             print(i, end=' ')
-        print(f"Make another {self.__class__.__name__} instance with setting "
+        print(f"\nMake another {self.__class__.__name__} instance with setting "
               "`decompress=True` to load unzipped files.")
