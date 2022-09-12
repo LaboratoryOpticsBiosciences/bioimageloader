@@ -2,15 +2,17 @@ from typing import IO, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import zipfile
-    from pathlib import Path
 
+from pathlib import Path
 from functools import cached_property
 from itertools import product
 from typing import Dict, List, Optional, Sequence, Tuple, Union
+import warnings
 
 import albumentations
 import numpy as np
 import pandas as pd
+import tifffile
 
 from ..base import MaskDataset
 from ..utils import stack_channels_to_rgb
@@ -67,6 +69,8 @@ class TissueNetV1(MaskDataset):
         Print `self.valid_tissues` for valid list
     selected_platform : str, default: 'all'
         Print `self.valid_platforms` for valid list
+    decompress : bool, default: False
+        Unzip .npz file for small memory consumption and fast random access
 
     Notes
     -----
@@ -112,6 +116,7 @@ class TissueNetV1(MaskDataset):
         selected_tissue: str = 'all',
         selected_platform: str = 'all',
         uint8: bool = True,
+        decompress: bool = False,
         **kwargs
     ):
         self._root_dir = root_dir
@@ -127,6 +132,7 @@ class TissueNetV1(MaskDataset):
         self.selected_tissue = selected_tissue
         self.selected_platform = selected_platform
         self.uint8 = uint8
+        self.decompress = decompress
         if selected_subset not in self.valid_subset:
             raise ValueError(f"Set `selected_subset` to one of {self.valid_subset}")
         if not any([ch in ('cells', 'nuclei') for ch in image_ch]):
@@ -134,16 +140,30 @@ class TissueNetV1(MaskDataset):
         if not any([ch in ('cells', 'nuclei') for ch in anno_ch]):
             raise ValueError("Set `anno_ch` in ('cells', 'nuclei') in sequence")
 
-        self._npz = np.load(self.search_npz())
-        self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
-        self.tissue_list = self._npz['tissue_list']
-        self.platform_list = self._npz['platform_list']
-        self._f_X: IO[bytes] = self._npz_zip.open('X.npy')
-        self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
+        if decompress:
+            if not self.is_unzipped:
+                raise FileNotFoundError(
+                    "Call `self.unzip()` before setting `decompress` argument",
+                )
+            self.tissue_list = np.load(self.root_unzip / 'tissue_list.npy')
+            self.platform_list = np.load(self.root_unzip / 'platform_list.npy')
+        else:
+            warnings.warn(
+                f"Loading {self.__class__.__name__} can be slow because it "
+                "will load compressed buffer directly. Consider using "
+                "`self.unzip()` to decompress dataset and set "
+                "`decompress=True`."
+            )
+            self._npz = np.load(self.search_npz())
+            self._npz_zip: 'zipfile.ZipFile' = self._npz.zip
+            self.tissue_list = self._npz['tissue_list']
+            self.platform_list = self._npz['platform_list']
+            self._f_X: IO[bytes] = self._npz_zip.open('X.npy')
+            self._f_y: IO[bytes] = self._npz_zip.open('y.npy')
 
         self._validate_selected()
 
-    def search_npz(self) -> 'Path':
+    def search_npz(self) -> Path:
         """Search a subset .npz file based on params
 
         Parameters
@@ -160,8 +180,23 @@ class TissueNetV1(MaskDataset):
 
     def __exit__(self):
         # make sure to close files
-        self._f_X.close()
-        self._f_y.close()
+        if hasattr(self, '_f_X'):
+            self._f_X.close()
+        if hasattr(self, '_f_y'):
+            self._f_y.close()
+
+    @cached_property
+    def root_unzip(self) -> Path:
+        p = self.search_npz()
+        # drop .npy extension
+        return p.parent / p.stem
+
+    @cached_property
+    def is_unzipped(self):
+        """Check if unzipped files exist. See `self.unzip` for more"""
+        if self.root_unzip.is_dir() and self.root_unzip.exists():
+            return True
+        return False
 
     @cached_property
     def valid_tissues(self):
@@ -204,14 +239,18 @@ class TissueNetV1(MaskDataset):
     def _mask_header_offset(self):
         return self._seek_header(self._f_y)
 
-    def get_image(self, p: int) -> np.ndarray:
-        img = self._read_chunk(
-            self._f_X,
-            chunk=self.image_shape,
-            dtype=self.image_dtype,
-            ind=p,
-            header_offset=self._image_header_offset
-        )
+    def get_image(self, p: Union[Path, int]) -> np.ndarray:
+        if isinstance(p, Path):
+            # is_unzipped == True
+            img = tifffile.imread(p)
+        else:
+            img = self._read_chunk(
+                self._f_X,
+                chunk=self.image_shape,
+                dtype=self.image_dtype,
+                ind=p,
+                header_offset=self._image_header_offset
+            )
         if len(image_ch := self.image_ch) == 1:
             ch = image_ch[0]
             if ch == 'nuclei':
@@ -221,14 +260,18 @@ class TissueNetV1(MaskDataset):
         img_rgb = stack_channels_to_rgb([img[..., i] for i in range(2)], 1, 2)
         return (255 * img_rgb).astype(np.uint8) if self.uint8 else img_rgb
 
-    def get_mask(self, p: str) -> np.ndarray:
-        mask = self._read_chunk(
-            self._f_y,
-            chunk=self.mask_shape,
-            dtype=self.mask_dtype,
-            ind=int(p),
-            header_offset=self._mask_header_offset
-        )
+    def get_mask(self, p: Union[Path, str]) -> np.ndarray:
+        if isinstance(p, Path):
+            # is_unzipped == True
+            mask = tifffile.imread(p)
+        else:
+            mask = self._read_chunk(
+                self._f_y,
+                chunk=self.mask_shape,
+                dtype=self.mask_dtype,
+                ind=int(p),
+                header_offset=self._mask_header_offset
+            )
         if len(anno_ch := self.anno_ch) == 1:
             ch = anno_ch[0]
             if ch == 'cells':
@@ -238,27 +281,35 @@ class TissueNetV1(MaskDataset):
         return mask
 
     @cached_property
-    def file_list(self) -> List[int]:
+    def file_list(self) -> Union[List[Path], List[int]]:
         """Dummy file list
         """
+        # tissue
         if self.selected_tissue == 'all':
             tissue_idx = np.repeat(True, len(self.tissue_list))
         else:
             tissue_idx = self.tissue_list == self.selected_tissue
-
+        # platform
         if self.selected_platform == 'all':
             platform_idx = np.repeat(True, len(self.platform_list))
         else:
             platform_idx = self.platform_list == self.selected_platform
-
         combined_idx = tissue_idx * platform_idx
         idx = np.where(combined_idx)[0]
-        return idx.tolist()
+        idx = idx.tolist()
+
+        if self.is_unzipped:
+            subdir = self.root_unzip / 'X'
+            return [sorted(subdir.iterdir())[i] for i in idx]
+        return idx
 
     @cached_property
-    def anno_dict(self) -> Dict[int, str]:
+    def anno_dict(self) -> Dict[int, Union[Path, str]]:
         """Dummy annotation dictionary
         """
+        if self.is_unzipped:
+            subdir = self.root_unzip / 'y'
+            return dict((i, subdir / p.name) for i, p in enumerate(self.file_list))
         return dict((i, str(i)) for i in self.file_list)
 
     @classmethod
@@ -330,3 +381,90 @@ class TissueNetV1(MaskDataset):
         df_tissuenet['Total'] = df_tissuenet.sum(axis=1)
         df_tissuenet = df_tissuenet.convert_dtypes()
         return df_tissuenet
+
+    def unzip(self, compression='zlib'):
+        """Unzip .npz file to allow faster loading
+
+        This method will create a directory within the `root_dir` and extract
+        all files inside .npz file. Metadata will be extracted as they are, but
+        images and masks are not. They are two big raw .npy files and will be
+        split to individual files. Images will be extracted to a directory "X"
+        and masks to a directory "y" with 6-zero-padded index in tiff format.
+        The decompressed data can be loaded by setting `decompress=True` when
+        initializing a new instance.
+
+        The original format .npz is a zipped numpy format. It contains multiple
+        .npy files and they are basically raw files. Accessing them sequentially
+        is not an issue and can be done really fast, but the issue is random
+        accessing. Jumping inside a big raw file is very slow. The slower the
+        loading step becomes, the further away the next buffer is from the
+        current one. Imagine you do random shuffling and loading process will
+        become a huge bottleneck.
+
+        Parameters
+        ----------
+        compression : bool, default: 'zlib'
+            compression argument to ``tifffile.imwrite()``. Default 'zlib' is
+            equivalent to deflate algorithm, which the original raw data is
+            compressed with.
+
+        """
+        assert self.selected_tissue == 'all' and self.selected_platform == 'all'
+
+        def _filter_metafiles(p: 'zipfile.ZipInfo'):
+            if p.filename in ['X.npy', 'y.npy']:
+                return False
+            return True
+
+        if self.is_unzipped:
+            warnings.warn(
+                f"{self._npz_zip.filename} is possibly already unzipped",
+                stacklevel=2
+            )
+            return
+
+        # if not unzipped
+        npz = self._npz_zip
+        # make outputdir
+        outdir = self.root_dir / Path(npz.filename).stem
+        outdir.mkdir()
+        # extract metadata
+        metafiles = list(filter(_filter_metafiles, npz.filelist))
+        for f in metafiles:
+            npz.extract(f, outdir)
+        # extract X and y
+        outdir_X = outdir / 'X'
+        outdir_y = outdir / 'y'
+        outdir_X.mkdir()
+        outdir_y.mkdir()
+        print(f'Save {len(self)} images and masks\nUnzipping...')
+        for i in range(len(self)):
+            img = self._read_chunk(
+                self._f_X,
+                chunk=self.image_shape,
+                dtype=self.image_dtype,
+                ind=i,
+                header_offset=self._image_header_offset
+            )
+            mask = self._read_chunk(
+                self._f_y,
+                chunk=self.mask_shape,
+                dtype=self.mask_dtype,
+                ind=i,
+                header_offset=self._mask_header_offset
+            )
+            # write X
+            tifffile.imwrite(
+                outdir_X / f'{i:06d}.tif',
+                img,
+                compression=compression
+            )
+            # write y
+            tifffile.imwrite(
+                outdir_y / f'{i:06d}.tif',
+                mask,
+                compression=compression
+            )
+            print(i, end=' ')
+        print(f"Make another {self.__class__.__name__} instance with setting "
+              "`decompress=True` to load unzipped files.")
