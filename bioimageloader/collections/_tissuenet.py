@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import albumentations
+import cv2
 import numpy as np
 import tifffile
 
@@ -304,11 +305,14 @@ class TissueNetV1(MaskDataset):
         if len(image_ch := self.image_ch) == 1:
             ch = image_ch[0]
             if ch == 'nuclei':
-                return img[..., 0]
+                img = (255 * img[..., 0]).astype(np.uint8) if self.uint8 else img[..., 0]
+                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             elif ch == 'cells':
-                return img[..., 1]
+                img = (255 * img[..., 1]).astype(np.uint8) if self.uint8 else img[..., 1]
+                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         img_rgb = stack_channels_to_rgb([img[..., i] for i in range(2)], 1, 2)
-        return (255 * img_rgb).astype(np.uint8) if self.uint8 else img_rgb
+        img_rgb = (255 * img_rgb).astype(np.uint8) if self.uint8 else img_rgb
+        return img_rgb
 
     def get_mask(self, p: Union[Path, str]) -> np.ndarray:
         if isinstance(p, Path):
