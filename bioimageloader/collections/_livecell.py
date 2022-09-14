@@ -57,7 +57,7 @@ class LIVECell(MaskDataset):
 
     Notes
     -----
-    - Annotation in MS COCO format [3]_. Parsing it takes time`.
+    - Annotation in MS COCO format [3]_. Parsing it takes time.
     - Currently not supporting dynamically parsing COCO annotation due to slow
       speed. Pre-parse masks in .tif format by calling ``save_coco_to_tif()``.
     - Validation set is originally separted from training set. Currently they
