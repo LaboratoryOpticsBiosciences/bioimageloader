@@ -4,11 +4,11 @@ if TYPE_CHECKING:
     import zipfile
     import pandas as pd
 
-from pathlib import Path
+import warnings
 from functools import cached_property
 from itertools import product
+from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
-import warnings
 
 import albumentations
 import numpy as np
@@ -86,7 +86,9 @@ class TissueNetV1(MaskDataset):
     - Train, val, test are all big .npy raw file
     - Highly recommend using ``unzip()`` to unzip .npy files for fast random
       accessing with small memory footprint. Then set ``use_unzipped`` argument
-      to True to load them.
+      to True to load them. Note that it unzips only a ``selected_subset``. To
+      unzip all, you need to call it three times with three different
+      ``selected_subset``.
     - If you have a large memory available (10GB+), you could use ``in_memory``
       option.
     - when ``use_unzipped`` is set to False, ``file_list`` and ``anno_dict`` are
@@ -351,7 +353,8 @@ class TissueNetV1(MaskDataset):
             return idx
         if self.is_unzipped:
             subdir = self.root_unzip / 'X'
-            return [sorted(subdir.iterdir())[i] for i in idx]
+            files = sorted(subdir.iterdir())
+            return [files[i] for i in idx]
         # dummy file list
         return idx
 
