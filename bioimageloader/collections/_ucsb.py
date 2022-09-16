@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -82,7 +83,7 @@ class UCSB(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         tif = tifffile.imread(p)
-        return tif
+        return img_as_float32(tif)
 
     def get_mask(self, p: Path) -> np.ndarray:
         tif = tifffile.imread(p)

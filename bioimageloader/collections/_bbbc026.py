@@ -5,6 +5,7 @@ from typing import List, Optional
 import albumentations
 import cv2
 import numpy as np
+from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..utils import imread_asarray
@@ -63,7 +64,8 @@ class BBBC026(Dataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = imread_asarray(p)
-        return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        return img_as_float32(img)
 
     @cached_property
     def file_list(self) -> List[Path]:

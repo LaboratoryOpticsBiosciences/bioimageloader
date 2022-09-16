@@ -1,14 +1,15 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import albumentations
 import cv2
 import numpy as np
 import tifffile
-
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
+
 
 class BBBC009(MaskDataset):
     """Human red blood cells
@@ -60,7 +61,7 @@ class BBBC009(MaskDataset):
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        return img
+        return img_as_float32(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = tifffile.imread(p)
@@ -70,7 +71,6 @@ class BBBC009(MaskDataset):
     @cached_property
     def file_list(self) -> List[Path]:
         # Important to decorate with `cached_property` in general
-        #file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'human_rbc_dic_images'
         file_list = sorted(root_dir.glob(f'{parent}/*.tif'))
@@ -79,7 +79,6 @@ class BBBC009(MaskDataset):
     @cached_property
     def anno_dict(self) -> Dict[int, Path]:
         # Important to decorate with `cached_property` in general
-        #file_list: Union[List[Path], List[List[Path]]]
         root_dir = self.root_dir
         parent = 'human_rbc_dic_outlines'
         anno_list = sorted(root_dir.glob(f'{parent}/*.tif'))

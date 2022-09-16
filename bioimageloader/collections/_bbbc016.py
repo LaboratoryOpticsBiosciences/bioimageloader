@@ -6,6 +6,7 @@ import albumentations
 import cv2
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..types import BundledPath
@@ -88,7 +89,7 @@ class BBBC016(Dataset):
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         else:
             img = stack_channels_to_rgb(tifffile.imread, p, 2, 1, 0)
-        return img
+        return img_as_float32(img)
 
     @cached_property
     def file_list(self) -> Union[List[Path], List[BundledPath]]:

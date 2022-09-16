@@ -7,6 +7,7 @@ import albumentations
 import cv2
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -32,7 +33,7 @@ class S_BSST265(MaskDataset):
 
     Notes
     -----
-    - All images have grayscale though some have 3 channels
+    - All images have grayscale BUT some have 3 channels
     - rawimages: Raw nuclear images in TIFF format
     - groundtruth: Annotated masks in TIFF format
     - groundtruth_svgs: SVG-Files for each annotated masks and corresponding raw
@@ -81,6 +82,7 @@ class S_BSST265(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         tif = tifffile.imread(p)
+        tif = img_as_float32(tif)
         if tif.shape[-1] != 3:
             tif = cv2.cvtColor(tif, cv2.COLOR_GRAY2RGB)
         return tif

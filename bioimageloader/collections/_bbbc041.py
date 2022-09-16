@@ -6,6 +6,7 @@ from typing import List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
+from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..utils import imread_asarray
@@ -95,7 +96,7 @@ class BBBC041(Dataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = imread_asarray(p)
-        return img
+        return img_as_float32(img)
 
     @cached_property
     def file_list(self) -> List[Path]:

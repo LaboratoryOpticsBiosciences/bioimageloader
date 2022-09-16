@@ -8,6 +8,7 @@ import albumentations
 import cv2
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
@@ -132,12 +133,12 @@ class BBBC020(MaskDataset):
         img[..., 0] = 0
         if len(ch := self.image_ch) == 1:
             if ch[0] == 'cells':
-                return cv2.cvtColor(img[..., 1], cv2.COLOR_GRAY2RGB)
+                img = cv2.cvtColor(img[..., 1], cv2.COLOR_GRAY2RGB)
             elif ch[0] == 'nuclei':
-                return cv2.cvtColor(img[..., 2], cv2.COLOR_GRAY2RGB)
+                img = cv2.cvtColor(img[..., 2], cv2.COLOR_GRAY2RGB)
             else:
                 raise ValueError
-        return img
+        return img_as_float32(img)
 
     def get_mask(self, lst_p: Union[BundledPath, List[BundledPath]]) -> np.ndarray:
         def _assign_index(

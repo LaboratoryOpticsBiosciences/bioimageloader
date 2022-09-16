@@ -7,6 +7,7 @@ import os.path
 from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
+from skimage.util import img_as_float32
 
 import albumentations
 import cv2
@@ -40,7 +41,8 @@ class StarDist(MaskDataset):
 
     Notes
     -----
-    - StarDist data is a subset of Data Science Bowl 2018 [3]_
+    - StarDist data is a subset of Data Science Bowl 2018 [3]_. Choose only one,
+      do not mix them.
     - ``root_dir`` is not 'dsb2018' even though the archive name is 'dsb2018',
       because it conflicts with the original DSB2018. Make a new directory.
     - All images have grayscale
@@ -84,6 +86,7 @@ class StarDist(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
+        img = img_as_float32(img)
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     def get_mask(self, p: Path) -> np.ndarray:

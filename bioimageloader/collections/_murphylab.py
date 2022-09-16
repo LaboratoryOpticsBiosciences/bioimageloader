@@ -5,15 +5,17 @@ from typing import Dict, List, Optional
 
 import albumentations
 import numpy as np
+
+from PIL import Image
+from skimage.util import img_as_float32
 try:
     from gimpformats.gimpXcfDocument import GimpDocument
 except ModuleNotFoundError as e:
     print("Install `gimpformats` pkg")
     raise e
 
-from PIL import Image
-
 from ..base import MaskDataset
+from ..utils import imread_asarray
 
 
 class MurphyLab(MaskDataset):
@@ -123,8 +125,8 @@ class MurphyLab(MaskDataset):
             self.file_list, self.anno_dict = self._drop_broken_files()
 
     def get_image(self, p: Path) -> np.ndarray:
-        img = Image.open(p)
-        return np.asarray(img)
+        img = imread_asarray(p)
+        return img_as_float32(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
         if self.filled_mask:

@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 import tifffile
 from pycocotools import coco
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -118,7 +119,7 @@ class LIVECell(MaskDataset):
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        return img
+        return img_as_float32(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = tifffile.imread(p)

@@ -6,6 +6,7 @@ import albumentations
 import cv2
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
@@ -123,7 +124,7 @@ class BBBC007(MaskDataset):
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         else:
             img = stack_channels_to_rgb(self._imread_handler, p)
-        return img
+        return img_as_float32(img)
 
     def get_mask(self, p: Union[Path, BundledPath]) -> np.ndarray:
         if isinstance(p, Path):

@@ -7,6 +7,7 @@ import albumentations
 import numpy as np
 import tifffile
 from PIL import Image
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -75,7 +76,7 @@ class DigitalPathology(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         tif = tifffile.imread(p)
-        return tif
+        return img_as_float32(tif)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = np.asarray(Image.open(p))

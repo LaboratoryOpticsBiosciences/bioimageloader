@@ -1,4 +1,3 @@
-import os.path
 from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Union
@@ -6,6 +5,7 @@ from typing import Dict, List, Optional, Sequence, Union
 import albumentations
 import numpy as np
 from PIL import Image
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -72,7 +72,7 @@ class TNBC(MaskDataset):
         img = Image.open(p)
         if img.mode == 'RGBA':
             img = img.convert(mode='RGB')
-        return np.asarray(img)
+        return img_as_float32(np.asarray(img))
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = Image.open(p)

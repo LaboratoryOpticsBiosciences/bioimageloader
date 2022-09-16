@@ -1,13 +1,15 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional, Sequence, Union, Dict
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
 from PIL import Image
-
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
+from ..utils import imread_asarray
+
 
 class BBBC030(MaskDataset):
     """Chinese Hamster Ovary Cells
@@ -57,13 +59,12 @@ class BBBC030(MaskDataset):
         # specific to this one here
 
     def get_image(self, p: Path) -> np.ndarray:
-        img = Image.open(p)
-        return np.asarray(img)
+        img = imread_asarray(p)
+        return img_as_float32(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
-        mask = Image.open(p).convert('1')
-        # dtype=bool originally and bool is not well handled by albumentations
-        return  255 * np.asarray(mask)
+        mask = imread_asarray(p)
+        return mask
 
     @cached_property
     def file_list(self) -> List[Path]:

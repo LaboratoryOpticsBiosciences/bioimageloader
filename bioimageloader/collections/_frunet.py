@@ -7,6 +7,7 @@ import albumentations
 import cv2
 import numpy as np
 import tifffile
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -34,9 +35,11 @@ class FRUNet(MaskDataset):
     Notes
     -----
     - Originally, dtype is UINT16
-    - Max value is 20444, but contrast varies a lot. Normalization may be
-      needed. Init param ``normalize`` is set to True by default for this
-      reason.
+    - Max value is 20444, but contrast varies a lot. For example, some images
+      have value less than 0.05 of 2^16, which makes images not visible.
+      Normalization may be needed. Init param ``normalize`` is set to True by
+      default for this reason. For each image, it calculates maximum value and
+      divide by it.
 
     References
     ----------
@@ -78,11 +81,10 @@ class FRUNet(MaskDataset):
         tif = tifffile.imread(p)
         if self.normalize:
             v = tif.max()
-            tif = 255 * (np.clip(tif, 0, v) / v)  # float64
-            tif = tif.astype(np.uint8)
+            tif = tif / np.float32(v)
             tif = cv2.cvtColor(tif, cv2.COLOR_GRAY2RGB)
             return tif
-        return tif
+        return img_as_float32(tif)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = tifffile.imread(p)

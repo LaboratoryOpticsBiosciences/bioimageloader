@@ -1,14 +1,15 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional, Sequence, Union, Dict
+from typing import Dict, List, Optional, Sequence, Union
 
 import albumentations
 import cv2
 import numpy as np
 import tifffile
-
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
+
 
 class BBBC004(MaskDataset):
     """Synthetic cells
@@ -69,7 +70,7 @@ class BBBC004(MaskDataset):
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        return img
+        return img_as_float32(img)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = tifffile.imread(p)

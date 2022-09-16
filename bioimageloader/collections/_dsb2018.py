@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Sequence, Union, Any
 import albumentations
 import numpy as np
 from PIL import Image
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
@@ -77,7 +78,7 @@ class DSB2018(MaskDataset):
     def get_image(self, p: Path) -> np.ndarray:
         img = Image.open(p)
         img = img.convert(mode='RGB')
-        return np.asarray(img)
+        return img_as_float32(np.asarray(img))
 
     def get_mask(self, anno: Union[BundledPath, Dict[str, Any]]) -> np.ndarray:
         if self.training and not isinstance(anno, dict):

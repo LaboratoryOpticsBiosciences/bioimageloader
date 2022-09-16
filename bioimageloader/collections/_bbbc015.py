@@ -4,6 +4,7 @@ from typing import List, Optional, Sequence, Union
 
 import albumentations
 import numpy as np
+from skimage.util import img_as_float32
 
 from ..base import Dataset
 from ..types import BundledPath
@@ -95,7 +96,7 @@ class BBBC015(Dataset):
             img = stack_channels_to_rgb(
                 lambda x: imread_asarray(x)[..., 0], p, 1, 0, 2
             )
-        return img
+        return img_as_float32(img)
 
     @cached_property
     def file_list(self) -> Union[List[Path], List[BundledPath]]:

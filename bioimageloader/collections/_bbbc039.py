@@ -64,6 +64,7 @@ class BBBC039(MaskDataset):
 
     # Dataset's acronym
     acronym = 'BBBC039'
+    _max_val = 4095  # 2**12
 
     def __init__(
         self,
@@ -85,9 +86,8 @@ class BBBC039(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = tifffile.imread(p)
-        img = (img / 2**4).astype(np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        return img
+        img = img / np.float32(self._max_val)
+        return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     def get_mask(self, p: Path) -> np.ndarray:
         mask = np.asarray(Image.open(p))[..., 0]

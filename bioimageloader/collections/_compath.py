@@ -8,6 +8,7 @@ import numpy as np
 import tifffile
 from PIL import Image
 from skimage.draw import polygon
+from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 
@@ -101,7 +102,7 @@ class ComputationalPathology(MaskDataset):
         img = Image.open(p)
         if img.mode == 'RGBA':
             img = img.convert(mode='RGB')
-        return np.asarray(img)
+        return img_as_float32(np.asarray(img))
 
     def get_mask(self, p: Path) -> np.ndarray:
         if self.mask_tif:

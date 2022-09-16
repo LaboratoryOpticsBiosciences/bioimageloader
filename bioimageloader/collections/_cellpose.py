@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Sequence, Union
 import albumentations
 import cv2
 import numpy as np
+from skimage.util import img_as_float32
 
 from bioimageloader.base import MaskDataset
 from bioimageloader.utils import imread_asarray
@@ -42,6 +43,7 @@ class Cellpose(MaskDataset):
 
     Notes
     -----
+    - Download link is hard to find [3]_
     - It is a complete dataset by itself, meaning that it is not intended to be
       mixed or concatenated with others. It consists of various sources of
       images, not only bioimages but also images of fruits, rocks and etc.
@@ -49,9 +51,10 @@ class Cellpose(MaskDataset):
       have values on the second channel and if there is more signal, then it
       goes to the first one. There is no image that has values on the last
       channel. As a result, when visualized in RGB, they look all green and red.
+      In particular, for this reason, grayscale images have signal in the second
+      channel and look green. ``gray_is_not_green`` argument address that.
     - Built-in grayscale conversion methods are not correct for this dataset.
       The conversion should be channel-agnostic.
-    - Download link is hard to find [3]_
     - Currently, ``gray_is_not_green=False`` and ``grayscale=True`` will reduce
       values of single channel images 1/3 times.
 
@@ -185,6 +188,7 @@ class Cellpose(MaskDataset):
 
     def get_image(self, p: Path) -> np.ndarray:
         img = imread_asarray(p)
+        img = img_as_float32(img)
         if p.name in self.names_rg:
             return img
         if self.gray_is_not_green:
