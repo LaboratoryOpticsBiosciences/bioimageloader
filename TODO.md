@@ -80,8 +80,7 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
     Important one. Images with 2 channels using `grayscale_mode=eqaul` should be fixed
     by list[float].
 - [ ]  More data
-    - StarDist (subset of DSB2018)
-    - Cellpose
+    - [ ] [TissueNet](https://deepcell.org)
     - https://twitter.com/cmci_/status/1498156970700046337?t=9n2gDTpeM1Oq3JcCOV9QOg
         All 3 are related. Rooted from one and modified somehow?
         1. Romain Guiet. (2022). HeLa "Kyoto" cells under the scope (Version v0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6139958
@@ -91,7 +90,10 @@ I2K 2022 *“developing open source image analysis platforms/tools”*
         Included in Cellpose dataset, cytoplasmic (phalloidin) and nuclear stains (DAPI)
     - CRCHisto
     - CEM500K
-    - [ ]  OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
+    - [ ] OpenCell [https://opencell.czbiohub.org/](https://opencell.czbiohub.org/)
+    - [x] LIVECellt
+    - [x] StarDist (subset of DSB2018)
+    - [x] Cellpose
 - [ ]  hydra for Config
     https://hydra.cc/docs/intro/
 
