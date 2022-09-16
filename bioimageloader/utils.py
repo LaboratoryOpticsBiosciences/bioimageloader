@@ -6,14 +6,17 @@ import random
 from copy import deepcopy
 from itertools import accumulate
 from pathlib import Path
-from typing import Callable, List, Optional, Protocol, Sequence, TypeVar, Union
+from typing import (TYPE_CHECKING, Callable, List, Optional, Protocol,
+                    Sequence, TypeVar, Union)
 
-import albumentations
 import numpy as np
 from PIL import Image
 
 from .base import Dataset, MaskDataset
 from .types import Bundled
+
+if TYPE_CHECKING:
+    import albumentations
 
 T = TypeVar('T')
 
@@ -231,7 +234,7 @@ def stack_channels_to_rgb(
     return stacked
 
 
-def bundle_list(lst: List[T], bundle_size: int) -> List[Bundled[T]]:
+def bundle_list(lst: List[T], bundle_size: int) -> List['Bundled[T]']:
     """Reshape a list given the repetition step size"""
     return [list(e) for e in zip(
         *[lst[i::bundle_size] for i in range(bundle_size)]
@@ -262,7 +265,7 @@ def get_dataset_from_directory(
     root_dir: str,
     *,
     output: Optional[str] = None,
-    transforms: Optional[albumentations.Compose] = None,
+    transforms: Optional['albumentations.Compose'] = None,
     num_samples: Optional[int] = None,
     grayscale: Optional[bool] = None,
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
@@ -337,7 +340,7 @@ def get_maskdataset_from_directory(
     image_dir: Optional[str] = None,
     label_dir: Optional[str] = None,
     output: Optional[str] = None,
-    transforms: Optional[albumentations.Compose] = None,
+    transforms: Optional['albumentations.Compose'] = None,
     num_samples: Optional[int] = None,
     grayscale: Optional[bool] = None,
     grayscale_mode: Optional[Union[str, Sequence[float]]] = None,

@@ -1,8 +1,7 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-import albumentations
 import numpy as np
 from PIL import Image
 from skimage.util import img_as_float32
@@ -10,6 +9,8 @@ from skimage.util import img_as_float32
 from ..base import MaskDataset
 from ..utils import imread_asarray
 
+if TYPE_CHECKING:
+    import albumentations
 
 class BBBC030(MaskDataset):
     """Chinese Hamster Ovary Cells
@@ -47,7 +48,7 @@ class BBBC030(MaskDataset):
         root_dir: str,
         *,  # only keyword param
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         # specific to this dataset
         **kwargs

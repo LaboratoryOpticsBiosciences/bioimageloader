@@ -1,14 +1,16 @@
 import re
 from functools import cached_property, partial
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-import albumentations
 import numpy as np
 import tifffile
 from skimage.util import img_as_float32
 
 from ..base import MaskDataset
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class UCSB(MaskDataset):
@@ -62,7 +64,7 @@ class UCSB(MaskDataset):
         root_dir: str,
         *,
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',

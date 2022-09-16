@@ -57,15 +57,17 @@ see also ``utils.get_maskdatasets_from_directory``
 import os
 from functools import cached_property
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
-import albumentations
 import numpy as np
 import tifffile
 
 from .base import Dataset, MaskDataset
 from .types import KNOWN_IMAGE_EXT, PIL_IMAGE_EXT, TIFFFILE_IMAGE_EXT
 from .utils import imread_asarray
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class CommonDataset(Dataset):
@@ -106,7 +108,7 @@ class CommonDataset(Dataset):
         root_dir,
         *,
         output: Optional[str] = None,
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: Optional[bool] = None,
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,
@@ -187,7 +189,7 @@ class CommonMaskDataset(CommonDataset, MaskDataset):
         root_dir,
         *,
         output: Optional[str] = None,
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: Optional[bool] = None,
         grayscale_mode: Optional[Union[str, Sequence[float]]] = None,

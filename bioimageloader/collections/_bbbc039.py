@@ -1,8 +1,7 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
-import albumentations
 import cv2
 import numpy as np
 import scipy.ndimage as ndi
@@ -10,6 +9,9 @@ import tifffile
 from PIL import Image
 
 from ..base import MaskDataset
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class BBBC039(MaskDataset):
@@ -71,7 +73,7 @@ class BBBC039(MaskDataset):
         root_dir: str,
         *,
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         # specific to this dataset
         training: bool = True,

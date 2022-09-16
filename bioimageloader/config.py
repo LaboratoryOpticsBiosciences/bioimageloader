@@ -1,14 +1,16 @@
 import os.path
 import warnings
 from functools import cached_property
-from typing import Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
-import albumentations
 import yaml
 
 from .base import Dataset
 from .collections import *
 from .types import DatasetList
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class Config(dict):
@@ -37,7 +39,7 @@ class Config(dict):
 
     def load_datasets(
         self,
-        transforms: Optional[Union[albumentations.Compose, Dict[str, albumentations.Compose]]] = None,
+        transforms: Optional[Union['albumentations.Compose', Dict[str, 'albumentations.Compose']]] = None,
     ) -> DatasetList:
         """Load multiple datasets from a yaml file
 
