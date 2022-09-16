@@ -1,15 +1,18 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
-import albumentations
 import numpy as np
 from PIL import Image
 from skimage.util import img_as_float32
 
 from ..base import MaskDataset
 from ..types import BundledPath
-from ..utils import imread_asarray, rle_decoding_inseg, read_csv, ordered_unique
+from ..utils import (imread_asarray, ordered_unique, read_csv,
+                     rle_decoding_inseg)
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class DSB2018(MaskDataset):
@@ -58,7 +61,7 @@ class DSB2018(MaskDataset):
         root_dir: str,
         *,
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: bool = False,
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',

@@ -1,12 +1,14 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-import albumentations
 import numpy as np
 
 from bioimageloader.base import Dataset, MaskDataset
 from bioimageloader.types import BundledPath
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class DatasetTemplate(Dataset):
@@ -42,7 +44,7 @@ class DatasetTemplate(Dataset):
         self,
         root_dir: str,
         *,  # only keyword param
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: bool = False,  # optional
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',  # optional
@@ -101,7 +103,7 @@ class MaskTemplate(MaskDataset):
         root_dir: str,
         *,  # only keyword param
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         grayscale: bool = False,  # optional
         grayscale_mode: Union[str, Sequence[float]] = 'cv2',  # optional

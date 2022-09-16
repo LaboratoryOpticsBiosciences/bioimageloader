@@ -1,8 +1,7 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-import albumentations
 import cv2
 import numpy as np
 import tifffile
@@ -10,6 +9,8 @@ from skimage.util import img_as_float32
 
 from ..base import Dataset
 
+if TYPE_CHECKING:
+    import albumentations
 
 class BBBC002(Dataset):
     """Drosophila Kc167 cells
@@ -55,7 +56,7 @@ class BBBC002(Dataset):
         self,
         root_dir: str,
         *,
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         **kwargs
     ):

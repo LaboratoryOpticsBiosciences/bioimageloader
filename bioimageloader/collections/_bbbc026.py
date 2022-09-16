@@ -1,8 +1,7 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-import albumentations
 import cv2
 import numpy as np
 from skimage.util import img_as_float32
@@ -10,6 +9,8 @@ from skimage.util import img_as_float32
 from ..base import Dataset
 from ..utils import imread_asarray
 
+if TYPE_CHECKING:
+    import albumentations
 
 class BBBC026(Dataset):
     """Human Hepatocyte and Murine Fibroblast cells – Co-culture experiment
@@ -54,7 +55,7 @@ class BBBC026(Dataset):
         self,
         root_dir: str,
         *,
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         **kwargs
     ):

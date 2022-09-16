@@ -9,12 +9,14 @@ import abc
 import inspect
 import random
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Sequence, Union
+from typing import (TYPE_CHECKING, Any, Dict, Iterator, Optional, Sequence,
+                    Union)
 
-import albumentations
 import cv2
 import numpy as np
 
+if TYPE_CHECKING:
+    import albumentations
 
 class DatasetInterface(metaclass=abc.ABCMeta):
     """Dataset interface
@@ -136,7 +138,7 @@ class Dataset(DatasetInterface):
         return 'image'
 
     @property
-    def transforms(self) -> Optional[albumentations.Compose]:
+    def transforms(self) -> Optional['albumentations.Compose']:
         """Transform images and masks"""
         if hasattr(self, '_transforms'):
             return getattr(self, '_transforms')

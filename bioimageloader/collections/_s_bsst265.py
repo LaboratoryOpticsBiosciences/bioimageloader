@@ -1,15 +1,17 @@
 import os.path
 from functools import cached_property
 from pathlib import Path
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
-import albumentations
 import cv2
 import numpy as np
 import tifffile
 from skimage.util import img_as_float32
 
 from ..base import MaskDataset
+
+if TYPE_CHECKING:
+    import albumentations
 
 
 class S_BSST265(MaskDataset):
@@ -70,7 +72,7 @@ class S_BSST265(MaskDataset):
         root_dir: str,
         *,
         output: str = 'both',
-        transforms: Optional[albumentations.Compose] = None,
+        transforms: Optional['albumentations.Compose'] = None,
         num_samples: Optional[int] = None,
         **kwargs
     ):
