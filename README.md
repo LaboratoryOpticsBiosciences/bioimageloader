@@ -17,7 +17,8 @@ concatenate, perform image augmentation, and batch-load them.
 1. collections of interfaces for popular and public bioimage datasets
 2. image augmentation using [albumentations], which is popular and powerful
    image augmentation library (for 2D images)
-3. compatibility with [scikit-learn], [tensorflow], and [pytorch]
+3. compatibility with [pytorch]
+4. and with others such as [scikit-learn] and [tensorflow]
 
 
 ## Table of Contents
@@ -91,6 +92,19 @@ Find full guides at [bioimageloader-docs:User Guides]
                                batch_size=16,
                                drop_last=True,
                                num_workers=8)
+    for meow in call_cat:
+        batch_image = meow['image']
+        batch_mask = meow['mask']
+    ```
+
+    or directly use pytorch's `DataLoader`
+    ```python
+    from torch.utils.data import DataLoader
+
+    call_cat = Dataloader(cat,
+                          batch_size=16,
+                          drop_last=True,
+                          num_workers=8)
     for meow in call_cat:
         batch_image = meow['image']
         batch_mask = meow['mask']
