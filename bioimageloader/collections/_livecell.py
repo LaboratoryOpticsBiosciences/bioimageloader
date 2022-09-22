@@ -132,7 +132,7 @@ class LIVECell(MaskDataset):
         # Call MaskDataset.root_dir
         root_dir = self.root_dir
         parent = (root_dir / 'images' / 'livecell_train_val_images' if self.training
-                  else root_dir / 'images' / 'livecell_test_masks')
+                  else root_dir / 'images' / 'livecell_test_images')
         return sorted(parent.glob('*.tif'))
 
     @cached_property
