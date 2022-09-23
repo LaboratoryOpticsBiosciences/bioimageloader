@@ -62,11 +62,6 @@ class TissueNetV1(MaskDataset):
     anno_ch : {'cells', 'nuclei'}, default: ('cells', 'nuclei')
         Which channel(s) to load as annotation. Make sure to give it as a
         Sequence when choose a single channel.
-    uint8 : bool, default: True
-        Whether to convert images to UINT8. It will divide images by a certain
-        value so that they have a reasonable range of pixel values when cast
-        into UINT8. If set False, no process will be applied. Read more about
-        rationales in Notes section.
     selected_tissue : str, default: 'all'
         Print `self.valid_tissues` for valid list
     selected_platform : str, default: 'all'
@@ -135,7 +130,6 @@ class TissueNetV1(MaskDataset):
         anno_ch: Sequence[str] = ('cells', 'nuclei'),
         selected_tissue: str = 'all',
         selected_platform: str = 'all',
-        uint8: bool = True,
         use_unzipped: bool = False,
         in_memory: bool = False,
         **kwargs
@@ -152,7 +146,6 @@ class TissueNetV1(MaskDataset):
         self.anno_ch = anno_ch
         self.selected_tissue = selected_tissue
         self.selected_platform = selected_platform
-        self.uint8 = uint8
         self.use_unzipped = use_unzipped
         self.in_memory = in_memory
         # check some arguemnts
@@ -304,14 +297,12 @@ class TissueNetV1(MaskDataset):
                 )
         if len(image_ch := self.image_ch) == 1:
             ch = image_ch[0]
+            # CAUTION channel order is different from mask
             if ch == 'nuclei':
-                img = (255 * img[..., 0]).astype(np.uint8) if self.uint8 else img[..., 0]
-                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+                return cv2.cvtColor(img[..., 0], cv2.COLOR_GRAY2RGB)
             elif ch == 'cells':
-                img = (255 * img[..., 1]).astype(np.uint8) if self.uint8 else img[..., 1]
-                return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+                return cv2.cvtColor(img[..., 1], cv2.COLOR_GRAY2RGB)
         img_rgb = stack_channels_to_rgb([img[..., i] for i in range(2)], 1, 2)
-        img_rgb = (255 * img_rgb).astype(np.uint8) if self.uint8 else img_rgb
         return img_rgb
 
     def get_mask(self, p: Union[Path, str]) -> np.ndarray:
@@ -331,6 +322,7 @@ class TissueNetV1(MaskDataset):
                 )
         if len(anno_ch := self.anno_ch) == 1:
             ch = anno_ch[0]
+            # CAUTION channel order is different from image
             if ch == 'cells':
                 return mask[..., 0]
             elif ch == 'nuclei':
