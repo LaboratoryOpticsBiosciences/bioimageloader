@@ -191,7 +191,7 @@ class LIVECell(MaskDataset):
                     mask |= self.coco_val.annToMask(anns[i]) * i
             tifffile.imwrite(mask_train_dir / img['file_name'],
                              mask,
-                             compression='LZW')
+                             compression=compression)
             print(ind, end=' ')
         print("Done!")
         # test
@@ -209,6 +209,6 @@ class LIVECell(MaskDataset):
                 mask |= self.coco_te.annToMask(anns[i]) * i
             tifffile.imwrite(mask_test_dir / img['file_name'],
                              mask,
-                             compression='LZW')
+                             compression=compression)
             print(ind, end=' ')
         print("Done!")
