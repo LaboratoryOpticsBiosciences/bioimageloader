@@ -59,7 +59,7 @@ class LIVECell(MaskDataset):
 
     Notes
     -----
-    - Annotation in MS COCO format [3]_. Parsing it takes time`.
+    - Annotation in MS COCO format [3]_. Parsing it takes time.
     - Currently not supporting dynamically parsing COCO annotation due to slow
       speed. Pre-parse masks in .tif format by calling ``save_coco_to_tif()``.
     - Validation set is originally separted from training set. Currently they
@@ -145,7 +145,7 @@ class LIVECell(MaskDataset):
             sorted(parent.glob('*.tif'))
         ))
 
-    def save_coco_to_tif(self):
+    def save_coco_to_tif(self, compression='LZW'):
         """Save the masks as tif files
 
         Read training/val or test annotations from json. Make tif files under
@@ -153,6 +153,12 @@ class LIVECell(MaskDataset):
 
         Initialize a new instance with setting ``mask_tif=True`` to load saved
         masks.
+
+        Parameters
+        ----------
+        compression : bool, default: 'LZW'
+            compression argument to ``tifffile.imwrite()``. Default 'LZW' is
+            a recommended compression choice for TIFF file.
         """
         print("making instances masks and saving as tif files")
         # makedirs
@@ -183,7 +189,9 @@ class LIVECell(MaskDataset):
                 mask = mask.astype(np.int32)
                 for i in range(len(anns)):
                     mask |= self.coco_val.annToMask(anns[i]) * i
-            tifffile.imsave(mask_train_dir / img['file_name'], mask)
+            tifffile.imwrite(mask_train_dir / img['file_name'],
+                             mask,
+                             compression='LZW')
             print(ind, end=' ')
         print("Done!")
         # test
@@ -199,6 +207,8 @@ class LIVECell(MaskDataset):
             mask = mask.astype(np.int32)
             for i in range(len(anns)):
                 mask |= self.coco_te.annToMask(anns[i]) * i
-            tifffile.imsave(mask_test_dir / img['file_name'], mask)
+            tifffile.imwrite(mask_test_dir / img['file_name'],
+                             mask,
+                             compression='LZW')
             print(ind, end=' ')
         print("Done!")

@@ -128,6 +128,13 @@ class Config(dict):
             if attr in self[k]:
                 self[k][attr] = val
 
+    def set_num_samples(self, val: int):
+        """Iterate config and set all ``num_samples`` to given value
+        """
+        attr = 'num_samples'
+        for k in self.keys():
+            self[k][attr] = val
+
 
 class _Config(Config):
     """Config.from_dict()"""
