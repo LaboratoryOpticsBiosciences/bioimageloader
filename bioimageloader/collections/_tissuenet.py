@@ -89,9 +89,11 @@ class TissueNetV1(MaskDataset):
       option.
     - when ``use_unzipped`` is set to False, ``file_list`` and ``anno_dict`` are
       dummy lists.
-    - .npy file comes with a header whose size is 128 bytes and ends with
+    - Each .npy file comes with a header whose size is 128 bytes and ends with
       newline char
     - image has channel order [nuclei, cells] but mask has [cells, nuclei]
+    - As described, training set has (512, 512, 2) shape, but valiation and
+      testing sets have (256, 256, 2) shape.
 
     References
     ----------
@@ -436,7 +438,7 @@ class TissueNetV1(MaskDataset):
         df_tissuenet = df_tissuenet.convert_dtypes()
         return df_tissuenet
 
-    def unzip(self, compression='zlib'):
+    def unzip(self, compression='LZW'):
         """Unzip .npz file to allow faster loading
 
         This method will create a directory within the `root_dir` and extract
@@ -458,10 +460,9 @@ class TissueNetV1(MaskDataset):
 
         Parameters
         ----------
-        compression : bool, default: 'zlib'
-            compression argument to ``tifffile.imwrite()``. Default 'zlib' is
-            equivalent to deflate algorithm, which the original raw data is
-            compressed with.
+        compression : bool, default: 'LZW'
+            compression argument to ``tifffile.imwrite()``. Default 'LZW' is
+            a recommended compression choice for TIFF file.
 
         """
         assert self.selected_tissue == 'all' and self.selected_platform == 'all'
